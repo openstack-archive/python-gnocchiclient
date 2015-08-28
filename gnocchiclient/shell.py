@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import logging
 import sys
 
 from cliff import app
@@ -66,6 +67,23 @@ class GnocchiShell(app.App):
     def clean_up(self, cmd, result, err):
         if err and isinstance(err, exceptions.HttpError):
             print(err.details)
+
+    def configure_logging(self):
+        super(GnocchiShell, self).configure_logging()
+
+        # Hide some useless message
+        requests_log = logging.getLogger("requests")
+        cliff_log = logging.getLogger('cliff')
+        stevedore_log = logging.getLogger('stevedore')
+        iso8601_log = logging.getLogger("iso8601")
+
+        requests_log.setLevel(logging.ERROR)
+        cliff_log.setLevel(logging.ERROR)
+        stevedore_log.setLevel(logging.ERROR)
+        iso8601_log.setLevel(logging.ERROR)
+
+        if self.options.debug:
+            requests_log.setLevel(logging.DEBUG)
 
 
 def main(args=None):
