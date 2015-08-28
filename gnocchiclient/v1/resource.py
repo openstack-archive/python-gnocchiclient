@@ -20,6 +20,7 @@ from cliff import lister
 from cliff import show
 from oslo_serialization import jsonutils
 
+from gnocchiclient import utils
 from gnocchiclient.v1 import base
 
 
@@ -52,6 +53,17 @@ class ResourceManager(base.Manager):
         url = self.client.url("resource/generic/%s" % (resource_id))
         self.client.api.delete(url)
 
+    def search(self, resource_type="generic", details=False, history=False,
+               request=None):
+        request = request or {}
+        details = "true" if details else "false"
+        history = "true" if history else "false"
+        url = self.client.url("/search/resource/%s?details=%s&history=%s" % (
+            resource_type, details, history))
+        return self.client.api.post(
+            url, headers={'Content-Type': "application/json"},
+            data=jsonutils.dumps(request)).json()
+
 
 class CliResourceList(lister.Lister):
     COLS = ('id', 'type',
@@ -81,6 +93,22 @@ class CliResourceList(lister.Lister):
     @classmethod
     def _resource2tuple(cls, resource):
         return tuple([resource[k] for k in cls.COLS])
+
+
+class CliResourceSearch(CliResourceList):
+    def get_parser(self, prog_name):
+        parser = super(CliResourceSearch, self).get_parser(prog_name)
+        parser.add_argument("-q", "--query",
+                            help="Query"),
+        return parser
+
+    def take_action(self, parsed_args):
+        resources = self.app.client.resource.search(
+            resource_type=parsed_args.resource_type,
+            details=parsed_args.details,
+            history=parsed_args.history,
+            request=utils.search_query_builder(parsed_args.query))
+        return self.COLS, [self._resource2tuple(r) for r in resources]
 
 
 def normalize_metrics(res):
@@ -131,7 +159,7 @@ class CliResourceCreate(show.ShowOne):
                 attr, __, value = attr.partition(":")
                 resource[attr] = value
         if parsed_args.metric:
-            rid = getattr(parsed_args, 'resource_id')
+            rid = getattr(parsed_args, 'resource_id', None)
             if rid:
                 r = self.app.client.resource.get(parsed_args.resource_type,
                                                  parsed_args.resource_id)
