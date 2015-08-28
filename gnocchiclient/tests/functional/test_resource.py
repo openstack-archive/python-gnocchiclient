@@ -23,6 +23,7 @@ class ResourceClientTest(base.ClientTestBase):
 
     def details_multiple(self, output_lines, with_label=False):
         """Return list of dicts with item details from cli output tables.
+
         If with_label is True, key '__label' is added to each items dict.
         For more about 'label' see OutputParser.tables().
 
@@ -54,13 +55,15 @@ class ResourceClientTest(base.ClientTestBase):
 
         # UPDATE
         result = self.gnocchi(
-            'resource', params=("update generic %s -a project_id:%s" %
+            'resource', params=("update generic %s -a project_id:%s "
+                                "-m temperature:high" %
                                 (self.RESOURCE_ID, self.PROJECT_ID)))
         resource_updated = self.details_multiple(result)[0]
         self.assertEqual(self.RESOURCE_ID, resource_updated["id"])
         self.assertEqual(self.PROJECT_ID, resource_updated["project_id"])
         self.assertEqual(resource["started_at"],
                          resource_updated["started_at"])
+        self.assertEqual("temperature", resource["metrics"].keys()[0])
 
         # GET
         result = self.gnocchi(

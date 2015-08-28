@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import uuid
 
 from cliff import command
 from cliff import lister
@@ -82,6 +83,12 @@ class CliResourceList(lister.Lister):
         return tuple([resource[k] for k in cls.COLS])
 
 
+def normalize_metrics(res):
+    res['metrics'] = "\n".join(sorted(
+        ["%s: %s" % (name, _id)
+            for name, _id in res['metrics'].items()]))
+
+
 class CliResourceShow(show.ShowOne):
     def get_parser(self, prog_name):
         parser = super(CliResourceShow, self).get_parser(prog_name)
@@ -97,9 +104,7 @@ class CliResourceShow(show.ShowOne):
         res = self.app.client.resource.get(
             resource_type=parsed_args.resource_type,
             resource_id=parsed_args.resource_id)
-        res['metrics'] = "\n".join(sorted(
-            ["%s: %s" % (name, _id)
-             for name, _id in res['metrics'].items()]))
+        normalize_metrics(res)
         return self.dict2columns(res)
 
 
@@ -113,21 +118,44 @@ class CliResourceCreate(show.ShowOne):
         parser.add_argument("-a", "--attribute", action='append',
                             help=("name and value of a attribute "
                                   "separated with a ':'"))
+        parser.add_argument("-m", "--metric", action='append',
+                            help=("To add a metric use 'name:id' or "
+                                  "'name:archive_policy_name'. "
+                                  "To remove a metric use 'name:-'."))
         return parser
 
-    @staticmethod
-    def _resource_from_args(parsed_args):
+    def _resource_from_args(self, parsed_args):
         resource = {}
         if parsed_args.attribute:
             for attr in parsed_args.attribute:
                 attr, __, value = attr.partition(":")
                 resource[attr] = value
+        if parsed_args.metric:
+            rid = getattr(parsed_args, 'resource_id')
+            if rid:
+                r = self.app.client.resource.get(parsed_args.resource_type,
+                                                 parsed_args.resource_id)
+                default = r['metrics']
+            else:
+                default = {}
+            resource['metrics'] = default
+            for metric in parsed_args.metric:
+                name, __, value = metric.partition(":")
+                if value == '-' or not value:
+                    resource['metrics'].pop(name, None)
+                else:
+                    try:
+                        value = uuid.UUID(value)
+                    except ValueError:
+                        value = {'archive_policy_name': value}
+                    resource['metrics'][name] = value
         return resource
 
     def take_action(self, parsed_args):
         resource = self._resource_from_args(parsed_args)
         res = self.app.client.resource.create(
             resource_type=parsed_args.resource_type, resource=resource)
+        normalize_metrics(res)
         return self.dict2columns(res)
 
 
@@ -144,6 +172,7 @@ class CliResourceUpdate(CliResourceCreate):
             resource_type=parsed_args.resource_type,
             resource_id=parsed_args.resource_id,
             resource=resource)
+        normalize_metrics(res)
         return self.dict2columns(res)
 
 
