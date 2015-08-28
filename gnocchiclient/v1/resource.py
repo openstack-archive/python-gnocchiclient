@@ -14,6 +14,7 @@
 #    under the License.
 
 
+from cliff import command
 from cliff import lister
 from cliff import show
 from oslo_serialization import jsonutils
@@ -45,6 +46,10 @@ class ResourceManager(base.Manager):
         return self.client.api.patch(
             url, headers={'Content-Type': "application/json"},
             data=jsonutils.dumps(resource)).json()
+
+    def delete(self, resource_id):
+        url = self.client.url("resource/generic/%s" % (resource_id))
+        self.client.api.delete(url)
 
 
 class CliResourceList(lister.Lister):
@@ -130,8 +135,7 @@ class CliResourceUpdate(CliResourceCreate):
     def get_parser(self, prog_name):
         parser = super(CliResourceUpdate, self).get_parser(prog_name)
         parser.add_argument("resource_id",
-                            default="generic",
-                            help="resource of the resourece")
+                            help="ID of the resource")
         return parser
 
     def take_action(self, parsed_args):
@@ -141,3 +145,14 @@ class CliResourceUpdate(CliResourceCreate):
             resource_id=parsed_args.resource_id,
             resource=resource)
         return self.dict2columns(res)
+
+
+class CliResourceDelete(command.Command):
+    def get_parser(self, prog_name):
+        parser = super(CliResourceDelete, self).get_parser(prog_name)
+        parser.add_argument("resource_id",
+                            help="ID of the resource")
+        return parser
+
+    def take_action(self, parsed_args):
+        self.app.client.resource.delete(parsed_args.resource_id)
