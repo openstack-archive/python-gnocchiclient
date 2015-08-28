@@ -18,6 +18,7 @@ import sys
 from cliff import app
 from cliff import commandmanager
 from keystoneclient.auth import cli as keystoneclient_cli
+from keystoneclient import exceptions
 
 from gnocchiclient import client
 from gnocchiclient.version import __version__
@@ -61,6 +62,10 @@ class GnocchiShell(app.App):
         self.auth_plugin = keystoneclient_cli.load_from_argparse_arguments(
             self.options)
         self.client = client.Client(self.api_version, self.auth_plugin)
+
+    def clean_up(self, cmd, result, err):
+        if err and isinstance(err, exceptions.HttpError):
+            print(err.details)
 
 
 def main(args=None):

@@ -62,6 +62,30 @@ class ResourceShow(show.ShowOne):
         res = self.app.client.resource.get(
             resource_type=parsed_args.resource_type,
             resource_id=parsed_args.resource_id)
-        res['metrics'] = "\n".join(["%s: %s" % (name, _id)
-                                    for name, _id in res['metrics'].items()])
+        res['metrics'] = "\n".join(sorted(
+            ["%s: %s" % (name, _id)
+             for name, _id in res['metrics'].items()]))
+        return self.dict2columns(res)
+
+
+class ResourceCreate(show.ShowOne):
+    def get_parser(self, prog_name):
+        parser = super(ResourceCreate, self).get_parser(prog_name)
+        parser.add_argument("resource_type",
+                            default="generic",
+                            nargs='?',
+                            help="Type of resource")
+        parser.add_argument("--field", action='append',
+                            help=("field and its value of a attribute "
+                                  "separated with a ':'"))
+        return parser
+
+    def take_action(self, parsed_args):
+        resource = {}
+        if parsed_args.field:
+            for field in parsed_args.field:
+                field, __, value = field.partition(":")
+                resource[field] = value
+        res = self.app.client.resource.create(
+            resource_type=parsed_args.resource_type, resource=resource)
         return self.dict2columns(res)

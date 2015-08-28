@@ -13,6 +13,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import json
+
 from keystoneclient import session as keystoneclient_session
 
 
@@ -33,6 +35,12 @@ class ResourceManager(Manager):
         url = self.client.url("resource/%s/%s" % (
             resource_type, resource_id))
         return self.client.api.get(url).json()
+
+    def create(self, resource_type, resource):
+        url = self.client.url("resource/%s" % resource_type)
+        return self.client.api.post(
+            url, headers={'Content-Type': "application/json"},
+            data=json.dumps(resource)).json()
 
 
 class Client(object):
