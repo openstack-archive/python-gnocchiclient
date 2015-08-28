@@ -28,16 +28,21 @@ class Client(object):
 
     VERSION = "v1"
 
-    def __init__(self, auth, *args, **kwargs):
+    def __init__(self, auth=None, endpoint=None, interface=None,
+                 region_name=None, **kwargs):
         """Initialize a new client for the Gnocchi v1 API."""
-        self.api = keystoneclient_session.Session(auth, *args, **kwargs)
+        self.api = keystoneclient_session.Session(auth, **kwargs)
         self.resource = resource.ResourceManager(self)
-        self._endpoint = None
+        self.interface = interface
+        self.region_name = region_name
+        self._endpoint = endpoint
 
     @property
     def endpoint(self):
         if self._endpoint is None:
-            self._endpoint = self.api.get_endpoint(service_type='metric')
+            self._endpoint = self.api.get_endpoint(
+                service_type='metric', interface=self.interface,
+                region_name=self.region_name)
         return self._endpoint
 
     def url(self, url_suffix):
