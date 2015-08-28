@@ -29,6 +29,11 @@ class ResourceManager(Manager):
             resource_type, details, history))
         return self.client.api.get(url).json()
 
+    def get(self, resource_type, resource_id):
+        url = self.client.url("resource/%s/%s" % (
+            resource_type, resource_id))
+        return self.client.api.get(url).json()
+
 
 class Client(object):
     """Client for the Gnocchi v1 API.

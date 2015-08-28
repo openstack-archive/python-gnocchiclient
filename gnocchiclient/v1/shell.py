@@ -59,6 +59,9 @@ class ResourceShow(show.ShowOne):
         return parser
 
     def take_action(self, parsed_args):
-        return self.app.client.resource.get(
+        res = self.app.client.resource.get(
             resource_type=parsed_args.resource_type,
-            resource_id=parsed_args.resource_id).items()
+            resource_id=parsed_args.resource_id)
+        res['metrics'] = "\n".join(["%s: %s" % (name, _id)
+                                    for name, _id in res['metrics'].items()])
+        return self.dict2columns(res)
