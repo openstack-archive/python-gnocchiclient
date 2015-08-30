@@ -21,12 +21,21 @@ from gnocchiclient.v1 import resource
 class Client(object):
     """Client for the Gnocchi v1 API.
 
-    :param string auth: An keystoneclient authentication plugin to
-                        authenticate the session with
+    :param string auth: An optional keystoneclient authentication plugin
+                        to authenticate the session with
     :type auth: :py:class:`keystoneclient.auth.base.BaseAuthPlugin`
+    :param endpoint: The optional Gnocchi API endpoint
+    :type endpoint: str
+    :param interface: The endpoint interface ('public', 'internal', 'admin')
+    :type interface: str
+    :param region_name: The keystone region name
+    :type region_name: str
+    :param \*\*kwargs: Any option supported by
+                      :py:class:`keystoneclient.session.Session`
+
     """
 
-    VERSION = "v1"
+    _VERSION = "v1"
 
     def __init__(self, auth=None, endpoint=None, interface=None,
                  region_name=None, **kwargs):
@@ -45,7 +54,7 @@ class Client(object):
                 region_name=self.region_name)
         return self._endpoint
 
-    def url(self, url_suffix):
+    def _build_url(self, url_suffix):
         return "%s/%s/%s" % (self.endpoint.rstrip("/"),
-                             self.VERSION,
+                             self._VERSION,
                              url_suffix)

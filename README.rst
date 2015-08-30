@@ -2,11 +2,12 @@
 python-gnocchiclient
 ===============================
 
-Python client library for Gnocchi
+Python bindings to the OpenStack Gnocchi API
 
-Please feel here a long description which must be at least 3 lines wrapped on
-80 cols, so that distribution package maintainers can use it in their packages.
-Note that this is a hard requirement.
+This is a client for OpenStack gnocchi API. There's :doc:`a Python API
+<api>` (the :mod:`gnocchiclient` module), and a :doc:`command-line script
+<shell>` (installed as :program:`gnocchi`). Each implements the entire
+OpenStack Gnocchi API.
 
 * Free software: Apache license
 * Documentation: http://docs.openstack.org/developer/python-gnocchiclient

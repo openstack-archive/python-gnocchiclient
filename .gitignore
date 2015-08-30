@@ -52,3 +52,6 @@ ChangeLog
 *~
 .*.swp
 .*sw?
+
+# generated docs
+doc/source/ref/
