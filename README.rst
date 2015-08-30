@@ -12,8 +12,3 @@ Note that this is a hard requirement.
 * Documentation: http://docs.openstack.org/developer/python-gnocchiclient
 * Source: http://git.openstack.org/cgit/openstack/python-gnocchiclient
 * Bugs: http://bugs.launchpad.net/python-gnocchiclient
-
-Features
---------
-
-* TODO
