@@ -106,6 +106,14 @@ class GnocchiShell(app.App):
                  ' Valid interface types: [admin, public, internal].'
                  ' (Env: OS_INTERFACE)')
 
+        parser.add_argument(
+            '--endpoint',
+            metavar='<endpoint>',
+            dest='endpoint',
+            default=os.environ.get('GNOCCHI_ENDPOINT'),
+            help='The Gnocchi REST endpoint'
+                 ' (Env: GNOCCHI_ENDPOINT)')
+
         parser.add_argument('--timeout',
                             default=600,
                             type=_positive_non_zero_int,
@@ -124,6 +132,7 @@ class GnocchiShell(app.App):
         # gnocchi use noauth
         self.client = client.Client(self.api_version,
                                     auth=self.auth_plugin,
+                                    endpoint=self.options.endpoint,
                                     region_name=self.options.region_name,
                                     interface=self.options.interface,
                                     verify=self.options.verify,
