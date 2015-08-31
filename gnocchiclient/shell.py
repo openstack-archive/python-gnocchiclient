@@ -56,7 +56,6 @@ class GnocchiShell(app.App):
             )
 
         self.api_version = api_version
-        self.auth_plugin = None
         self.client = None
 
     def build_option_parser(self, description, version):
@@ -116,6 +115,12 @@ class GnocchiShell(app.App):
             help='The Gnocchi REST endpoint'
                  ' (Env: GNOCCHI_ENDPOINT)')
 
+        parser.add_argument(
+            '--no-auth', action='store_true',
+            default=os.environ.get('GNOCCHI_NO_AUTH'),
+            help='Don\'t use authentification'
+                 ' (Env: GNOCCHI_NO_AUTH)')
+
         parser.add_argument('--timeout',
                             default=600,
                             type=_positive_non_zero_int,
@@ -128,12 +133,13 @@ class GnocchiShell(app.App):
 
     def initialize_app(self, argv):
         super(GnocchiShell, self).initialize_app(argv)
-        self.auth_plugin = keystoneclient_cli.load_from_argparse_arguments(
-            self.options)
-        # TODO(sileht): allow to pass None as auth_plugin in case of
-        # gnocchi use noauth
+        if self.options.no_auth:
+            auth_plugin = None
+        else:
+            auth_plugin = keystoneclient_cli.load_from_argparse_arguments(
+                self.options)
         self.client = client.Client(self.api_version,
-                                    auth=self.auth_plugin,
+                                    auth=auth_plugin,
                                     endpoint=self.options.endpoint,
                                     region_name=self.options.region_name,
                                     interface=self.options.interface,
