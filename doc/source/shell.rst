@@ -43,7 +43,7 @@ set these environment variables::
     export GNOCCHI_ENDPOINT=http://gnocchi.example.org:8041
     export OS_AUTH_TOKEN=3bcc3d3a03f44e3d8377f9247b0ad155
 
-Also if the server doesn't support authentification need to provide
+Also, if the server doesn't support authentification, you can provide
 :option:`--no-auth` and :option:`--gnocchi-endpoint`. You can alternatively set these
 environment variables::
 
