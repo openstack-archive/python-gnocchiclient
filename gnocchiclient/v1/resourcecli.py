@@ -26,12 +26,13 @@ class CliResourceList(lister.Lister):
             'started_at', 'ended_at',
             'revision_start', 'revision_end')
 
-    def get_parser(self, prog_name):
+    def get_parser(self, prog_name, history=True):
         parser = super(CliResourceList, self).get_parser(prog_name)
         parser.add_argument("--details", action='store_true',
                             help="Show all attributes of generic resources"),
-        parser.add_argument("--history", action='store_true',
-                            help="Show history of the resources"),
+        if history:
+            parser.add_argument("--history", action='store_true',
+                                help="Show history of the resources"),
         parser.add_argument("resource_type",
                             default="generic",
                             nargs='?',
@@ -48,6 +49,22 @@ class CliResourceList(lister.Lister):
     @classmethod
     def _resource2tuple(cls, resource):
         return tuple([resource[k] for k in cls.COLS])
+
+
+class CliResourceHistory(CliResourceList):
+    def get_parser(self, prog_name):
+        parser = super(CliResourceHistory, self).get_parser(prog_name,
+                                                            history=False)
+        parser.add_argument("resource_id",
+                            help="ID of a resource")
+        return parser
+
+    def take_action(self, parsed_args):
+        resources = self.app.client.resource.history(
+            resource_type=parsed_args.resource_type,
+            resource_id=parsed_args.resource_id,
+            details=parsed_args.details)
+        return self.COLS, [self._resource2tuple(r) for r in resources]
 
 
 class CliResourceSearch(CliResourceList):

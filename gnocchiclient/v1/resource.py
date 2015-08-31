@@ -33,16 +33,34 @@ class ResourceManager(base.Manager):
             resource_type, details, history))
         return self.client.api.get(url).json()
 
-    def get(self, resource_type, resource_id):
+    def get(self, resource_type, resource_id, history=False):
         """Get a resource
 
         :param resource_type: Type of the resource
         :type resource_type: str
         :param resource_id: ID of the resource
         :type resource_id: str
+        :param history: Show the history of the resource
+        :type history: bool
         """
-        url = self.client._build_url("resource/%s/%s" % (
-            resource_type, resource_id))
+        history = "/history" if history else ""
+        url = self.client._build_url("resource/%s/%s%s" % (
+            resource_type, resource_id, history))
+        return self.client.api.get(url).json()
+
+    def history(self, resource_type, resource_id, details=False):
+        """Get a resource
+
+        :param resource_type: Type of the resource
+        :type resource_type: str
+        :param resource_id: ID of the resource
+        :type resource_id: str
+        :param details: Show all attributes of resources
+        :type details: bool
+        """
+        details = "true" if details else "false"
+        url = self.client._build_url("resource/%s/%s/history?details=%s" % (
+            resource_type, resource_id, details))
         return self.client.api.get(url).json()
 
     def create(self, resource_type, resource):

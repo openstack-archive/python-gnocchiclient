@@ -72,6 +72,17 @@ class ResourceClientTest(base.ClientTestBase):
         self.assertEqual(self.RESOURCE_ID, resource_got["id"])
         self.assertEqual(self.PROJECT_ID, resource_got["project_id"])
         self.assertEqual(resource["started_at"], resource_got["started_at"])
+        self.assertIn("temperature", resource_updated["metrics"])
+
+        # HISTORY
+        result = self.gnocchi(
+            'resource', params="history generic %s" % self.RESOURCE_ID)
+        resource_history = self.parser.listing(result)
+        self.assertEqual(2, len(resource_history))
+        self.assertEqual(self.RESOURCE_ID, resource_history[0]["id"])
+        self.assertEqual(self.RESOURCE_ID, resource_history[1]["id"])
+        self.assertEqual("None", resource_history[0]["project_id"])
+        self.assertEqual(self.PROJECT_ID, resource_history[1]["project_id"])
 
         # LIST
         result = self.gnocchi('resource', params="list generic")
