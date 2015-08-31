@@ -66,7 +66,7 @@ Examples
 
 Create a resource::
 
-    gnocch resource create instance --attribute id:5a301761-f78b-46e2-8900-8b4f6fe6675a --attribute project_id:eba5c38f-c3dd-4d9c-9235-32d430471f94 --metric temperature:high
+    gnocchi resource create instance --attribute id:5a301761-f78b-46e2-8900-8b4f6fe6675a --attribute project_id:eba5c38f-c3dd-4d9c-9235-32d430471f94 --metric temperature:high
 
 List resources::
 
