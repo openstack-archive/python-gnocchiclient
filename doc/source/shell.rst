@@ -41,14 +41,17 @@ token using :option:`--gnocchi-endpoint` and :option:`--os-auth-token`. You can 
 set these environment variables::
 
     export GNOCCHI_ENDPOINT=http://gnocchi.example.org:8041
+    export OS_AUTH_PLUGIN=token
     export OS_AUTH_TOKEN=3bcc3d3a03f44e3d8377f9247b0ad155
 
 Also, if the server doesn't support authentification, you can provide
-:option:`--no-auth` and :option:`--gnocchi-endpoint`. You can alternatively set these
-environment variables::
+:option:`--os-auth-plugon` gnocchi-noauth, :option:`--endpoint`, :option:`--user-id` 
+and :option:`--project-id`. You can alternatively set these environment variables::
 
+    export OS_AUTH_PLUGIN=gnocchi-noauth
     export GNOCCHI_ENDPOINT=http://gnocchi.example.org:8041
-    export GNOCCHI_NO_AUTH=True
+    export GNOCCHI_USER_ID=99aae-4dc2-4fbc-b5b8-9688c470d9cc
+    export GNOCCHI_PROJECT_ID=c8d27445-48af-457c-8e0d-1de7103eae1f
 
 From there, all shell commands take the form::
 

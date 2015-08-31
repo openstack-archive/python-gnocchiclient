@@ -11,7 +11,9 @@
 #    under the License.
 
 import re
+import uuid
 
+from tempest_lib.cli import base as tempest_lib_cli_base
 
 from gnocchiclient.tests.functional import base
 
@@ -23,10 +25,16 @@ class ResourceClientTest(base.ClientTestBase):
         endpoint = re.findall("(http://[^/]*)/v1/resource/generic",
                               result, re.M)[0]
 
-        result = self.gnocchi('resource',
-                              params="list",
-                              flags=("--no-auth "
-                                     "--endpoint %s") % endpoint,
-                              fail_ok=True, merge_stderr=True)
+        result = tempest_lib_cli_base.execute(
+            'gnocchi', 'resource', params="list",
+            flags=("--os-auth-plugin gnocchi-noauth "
+                   "--user-id %s "
+                   "--project-id %s "
+                   "--endpoint %s"
+                   ) % (str(uuid.uuid4()),
+                        str(uuid.uuid4()),
+                        endpoint),
+            fail_ok=True, merge_stderr=True,
+            cli_dir=self.clients.cli_dir)
         self.assertFirstLineStartsWith(result.split('\n'),
                                        "Unauthorized (HTTP 401)")

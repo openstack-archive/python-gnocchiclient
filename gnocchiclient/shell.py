@@ -25,6 +25,7 @@ from keystoneclient.auth import cli as keystoneclient_cli
 from keystoneclient import exceptions
 
 from gnocchiclient import client
+from gnocchiclient import noauth
 from gnocchiclient.version import __version__
 
 LOG = logging.getLogger(__name__)
@@ -107,40 +108,35 @@ class GnocchiShell(app.App):
                  ' Valid interface types: [admin, public, internal].'
                  ' (Env: OS_INTERFACE)')
 
-        parser.add_argument(
-            '--endpoint',
-            metavar='<endpoint>',
-            dest='endpoint',
-            default=os.environ.get('GNOCCHI_ENDPOINT'),
-            help='The Gnocchi REST endpoint'
-                 ' (Env: GNOCCHI_ENDPOINT)')
-
-        parser.add_argument(
-            '--no-auth', action='store_true',
-            default=os.environ.get('GNOCCHI_NO_AUTH'),
-            help='Don\'t use authentification'
-                 ' (Env: GNOCCHI_NO_AUTH)')
-
         parser.add_argument('--timeout',
                             default=600,
                             type=_positive_non_zero_int,
                             help='Number of seconds to wait for a response.')
 
-        keystoneclient_cli.register_argparse_arguments(parser=parser,
-                                                       argv=sys.argv,
-                                                       default="password")
+        plugin = keystoneclient_cli.register_argparse_arguments(
+            parser=parser, argv=sys.argv, default="password")
+
+        if plugin != noauth.GnocchiNoAuthPlugin:
+            parser.add_argument(
+                '--endpoint',
+                metavar='<endpoint>',
+                dest='endpoint',
+                default=os.environ.get('GNOCCHI_ENDPOINT'),
+                help='Gnocchi endpoint (Env: GNOCCHI_ENDPOINT)')
+
         return parser
 
     def initialize_app(self, argv):
         super(GnocchiShell, self).initialize_app(argv)
-        if self.options.no_auth:
-            auth_plugin = None
+        if hasattr(self.options, "endpoint"):
+            endpoint = self.options.endpoint
         else:
-            auth_plugin = keystoneclient_cli.load_from_argparse_arguments(
-                self.options)
+            endpoint = None
+        auth_plugin = keystoneclient_cli.load_from_argparse_arguments(
+            self.options)
         self.client = client.Client(self.api_version,
                                     auth=auth_plugin,
-                                    endpoint=self.options.endpoint,
+                                    endpoint=endpoint,
                                     region_name=self.options.region_name,
                                     interface=self.options.interface,
                                     verify=self.options.verify,
