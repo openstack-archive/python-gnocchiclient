@@ -48,7 +48,8 @@ class ResourceClientTest(base.ClientTestBase):
     def test_resource_scenario(self):
         # CREATE
         result = self.gnocchi(
-            'resource', params="create generic -a id:%s" % self.RESOURCE_ID)
+            u'resource', params=u"create generic -a id:%s" % self.RESOURCE_ID)
+        resource = self.details_multiple(result)
         resource = self.details_multiple(result)[0]
         self.assertEqual(self.RESOURCE_ID, resource["id"])
         self.assertEqual('None', resource["project_id"])

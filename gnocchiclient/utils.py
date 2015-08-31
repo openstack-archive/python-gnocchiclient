@@ -74,7 +74,7 @@ def _parsed_query2dict(parsed_query):
             if result is None:
                 result = res
             elif isinstance(result, dict):
-                result.values()[0].append(res)
+                list(result.values())[0].append(res)
         else:
             result = part
     return result

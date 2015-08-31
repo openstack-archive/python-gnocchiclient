@@ -11,9 +11,13 @@
 #    under the License.
 
 import os
+import shlex
+import six
+import subprocess
 import uuid
 
 from tempest_lib.cli import base
+from tempest_lib import exceptions
 
 
 class GnocchiClient(object):
@@ -25,8 +29,8 @@ class GnocchiClient(object):
     def __init__(self):
         self.cli_dir = os.environ.get('GNOCCHI_CLIENT_EXEC_DIR')
         self.endpoint = os.environ.get('GNOCCHI_ENDPOINT')
-        self.user_id = uuid.uuid4()
-        self.project_id = uuid.uuid4()
+        self.user_id = str(uuid.uuid4())
+        self.project_id = str(uuid.uuid4())
 
     def gnocchi(self, action, flags='', params='',
                 fail_ok=False, merge_stderr=False):
@@ -37,8 +41,35 @@ class GnocchiClient(object):
                                      self.endpoint)
 
         flags = creds + ' ' + flags
-        return base.execute("gnocchi", action, flags, params, fail_ok,
-                            merge_stderr, self.cli_dir)
+
+        # FIXME(sileht): base.execute is broken in py3 in tempest-lib
+        # see: https://review.openstack.org/#/c/218870/
+        # return base.execute("gnocchi", action, flags, params, fail_ok,
+        #                      merge_stderr, self.cli_dir)
+
+        cmd = "gnocchi"
+
+        # from fixed tempestlib
+        cmd = ' '.join([os.path.join(self.cli_dir, cmd),
+                        flags, action, params])
+        if six.PY2:
+            cmd = cmd.encode('utf-8')
+        cmd = shlex.split(cmd)
+        result = ''
+        result_err = ''
+        stdout = subprocess.PIPE
+        stderr = subprocess.STDOUT if merge_stderr else subprocess.PIPE
+        proc = subprocess.Popen(cmd, stdout=stdout, stderr=stderr)
+        result, result_err = proc.communicate()
+        if not fail_ok and proc.returncode != 0:
+            raise exceptions.CommandFailed(proc.returncode,
+                                           cmd,
+                                           result,
+                                           result_err)
+        if six.PY2:
+            return result
+        else:
+            return os.fsdecode(result)
 
 
 class ClientTestBase(base.ClientTestBase):
