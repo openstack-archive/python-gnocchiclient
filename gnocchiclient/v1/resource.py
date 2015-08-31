@@ -12,12 +12,30 @@
 #    under the License.
 
 from oslo_serialization import jsonutils
+from six.moves.urllib import parse as urllib_parse
 
 from gnocchiclient.v1 import base
 
 
+def _get_pagination_options(details=False, history=False,
+                            limit=None, marker=None, sorts=None):
+    options = []
+    if details:
+        options.append("details=true")
+    if history:
+        options.append("history=true")
+    if limit:
+        options.append("limit=%d" % limit)
+    if marker:
+        options.append("marker=%s" % urllib_parse.quote(marker))
+    for sort in sorts or []:
+        options.append("sort=%s" % urllib_parse.quote(sort))
+    return "&".join(options)
+
+
 class ResourceManager(base.Manager):
-    def list(self, resource_type="generic", details=False, history=False):
+    def list(self, resource_type="generic", details=False, history=False,
+             limit=None, marker=None, sorts=None):
         """List resources
 
         :param resource_type: Type of the resource
@@ -26,11 +44,16 @@ class ResourceManager(base.Manager):
         :type details: bool
         :param history: Show the history of resources
         :type history: bool
+        :param limit: maximum number of resources to return
+        :type limit: int
+        :param marker: the last item of the previous page; we returns the next
+                       results after this value.
+        :param sorts: list of resource attributes to order by. (example
+                      ["user_id:desc-nullslast", "project_id:asc"]
+        :type sorts: list of str
         """
-        details = "true" if details else "false"
-        history = "true" if history else "false"
-        url = self.client._build_url("resource/%s?details=%s&history=%s" % (
-            resource_type, details, history))
+        qs = _get_pagination_options(details, history, limit, marker, sorts)
+        url = self.client._build_url("resource/%s?%s" % (resource_type, qs))
         return self.client.api.get(url).json()
 
     def get(self, resource_type, resource_id, history=False):
@@ -48,7 +71,8 @@ class ResourceManager(base.Manager):
             resource_type, resource_id, history))
         return self.client.api.get(url).json()
 
-    def history(self, resource_type, resource_id, details=False):
+    def history(self, resource_type, resource_id, details=False,
+                limit=None, marker=None, sorts=None):
         """Get a resource
 
         :param resource_type: Type of the resource
@@ -57,10 +81,17 @@ class ResourceManager(base.Manager):
         :type resource_id: str
         :param details: Show all attributes of resources
         :type details: bool
+        :param limit: maximum number of resources to return
+        :type limit: int
+        :param marker: the last item of the previous page; we returns the next
+                       results after this value.
+        :param sorts: list of resource attributes to order by. (example
+                      ["user_id:desc-nullslast", "project_id:asc"]
+        :type sorts: list of str
         """
-        details = "true" if details else "false"
-        url = self.client._build_url("resource/%s/%s/history?details=%s" % (
-            resource_type, resource_id, details))
+        qs = _get_pagination_options(details, False, limit, marker, sorts)
+        url = self.client._build_url("resource/%s/%s/history?%s" % (
+            resource_type, resource_id, qs))
         return self.client.api.get(url).json()
 
     def create(self, resource_type, resource):
@@ -103,7 +134,7 @@ class ResourceManager(base.Manager):
         self.client.api.delete(url)
 
     def search(self, resource_type="generic", request=None, details=False,
-               history=False):
+               history=False, limit=None, marker=None, sorts=None):
         """List resources
 
         :param resource_type: Type of the resource
@@ -114,6 +145,13 @@ class ResourceManager(base.Manager):
         :type details: bool
         :param history: Show the history of resources
         :type history: bool
+        :param limit: maximum number of resources to return
+        :type limit: int
+        :param marker: the last item of the previous page; we returns the next
+                       results after this value.
+        :param sorts: list of resource attributes to order by. (example
+                      ["user_id:desc-nullslast", "project_id:asc"]
+        :type sorts: list of str
 
         See Gnocchi REST API documentation for the format
         of *request dictionary*
@@ -121,11 +159,9 @@ class ResourceManager(base.Manager):
         """
 
         request = request or {}
-        details = "true" if details else "false"
-        history = "true" if history else "false"
+        qs = _get_pagination_options(details, False, limit, marker, sorts)
         url = self.client._build_url(
-            "/search/resource/%s?details=%s&history=%s" % (
-                resource_type, details, history))
+            "/search/resource/%s?%s" % (resource_type, qs))
         return self.client.api.post(
             url, headers={'Content-Type': "application/json"},
             data=jsonutils.dumps(request)).json()

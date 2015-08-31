@@ -33,6 +33,15 @@ class CliResourceList(lister.Lister):
         if history:
             parser.add_argument("--history", action='store_true',
                                 help="Show history of the resources"),
+        parser.add_argument("--limit", type=int, metavar="<LIMIT>",
+                            help=("Number of resources to return "
+                                  "(Default is server default)"))
+        parser.add_argument("--marker", metavar="<MARKER>",
+                            help=("Last item of the previous listing. "
+                                  "Return the next results after this value"))
+        parser.add_argument("--sort", action="append", metavar="<SORT>",
+                            help=("Sort of resource attribute ",
+                                  "(example: user_id:desc-nullslast"))
         parser.add_argument("resource_type",
                             default="generic",
                             nargs='?',
@@ -42,9 +51,20 @@ class CliResourceList(lister.Lister):
     def take_action(self, parsed_args):
         resources = self.app.client.resource.list(
             resource_type=parsed_args.resource_type,
-            details=parsed_args.details,
-            history=parsed_args.history)
+            **self._get_pagination_options(parsed_args))
         return self.COLS, [self._resource2tuple(r) for r in resources]
+
+    @staticmethod
+    def _get_pagination_options(parsed_args):
+        options = dict(
+            details=parsed_args.details,
+            sorts=parsed_args.sort,
+            limit=parsed_args.limit,
+            marker=parsed_args.marker)
+
+        if hasattr(parsed_args, 'history'):
+            options['history'] = parsed_args.history
+        return options
 
     @classmethod
     def _resource2tuple(cls, resource):
@@ -63,7 +83,7 @@ class CliResourceHistory(CliResourceList):
         resources = self.app.client.resource.history(
             resource_type=parsed_args.resource_type,
             resource_id=parsed_args.resource_id,
-            details=parsed_args.details)
+            **self._get_pagination_options(parsed_args))
         return self.COLS, [self._resource2tuple(r) for r in resources]
 
 
@@ -77,9 +97,8 @@ class CliResourceSearch(CliResourceList):
     def take_action(self, parsed_args):
         resources = self.app.client.resource.search(
             resource_type=parsed_args.resource_type,
-            details=parsed_args.details,
-            history=parsed_args.history,
-            request=utils.search_query_builder(parsed_args.query))
+            request=utils.search_query_builder(parsed_args.query),
+            **self._get_pagination_options(parsed_args))
         return self.COLS, [self._resource2tuple(r) for r in resources]
 
 

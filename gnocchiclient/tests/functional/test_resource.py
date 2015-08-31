@@ -19,6 +19,7 @@ from gnocchiclient.tests.functional import base
 
 class ResourceClientTest(base.ClientTestBase):
     RESOURCE_ID = str(uuid.uuid4())
+    RESOURCE_ID2 = str(uuid.uuid4())
     PROJECT_ID = str(uuid.uuid4())
 
     def details_multiple(self, output_lines, with_label=False):
@@ -96,16 +97,44 @@ class ResourceClientTest(base.ClientTestBase):
 
         # Search
         result = self.gnocchi('resource',
-                              params="search generic --query 'project_id=%s'" %
-                              self.PROJECT_ID)
+                              params=("search generic "
+                                      "--query 'project_id=%s'"
+                                      ) % self.PROJECT_ID)
         resource_list = self.parser.listing(result)[0]
         self.assertEqual(self.RESOURCE_ID, resource_list["id"])
         self.assertEqual(self.PROJECT_ID, resource_list["project_id"])
         self.assertEqual(resource["started_at"], resource_list["started_at"])
 
+        # CREATE 2
+        result = self.gnocchi(
+            'resource', params=("create generic "
+                                "-a id:%s "
+                                "-a project_id:%s"
+                                ) % (self.RESOURCE_ID2, self.PROJECT_ID))
+        resource2 = self.details_multiple(result)[0]
+        self.assertEqual(self.RESOURCE_ID2, resource2["id"])
+        self.assertEqual(self.PROJECT_ID, resource2["project_id"])
+        self.assertNotEqual('None', resource2["started_at"])
+
+        # Search + limit + short
+        result = self.gnocchi('resource',
+                              params=("search generic "
+                                      "--query 'project_id=%s' "
+                                      "--sort started_at:asc "
+                                      "--marker %s "
+                                      "--limit 1"
+                                      ) % (self.PROJECT_ID, self.RESOURCE_ID))
+        resource_limit = self.parser.listing(result)[0]
+        self.assertEqual(self.RESOURCE_ID2, resource_limit["id"])
+        self.assertEqual(self.PROJECT_ID, resource_limit["project_id"])
+        self.assertEqual(resource2["started_at"], resource_limit["started_at"])
+
         # DELETE
         result = self.gnocchi('resource',
                               params="delete %s" % self.RESOURCE_ID)
+        self.assertEqual("", result)
+        result = self.gnocchi('resource',
+                              params="delete %s" % self.RESOURCE_ID2)
         self.assertEqual("", result)
 
         # GET FAIL
@@ -124,5 +153,6 @@ class ResourceClientTest(base.ClientTestBase):
 
         # LIST EMPTY
         result = self.gnocchi('resource', params="list generic")
-        self.assertNotIn(self.RESOURCE_ID,
-                         [r['id'] for r in self.parser.listing(result)])
+        resource_ids = [r['id'] for r in self.parser.listing(result)]
+        self.assertNotIn(self.RESOURCE_ID, resource_ids)
+        self.assertNotIn(self.RESOURCE_ID2, resource_ids)
