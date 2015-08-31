@@ -11,8 +11,34 @@
 #    under the License.
 
 import os
+import uuid
 
 from tempest_lib.cli import base
+
+
+class GnocchiClient(object):
+    """Gnocchi Client for tempest-lib
+
+    This client doesn't use any authentification system
+    """
+
+    def __init__(self):
+        self.cli_dir = os.environ.get('GNOCCHI_CLIENT_EXEC_DIR')
+        self.endpoint = os.environ.get('GNOCCHI_ENDPOINT')
+        self.user_id = uuid.uuid4()
+        self.project_id = uuid.uuid4()
+
+    def gnocchi(self, action, flags='', params='',
+                fail_ok=False, merge_stderr=False):
+        creds = ("--os-auth-plugin gnocchi-noauth "
+                 "--user-id %s --project-id %s "
+                 "--endpoint %s") % (self.user_id,
+                                     self.project_id,
+                                     self.endpoint)
+
+        flags = creds + ' ' + flags
+        return base.execute("gnocchi", action, flags, params, fail_ok,
+                            merge_stderr, self.cli_dir)
 
 
 class ClientTestBase(base.ClientTestBase):
@@ -23,13 +49,7 @@ class ClientTestBase(base.ClientTestBase):
     """
 
     def _get_clients(self):
-        cli_dir = os.environ.get('OS_GNOCCHI_CLIENT_EXEC_DIR')
-        return base.CLIClient(
-            username=os.environ.get('OS_USERNAME'),
-            password=os.environ.get('OS_PASSWORD'),
-            tenant_name=os.environ.get('OS_TENANT_NAME'),
-            uri=os.environ.get('OS_AUTH_URL'),
-            cli_dir=cli_dir)
+        return GnocchiClient()
 
     def gnocchi(self, *args, **kwargs):
-        return self.clients.cmd_with_auth('gnocchi', *args, **kwargs)
+        return self.clients.gnocchi(*args, **kwargs)

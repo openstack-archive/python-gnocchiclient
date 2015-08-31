@@ -161,7 +161,7 @@ class ResourceManager(base.Manager):
         request = request or {}
         qs = _get_pagination_options(details, False, limit, marker, sorts)
         url = self.client._build_url(
-            "/search/resource/%s?%s" % (resource_type, qs))
+            "search/resource/%s?%s" % (resource_type, qs))
         return self.client.api.post(
             url, headers={'Content-Type': "application/json"},
             data=jsonutils.dumps(request)).json()
