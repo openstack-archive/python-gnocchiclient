@@ -37,7 +37,7 @@ For example, in Bash you would use::
 
 The command line tool will attempt to reauthenticate using your provided credentials
 for every request. You can override this behavior by manually supplying an auth
-token using :option:`--os-gnocchi-url` and :option:`--os-auth-token`. You can alternatively
+token using :option:`--gnocchi-endpoint` and :option:`--os-auth-token`. You can alternatively
 set these environment variables::
 
     export GNOCCHI_ENDPOINT=http://gnocchi.example.org:8041
