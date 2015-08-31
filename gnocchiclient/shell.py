@@ -17,6 +17,7 @@ import argparse
 import logging
 import os
 import sys
+import warnings
 
 from cliff import app
 from cliff import commandmanager
@@ -25,6 +26,8 @@ from keystoneclient import exceptions
 
 from gnocchiclient import client
 from gnocchiclient.version import __version__
+
+LOG = logging.getLogger(__name__)
 
 
 def _positive_non_zero_int(argument_value):
@@ -55,7 +58,6 @@ class GnocchiShell(app.App):
         self.api_version = api_version
         self.auth_plugin = None
         self.client = None
-        self.dump_stack_trace = True
 
     def build_option_parser(self, description, version):
         """Return an argparse option parser for this application.
@@ -144,7 +146,30 @@ class GnocchiShell(app.App):
             print(err.details)
 
     def configure_logging(self):
+        if self.options.debug:
+            # --debug forces verbose_level 3
+            # Set this here so cliff.app.configure_logging() can work
+            self.options.verbose_level = 3
+
         super(GnocchiShell, self).configure_logging()
+        root_logger = logging.getLogger('')
+
+        # Set logging to the requested level
+        if self.options.verbose_level == 0:
+            # --quiet
+            root_logger.setLevel(logging.ERROR)
+            warnings.simplefilter("ignore")
+        elif self.options.verbose_level == 1:
+            # This is the default case, no --debug, --verbose or --quiet
+            root_logger.setLevel(logging.WARNING)
+            warnings.simplefilter("ignore")
+        elif self.options.verbose_level == 2:
+            # One --verbose
+            root_logger.setLevel(logging.INFO)
+            warnings.simplefilter("once")
+        elif self.options.verbose_level >= 3:
+            # Two or more --verbose
+            root_logger.setLevel(logging.DEBUG)
 
         # Hide some useless message
         requests_log = logging.getLogger("requests")
@@ -152,13 +177,14 @@ class GnocchiShell(app.App):
         stevedore_log = logging.getLogger('stevedore')
         iso8601_log = logging.getLogger("iso8601")
 
-        requests_log.setLevel(logging.ERROR)
         cliff_log.setLevel(logging.ERROR)
         stevedore_log.setLevel(logging.ERROR)
         iso8601_log.setLevel(logging.ERROR)
 
         if self.options.debug:
             requests_log.setLevel(logging.DEBUG)
+        else:
+            requests_log.setLevel(logging.ERROR)
 
 
 def main(args=None):
