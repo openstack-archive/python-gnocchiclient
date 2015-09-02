@@ -15,6 +15,7 @@
 
 from keystoneclient import session as keystoneclient_session
 
+from gnocchiclient.v1 import archivepolicy
 from gnocchiclient.v1 import resource
 
 
@@ -42,6 +43,7 @@ class Client(object):
         """Initialize a new client for the Gnocchi v1 API."""
         self.api = keystoneclient_session.Session(auth, **kwargs)
         self.resource = resource.ResourceManager(self)
+        self.archivepolicy = archivepolicy.ArchivePolicyManager(self)
         self.interface = interface
         self.region_name = region_name
         self._endpoint = endpoint
