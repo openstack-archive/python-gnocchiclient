@@ -31,7 +31,7 @@ uuid = pp.Combine(hex_string(8) + ("-" + hex_string(4)) * 3 +
 number = r"[+-]?\d+(:?\.\d*)?(:?[eE][+-]?\d+)?"
 number = pp.Regex(number).setParseAction(lambda t: float(t[0]))
 identifier = pp.Word(pp.alphas, pp.alphanums + "_")
-quoted_string = pp.QuotedString('"')
+quoted_string = pp.QuotedString('"') | pp.QuotedString("'")
 comparison_term = pp.Forward()
 in_list = pp.Group(pp.Suppress('[') +
                    pp.Optional(pp.delimitedList(comparison_term)) +
