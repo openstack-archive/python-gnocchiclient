@@ -86,8 +86,7 @@ class CliResourceHistory(CliResourceList):
 class CliResourceSearch(CliResourceList):
     def get_parser(self, prog_name):
         parser = super(CliResourceSearch, self).get_parser(prog_name)
-        parser.add_argument("-q", "--query",
-                            help="Query"),
+        parser.add_argument("--query", help="Query"),
         return parser
 
     def take_action(self, parsed_args):
