@@ -99,3 +99,12 @@ def format_dict_list(objs, field):
         "- " + ", ".join("%s: %s" % (k, v)
                          for k, v in elem.items())
         for elem in objs[field])
+
+
+def dict_from_parsed_args(parsed_args, attrs):
+    d = {}
+    for attr in attrs:
+        value = getattr(parsed_args, attr)
+        if value is not None:
+            d[attr] = value
+    return d

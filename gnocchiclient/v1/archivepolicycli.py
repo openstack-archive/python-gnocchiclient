@@ -84,12 +84,9 @@ class CliArchivePolicyCreate(show.ShowOne):
         return parser
 
     def take_action(self, parsed_args):
-        archive_policy = {}
-        for attr in ['name', 'back_window', 'aggregation_methods']:
-            value = getattr(parsed_args, attr)
-            if value is not None:
-                archive_policy[attr] = value
-        archive_policy["definition"] = list(parsed_args.definition)
+        archive_policy = utils.dict_from_parsed_args(
+            parsed_args, ['name', 'back_window', 'aggregation_methods',
+                          'definition'])
         policy = self.app.client.archivepolicy.create(
             archive_policy=archive_policy)
         return self.dict2columns(policy)

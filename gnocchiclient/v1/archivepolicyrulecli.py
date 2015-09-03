@@ -39,25 +39,28 @@ class CliArchivePolicyRuleShow(show.ShowOne):
 
     def take_action(self, parsed_args):
         ap_rule = self.app.client.archivepolicyrule.get(
-            policy_rule_name=parsed_args.name)
+            name=parsed_args.name)
         return self.dict2columns(ap_rule)
 
 
 class CliArchivePolicyRuleCreate(show.ShowOne):
     def get_parser(self, prog_name):
         parser = super(CliArchivePolicyRuleCreate, self).get_parser(prog_name)
-        parser.add_argument("-a", "--attribute", action='append',
-                            help=("name and value of a attribute "
-                                  "separated with a ':'"))
+        parser.add_argument("name",
+                            help=("Rule name"))
+        parser.add_argument("-a", "--archive-policy-name",
+                            dest="archive_policy_name",
+                            required=True,
+                            help=("Archive policy name"))
+        parser.add_argument("-m", "--metric-pattern",
+                            dest="metric_pattern", required=True,
+                            help=("Wildcard of metric name to match"))
         return parser
 
     def take_action(self, parsed_args):
-        data = {}
-        if parsed_args.attribute:
-            for attr in parsed_args.attribute:
-                attr, __, value = attr.partition(":")
-                data[attr] = value
-        policy = self.app.client.archivepolicyrule.create(data=data)
+        rule = utils.dict_from_parsed_args(
+            parsed_args, ["name", "metric_pattern", "archive_policy_name"])
+        policy = self.app.client.archivepolicyrule.create(rule)
         return self.dict2columns(policy)
 
 
