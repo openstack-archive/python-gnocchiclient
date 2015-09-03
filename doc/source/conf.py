@@ -50,7 +50,8 @@ def gen_ref(ver, title, names):
                            "   :undoc-members:\n"
                            "   :show-inheritance:\n"
                            "   :noindex:\n")
-                          % {"title": name.capitalize(),
+                          % {"title": " ".join([n.capitalize()
+                                                for n in name.split("_")]),
                              "signs": "=" * len(name),
                              "pkg": pkg, "name": name})
 
