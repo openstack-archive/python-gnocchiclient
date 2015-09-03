@@ -83,3 +83,19 @@ def _parsed_query2dict(parsed_query):
 def search_query_builder(query):
     parsed_query = expr.parseString(query)[0]
     return _parsed_query2dict(parsed_query)
+
+
+def list2cols(cols, objs):
+    return cols, [tuple([o[k] for k in cols])
+                  for o in objs]
+
+
+def format_string_list(objs, field):
+    objs[field] = ", ".join(objs[field])
+
+
+def format_dict_list(objs, field):
+    objs[field] = "\n".join(
+        "- " + ", ".join("%s: %s" % (k, v)
+                         for k, v in elem.items())
+        for elem in objs[field])

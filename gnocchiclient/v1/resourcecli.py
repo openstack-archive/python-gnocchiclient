@@ -52,7 +52,7 @@ class CliResourceList(lister.Lister):
         resources = self.app.client.resource.list(
             resource_type=parsed_args.resource_type,
             **self._get_pagination_options(parsed_args))
-        return self.COLS, [self._resource2tuple(r) for r in resources]
+        return utils.list2cols(self.COLS, resources)
 
     @staticmethod
     def _get_pagination_options(parsed_args):
@@ -65,10 +65,6 @@ class CliResourceList(lister.Lister):
         if hasattr(parsed_args, 'history'):
             options['history'] = parsed_args.history
         return options
-
-    @classmethod
-    def _resource2tuple(cls, resource):
-        return tuple([resource[k] for k in cls.COLS])
 
 
 class CliResourceHistory(CliResourceList):
@@ -84,7 +80,7 @@ class CliResourceHistory(CliResourceList):
             resource_type=parsed_args.resource_type,
             resource_id=parsed_args.resource_id,
             **self._get_pagination_options(parsed_args))
-        return self.COLS, [self._resource2tuple(r) for r in resources]
+        return utils.list2cols(self.COLS, resources)
 
 
 class CliResourceSearch(CliResourceList):
@@ -99,7 +95,7 @@ class CliResourceSearch(CliResourceList):
             resource_type=parsed_args.resource_type,
             request=utils.search_query_builder(parsed_args.query),
             **self._get_pagination_options(parsed_args))
-        return self.COLS, [self._resource2tuple(r) for r in resources]
+        return utils.list2cols(self.COLS, resources)
 
 
 def normalize_metrics(res):

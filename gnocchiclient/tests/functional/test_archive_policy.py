@@ -29,6 +29,15 @@ class ArchivePolicyClientTest(base.ClientTestBase):
         policy = self.details_multiple(result)[0]
         self.assertEqual("low", policy["name"])
 
+        # LIST
+        result = self.gnocchi(
+            'archivepolicy', params="list")
+        policies = self.parser.listing(result)
+        policy_from_list = [p for p in policies
+                            if p['name'] == 'low'][0]
+        for field in ["back_window", "definition", "aggregation_methods"]:
+            self.assertEqual(policy[field], policy_from_list[field])
+
         # DELETE
         result = self.gnocchi('archivepolicy',
                               params="delete low")

@@ -15,6 +15,8 @@ from cliff import command
 from cliff import lister
 from cliff import show
 
+from gnocchiclient import utils
+
 
 class CliArchivePolicyList(lister.Lister):
     COLS = ('name',
@@ -25,12 +27,11 @@ class CliArchivePolicyList(lister.Lister):
         return parser
 
     def take_action(self, parsed_args):
-        policy = self.app.client.archivepolicy.list(parsed_args)
-        return self.COLS, [self._2tuple(r) for r in policy]
-
-    @classmethod
-    def _2tuple(cls, field):
-        return tuple([field[k] for k in cls.COLS])
+        policies = self.app.client.archivepolicy.list()
+        for ap in policies:
+            utils.format_dict_list(ap, "definition")
+            utils.format_string_list(ap, "aggregation_methods")
+        return utils.list2cols(self.COLS, policies)
 
 
 class CliArchivePolicyShow(show.ShowOne):
@@ -41,9 +42,11 @@ class CliArchivePolicyShow(show.ShowOne):
         return parser
 
     def take_action(self, parsed_args):
-        res = self.app.client.archivepolicy.get(
+        ap = self.app.client.archivepolicy.get(
             name=parsed_args.name)
-        return self.dict2columns(res)
+        utils.format_dict_list(ap, "definition")
+        utils.format_string_list(ap, "aggregation_methods")
+        return self.dict2columns(ap)
 
 
 def archive_policy_definition(string):
