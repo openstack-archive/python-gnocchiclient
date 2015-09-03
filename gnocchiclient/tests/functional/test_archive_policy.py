@@ -17,21 +17,21 @@ class ArchivePolicyClientTest(base.ClientTestBase):
     def test_archive_policy_scenario(self):
         # CREATE
         result = self.gnocchi(
-            u'archivepolicy', params=u"create low"
-                                     u" --back-window 0"
-                                     u" -d granularity:1s,points:86400")
+            u'archive policy', params=u"create low"
+            u" --back-window 0"
+            u" -d granularity:1s,points:86400")
         policy = self.details_multiple(result)[0]
         self.assertEqual('low', policy["name"])
 
         # GET
         result = self.gnocchi(
-            'archivepolicy', params="show low")
+            'archive policy', params="show low")
         policy = self.details_multiple(result)[0]
         self.assertEqual("low", policy["name"])
 
         # LIST
         result = self.gnocchi(
-            'archivepolicy', params="list")
+            'archive policy', params="list")
         policies = self.parser.listing(result)
         policy_from_list = [p for p in policies
                             if p['name'] == 'low'][0]
@@ -39,19 +39,19 @@ class ArchivePolicyClientTest(base.ClientTestBase):
             self.assertEqual(policy[field], policy_from_list[field])
 
         # DELETE
-        result = self.gnocchi('archivepolicy',
+        result = self.gnocchi('archive policy',
                               params="delete low")
         self.assertEqual("", result)
 
         # GET FAIL
-        result = self.gnocchi('archivepolicy',
+        result = self.gnocchi('archive policy',
                               params="show low",
                               fail_ok=True, merge_stderr=True)
         self.assertFirstLineStartsWith(result.split('\n'),
                                        "Not Found (HTTP 404)")
 
         # DELETE FAIL
-        result = self.gnocchi('archivepolicy',
+        result = self.gnocchi('archive policy',
                               params="delete low",
                               fail_ok=True, merge_stderr=True)
         self.assertFirstLineStartsWith(result.split('\n'),
