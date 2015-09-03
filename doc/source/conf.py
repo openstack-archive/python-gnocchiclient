@@ -54,7 +54,7 @@ def gen_ref(ver, title, names):
                              "signs": "=" * len(name),
                              "pkg": pkg, "name": name})
 
-gen_ref("v1", "Version 1 API", ["client", "resource"])
+gen_ref("v1", "Version 1 API", ["client", "resource", "archivepolicy"])
 
 # -- General configuration ----------------------------------------------------
 

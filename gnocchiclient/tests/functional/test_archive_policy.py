@@ -17,10 +17,9 @@ class ArchivePolicyClientTest(base.ClientTestBase):
     def test_archive_policy_scenario(self):
         # CREATE
         result = self.gnocchi(
-            u'archivepolicy', params=u"create -a name:low"
-                                     u" -a back_window:0"
-                                     u" -d granularity:1s"
-                                     u" -d points:86400 ")
+            u'archivepolicy', params=u"create low"
+                                     u" --back-window 0"
+                                     u" -d granularity:1s,points:86400")
         policy = self.details_multiple(result)[0]
         self.assertEqual('low', policy["name"])
 

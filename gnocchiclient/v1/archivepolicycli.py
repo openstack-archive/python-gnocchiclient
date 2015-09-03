@@ -42,35 +42,53 @@ class CliArchivePolicyShow(show.ShowOne):
 
     def take_action(self, parsed_args):
         res = self.app.client.archivepolicy.get(
-            policy_name=parsed_args.name)
+            name=parsed_args.name)
         return self.dict2columns(res)
 
 
+def archive_policy_definition(string):
+    parts = string.split(",")
+    defs = {}
+    for part in parts:
+        attr, __, value = part.partition(":")
+        if (attr not in ['granularity', 'points', 'timespan']
+                or value is None):
+            raise ValueError
+        defs[attr] = value
+    if len(defs) < 2:
+        raise ValueError
+    return defs
+
+
 class CliArchivePolicyCreate(show.ShowOne):
+
     def get_parser(self, prog_name):
         parser = super(CliArchivePolicyCreate, self).get_parser(prog_name)
-        parser.add_argument("-a", "--attribute", action='append',
-                            help=("name and value of a attribute "
-                                  "separated with a ':'"))
+        parser.add_argument("name", help=("name of the active policy"))
+        parser.add_argument("-b", "--back-window", dest="back_window",
+                            type=int,
+                            help=("back window of the active policy"))
+        parser.add_argument("-m", "--aggregation-method",
+                            action="append",
+                            dest="aggregation_methods",
+                            help=("aggregation method of the achive policy"))
         parser.add_argument("-d", "--definition", action='append',
-                            help=("name and value of a attribute "
-                                  "separated with a ':'"))
+                            required=True, type=archive_policy_definition,
+                            metavar="<DEFINITION>",
+                            help=("two attributes (separated by ',') of a "
+                                  "archive policy defintion with its name and "
+                                  "value separated with a ':'"))
         return parser
 
     def take_action(self, parsed_args):
-        data = {}
-        if parsed_args.attribute:
-            for attr in parsed_args.attribute:
-                attr, __, value = attr.partition(":")
-                data[attr] = value
-        if parsed_args.definition:
-            definition = {}
-            data["definition"] = []
-            for attr in parsed_args.definition:
-                attr, __, value = attr.partition(":")
-                definition[attr] = value
-            data["definition"].append(definition)
-        policy = self.app.client.archivepolicy.create(data=data)
+        archive_policy = {}
+        for attr in ['name', 'back_window', 'aggregation_methods']:
+            value = getattr(parsed_args, attr)
+            if value is not None:
+                archive_policy[attr] = value
+        archive_policy["definition"] = list(parsed_args.definition)
+        policy = self.app.client.archivepolicy.create(
+            archive_policy=archive_policy)
         return self.dict2columns(policy)
 
 
@@ -82,4 +100,4 @@ class CliArchivePolicyDelete(command.Command):
         return parser
 
     def take_action(self, parsed_args):
-        self.app.client.archivepolicy.delete(parsed_args.name)
+        self.app.client.archivepolicy.delete(name=parsed_args.name)

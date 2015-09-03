@@ -25,29 +25,32 @@ class ArchivePolicyManager(base.Manager):
         url = self.client._build_url("archive_policy")
         return self.client.api.get(url).json()
 
-    def get(self, policy_name):
-        """Get a archive_policy
+    def get(self, name):
+        """Get an archive policy
 
-        :param policy_name: Name of the archive_policy
-        :type policy_name: str
+        :param name: Name of the archive policy
+        :type name: str
         """
-        url = self.client._build_url("archive_policy/%s" % policy_name)
+        url = self.client._build_url("archive_policy/%s" % name)
         return self.client.api.get(url).json()
 
-    def create(self, data):
-        """Create a archive_policy
+    def create(self, archive_policy):
+        """Create an archive policy
+
+        :param archive_policy: the archive policy
+        :type archive_policy: dict
 
         """
         url = self.client._build_url("archive_policy/")
         return self.client.api.post(
             url, headers={'Content-Type': "application/json"},
-            data=jsonutils.dumps(data)).json()
+            data=jsonutils.dumps(archive_policy)).json()
 
-    def delete(self, policy_name):
-        """Delete a archive_policy
+    def delete(self, name):
+        """Delete an archive policy
 
-        :param policy_name: ID of the archive_policy
-        :type policy_name: str
+        :param name: Name of the archive policy
+        :type name: str
         """
-        url = self.client._build_url("archive_policy/%s" % policy_name)
+        url = self.client._build_url("archive_policy/%s" % name)
         self.client.api.delete(url)
