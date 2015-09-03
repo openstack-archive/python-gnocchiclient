@@ -28,8 +28,8 @@ class ArchivePolicyRuleManager(base.Manager):
     def get(self, name):
         """Get an archive policy rules
 
-        :param policy_name: Name of the archive policy rule
-        :type policy_name: str
+        :param name: Name of the archive policy rule
+        :type name: str
         """
         url = self.client._build_url("archive_policy_rule/%s"
                                      % name)
@@ -47,8 +47,8 @@ class ArchivePolicyRuleManager(base.Manager):
     def delete(self, name):
         """Delete an archive policy rule
 
-        :param policy_name: Name of the archive policy rule
-        :type policy_name: str
+        :param name: Name of the archive policy rule
+        :type name: str
         """
         url = self.client._build_url("archive_policy_rule/%s"
                                      % name)
