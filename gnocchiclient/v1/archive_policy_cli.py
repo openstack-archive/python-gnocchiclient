@@ -83,9 +83,11 @@ class CliArchivePolicyCreate(show.ShowOne):
         archive_policy = utils.dict_from_parsed_args(
             parsed_args, ['name', 'back_window', 'aggregation_methods',
                           'definition'])
-        policy = self.app.client.archive_policy.create(
+        ap = self.app.client.archive_policy.create(
             archive_policy=archive_policy)
-        return self.dict2columns(policy)
+        utils.format_dict_list(ap, "definition")
+        utils.format_string_list(ap, "aggregation_methods")
+        return self.dict2columns(ap)
 
 
 class CliArchivePolicyDelete(command.Command):
