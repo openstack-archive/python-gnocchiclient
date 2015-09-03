@@ -19,14 +19,10 @@ from gnocchiclient import utils
 
 
 class CliArchivePolicyRuleList(lister.Lister):
-    COLS = ('archive_policy_name', 'metric_pattern', 'name')
-
-    def get_parser(self, prog_name, history=True):
-        parser = super(CliArchivePolicyRuleList, self).get_parser(prog_name)
-        return parser
+    COLS = ('name', 'archive_policy_name', 'metric_pattern')
 
     def take_action(self, parsed_args):
-        ap_rules = self.app.client.archivepolicyrule.list(parsed_args)
+        ap_rules = self.app.client.archivepolicyrule.list()
         return utils.list2cols(self.COLS, ap_rules)
 
 

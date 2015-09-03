@@ -29,6 +29,14 @@ class ArchivePolicyRuleClientTest(base.ClientTestBase):
         policy_rule = self.details_multiple(result)[0]
         self.assertEqual("test", policy_rule["name"])
 
+        # LIST
+        result = self.gnocchi('archivepolicyrule', params="list")
+        rules = self.parser.listing(result)
+        rule_from_list = [p for p in rules
+                          if p['name'] == 'test'][0]
+        for field in ["metric_pattern", "archive_policy_name"]:
+            self.assertEqual(policy_rule[field], rule_from_list[field])
+
         # DELETE
         result = self.gnocchi('archivepolicyrule',
                               params="delete test")

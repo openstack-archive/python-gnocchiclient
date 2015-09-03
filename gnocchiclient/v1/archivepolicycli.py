@@ -22,10 +22,6 @@ class CliArchivePolicyList(lister.Lister):
     COLS = ('name',
             'back_window', 'definition', 'aggregation_methods')
 
-    def get_parser(self, prog_name, history=True):
-        parser = super(CliArchivePolicyList, self).get_parser(prog_name)
-        return parser
-
     def take_action(self, parsed_args):
         policies = self.app.client.archivepolicy.list()
         for ap in policies:
