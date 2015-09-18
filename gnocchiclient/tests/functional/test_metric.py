@@ -16,10 +16,8 @@ from gnocchiclient.tests.functional import base
 class MetricClientTest(base.ClientTestBase):
     def test_metric_scenario(self):
         # PREPARE AN ACHIVE POLICY
-        self.gnocchi(
-            u'archive policy', params=u"create metric-test"
-            u" --back-window 0"
-            u" -d granularity:1s,points:86400")
+        self.gnocchi("archive policy", params="create metric-test "
+                     "--back-window 0 -d granularity:1s,points:86400")
 
         # CREATE
         result = self.gnocchi(
@@ -61,6 +59,56 @@ class MetricClientTest(base.ClientTestBase):
 
         # DELETE FAIL
         result = self.gnocchi('metric', params="delete %s" % metric["id"],
+                              fail_ok=True, merge_stderr=True)
+        self.assertFirstLineStartsWith(result.split('\n'),
+                                       "Not Found (HTTP 404)")
+
+    def test_metric_by_name_scenario(self):
+        # PREPARE REQUIREMENT
+        self.gnocchi("archive policy", params="create metric-test2 "
+                     "--back-window 0 -d granularity:1s,points:86400")
+        self.gnocchi("resource", params="create generic -a id:metric-res")
+
+        # CREATE
+        result = self.gnocchi(
+            u'metric', params=u"create"
+            u" --archive-policy-name metric-test2 -r metric-res metric-name")
+        metric = self.details_multiple(result)[0]
+        self.assertIsNotNone(metric["id"])
+        self.assertEqual(self.clients.project_id,
+                         metric["created_by_project_id"])
+        self.assertEqual(self.clients.user_id, metric["created_by_user_id"])
+        self.assertEqual('metric-name', metric["name"])
+        self.assertNotEqual('None', metric["resource"])
+        self.assertIn("metric-test", metric["archive_policy/name"])
+
+        # GET
+        result = self.gnocchi('metric', params="show metric-name metric-res")
+        metric_get = self.details_multiple(result)[0]
+        self.assertEqual(metric, metric_get)
+
+        # LIST
+        result = self.gnocchi('metric', params="list")
+        metrics = self.parser.listing(result)
+        metric_from_list = [p for p in metrics
+                            if p['archive_policy/name'] == 'metric-test2'][0]
+        for field in ["archive_policy/name", "name"]:
+            # FIXME(sileht): add "resource_id" or "resource"
+            # when LP#1497171 is fixed
+            self.assertEqual(metric[field], metric_from_list[field])
+
+        # DELETE
+        result = self.gnocchi('metric', params="delete metric-name metric-res")
+        self.assertEqual("", result)
+
+        # GET FAIL
+        result = self.gnocchi('metric', params="show metric-name metric-res",
+                              fail_ok=True, merge_stderr=True)
+        self.assertFirstLineStartsWith(result.split('\n'),
+                                       "Not Found (HTTP 404)")
+
+        # DELETE FAIL
+        result = self.gnocchi('metric', params="delete metric-name metric-res",
                               fail_ok=True, merge_stderr=True)
         self.assertFirstLineStartsWith(result.split('\n'),
                                        "Not Found (HTTP 404)")
