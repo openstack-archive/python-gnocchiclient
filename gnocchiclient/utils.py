@@ -101,6 +101,17 @@ def format_dict_list(objs, field):
         for elem in objs[field])
 
 
+def format_move_dict_to_root(obj, field):
+    for attr in obj[field]:
+        obj["%s/%s" % (field, attr)] = obj[field][attr]
+    del obj[field]
+
+
+def format_archive_policy(ap):
+    format_dict_list(ap, "definition")
+    format_string_list(ap, "aggregation_methods")
+
+
 def dict_from_parsed_args(parsed_args, attrs):
     d = {}
     for attr in attrs:
