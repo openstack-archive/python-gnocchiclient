@@ -11,6 +11,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import uuid
+
 from oslo_serialization import jsonutils
 
 from gnocchiclient.v1 import base
@@ -25,35 +27,73 @@ class MetricManager(base.Manager):
         url = self.client._build_url("metric")
         return self.client.api.get(url).json()
 
-    def get(self, name):
+    @staticmethod
+    def _ensure_metric_is_uuid(metric):
+        try:
+            uuid.UUID(metric)
+        except ValueError:
+            raise TypeError("resource_id is required to get a metric by name")
+
+    def get(self, metric, resource_id=None):
         """Get an metric
 
-        :param name: Name of the metric
-        :type name: str
+        :param metric: ID or Name of the metric
+        :type metric: str
+        :param resource_id: ID of the resource (required
+                            to get a metric by name)
+        :type resource_id: str
         """
-        url = self.client._build_url("metric/%s" % name)
+        if resource_id is None:
+            self._ensure_metric_is_uuid(metric)
+            url = self.client._build_url("metric/%s" % metric)
+        else:
+            url = self.client._build_url("resource/generic/%s/metric/%s" % (
+                resource_id, metric))
         return self.client.api.get(url).json()
 
-    def create(self, metric):
+    def create(self, metric, resource_id=None, metric_name=None):
         """Create an metric
 
-        :param metric: the metric
-        :type metric: dict
-
+        :param metric: The metric
+        :type metric: str
+        :param resource_id: ID of the resource (required
+                            to get a metric by name)
+        :type resource_id: str
         """
-        url = self.client._build_url("metric/")
-        metric = self.client.api.post(
-            url, headers={'Content-Type': "application/json"},
-            data=jsonutils.dumps(metric)).json()
-        # FIXME(sileht): create and get have a
-        # different output: LP#1497171
-        return self.get(metric["id"])
+        if resource_id is None and metric_name is None:
+            url = self.client._build_url("metric")
+            metric = self.client.api.post(
+                url, headers={'Content-Type': "application/json"},
+                data=jsonutils.dumps(metric)).json()
+            # FIXME(sileht): create and get have a
+            # different output: LP#1497171
+            return self.get(metric["id"])
+        elif ((resource_id is None and metric_name is not None) or
+                (resource_id is not None and metric_name is None)):
+            raise TypeError("resource_id and metric_name are "
+                            "mutually required")
+        else:
+            url = self.client._build_url("resource/generic/%s/metric" %
+                                         resource_id)
+            metric = {metric_name: metric}
+            metric = self.client.api.post(
+                url, headers={'Content-Type': "application/json"},
+                data=jsonutils.dumps(metric))
+            return self.get(metric_name, resource_id)
 
-    def delete(self, name):
+    def delete(self, metric, resource_id=None):
         """Delete an metric
 
-        :param name: Name of the metric
-        :type name: str
+        :param metric: ID or Name of the metric
+        :type metric: str
+        :param resource_id: ID of the resource (required
+                            to get a metric by name)
+        :type resource_id: str
         """
-        url = self.client._build_url("metric/%s" % name)
+        if resource_id is None:
+            self._ensure_metric_is_uuid(metric)
+            url = self.client._build_url("metric/%s" % metric)
+        else:
+            url = self.client._build_url("resource/generic/%s/metric/%s" % (
+                resource_id, metric))
         self.client.api.delete(url)
