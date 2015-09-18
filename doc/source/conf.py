@@ -56,7 +56,7 @@ def gen_ref(ver, title, names):
                              "pkg": pkg, "name": name})
 
 gen_ref("v1", "Version 1 API", ["client", "resource", "archive_policy",
-                                "archive_policy_rule"])
+                                "archive_policy_rule", "metric"])
 
 # -- General configuration ----------------------------------------------------
 
