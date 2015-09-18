@@ -133,14 +133,14 @@ class ResourceManager(base.Manager):
         url = self.client._build_url("resource/generic/%s" % (resource_id))
         self.client.api.delete(url)
 
-    def search(self, resource_type="generic", request=None, details=False,
+    def search(self, resource_type="generic", query=None, details=False,
                history=False, limit=None, marker=None, sorts=None):
         """List resources
 
         :param resource_type: Type of the resource
         :param resource_type: str
-        :param request: The search request dictionary
-        :type resource_type: dict
+        :param query: The query dictionary
+        :type query: dict
         :param details: Show all attributes of resources
         :type details: bool
         :param history: Show the history of resources
@@ -154,14 +154,14 @@ class ResourceManager(base.Manager):
         :type sorts: list of str
 
         See Gnocchi REST API documentation for the format
-        of *request dictionary*
+        of *query dictionary*
         http://docs.openstack.org/developer/gnocchi/rest.html#searching-for-resources
         """
 
-        request = request or {}
+        query = query or {}
         qs = _get_pagination_options(details, False, limit, marker, sorts)
         url = self.client._build_url(
             "search/resource/%s?%s" % (resource_type, qs))
         return self.client.api.post(
             url, headers={'Content-Type': "application/json"},
-            data=jsonutils.dumps(request)).json()
+            data=jsonutils.dumps(query)).json()

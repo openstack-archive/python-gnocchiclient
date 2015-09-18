@@ -138,3 +138,41 @@ class CliMeasuresAdd(command.Command):
             resource_id=parsed_args.resource_id,
             measures=parsed_args.measure,
         )
+
+
+class CliMeasuresAggregation(lister.Lister):
+    COLS = ('timestamp', 'granularity', 'value')
+
+    def get_parser(self, prog_name):
+        parser = super(CliMeasuresAggregation, self).get_parser(prog_name)
+        parser.add_argument("-m", "--metric", nargs='+', required=True,
+                            help="metrics IDs or metric name")
+        parser.add_argument("--aggregation",
+                            help="aggregation to retrieve")
+        parser.add_argument("--start",
+                            help="start of the period")
+        parser.add_argument("--end",
+                            help="end of the period")
+        parser.add_argument("--needed-overlap", type=float,
+                            help=("percent of datapoints in each "
+                                  "metrics required"))
+        parser.add_argument("--query", help="Query"),
+        return parser
+
+    def take_action(self, parsed_args):
+        metrics = parsed_args.metric
+        query = None
+        if parsed_args.query:
+            query = utils.search_query_builder(parsed_args.query)
+            if len(parsed_args.metric) != 1:
+                raise ValueError("One metric is required if query is provied")
+            metrics = parsed_args.metric[0]
+        measures = self.app.client.metric.aggregation(
+            metrics=metrics,
+            query=query,
+            aggregation=parsed_args.aggregation,
+            start=parsed_args.start,
+            end=parsed_args.end,
+            needed_overlap=parsed_args.needed_overlap,
+        )
+        return self.COLS, measures

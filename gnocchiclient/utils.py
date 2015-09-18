@@ -119,3 +119,9 @@ def dict_from_parsed_args(parsed_args, attrs):
         if value is not None:
             d[attr] = value
     return d
+
+
+def dict_to_querystring(objs):
+    return "&".join(["%s=%s" % (k, v)
+                     for k, v in objs.items()
+                     if v is not None])
