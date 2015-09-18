@@ -39,6 +39,7 @@ policy_file = ${GNOCCHI_DATA}/policy.json
 [api]
 middlewares = 
 [storage]
+metric_processing_delay = 1
 file_basepath = ${GNOCCHI_DATA}
 driver = file
 coordination_url = file://${GNOCCHI_DATA}
