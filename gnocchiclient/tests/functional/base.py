@@ -14,6 +14,7 @@ import os
 import shlex
 import six
 import subprocess
+import time
 import uuid
 
 from tempest_lib.cli import base
@@ -36,9 +37,9 @@ class GnocchiClient(object):
                 fail_ok=False, merge_stderr=False):
         creds = ("--os-auth-plugin gnocchi-noauth "
                  "--user-id %s --project-id %s "
-                 "--endpoint %s") % (self.user_id,
-                                     self.project_id,
-                                     self.endpoint)
+                 "--gnocchi-endpoint %s") % (self.user_id,
+                                             self.project_id,
+                                             self.endpoint)
 
         flags = creds + ' ' + flags
 
@@ -81,6 +82,15 @@ class ClientTestBase(base.ClientTestBase):
 
     def _get_clients(self):
         return GnocchiClient()
+
+    def retry_gnocchi(self, retry, *args, **kwargs):
+        result = ""
+        while not result.strip() and retry > 0:
+            result = self.gnocchi(*args, **kwargs)
+            if not result:
+                time.sleep(1)
+                retry -= 1
+        return result
 
     def gnocchi(self, *args, **kwargs):
         return self.clients.gnocchi(*args, **kwargs)
