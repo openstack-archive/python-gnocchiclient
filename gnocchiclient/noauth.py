@@ -56,7 +56,8 @@ class GnocchiNoAuthPlugin(base.BaseAuthPlugin):
         options.extend([
             cfg.StrOpt('user-id', help='User ID', required=True),
             cfg.StrOpt('project-id', help='Project ID', required=True),
-            cfg.StrOpt('endpoint', help='Gnocchi endpoint', required=True),
+            cfg.StrOpt('gnocchi-endpoint', help='Gnocchi endpoint',
+                       dest="endpoint", required=True),
         ])
         return options
 

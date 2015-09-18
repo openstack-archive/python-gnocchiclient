@@ -37,6 +37,29 @@ class MetricClientTest(base.ClientTestBase):
         metric_get = self.details_multiple(result)[0]
         self.assertEqual(metric, metric_get)
 
+        # MEASURES ADD
+        result = self.gnocchi('measures',
+                              params=("add %s "
+                                      "-m '2015-03-06T14:33:57@43.11' "
+                                      "--measure '2015-03-06T14:34:12@12' "
+                                      ) % metric["id"])
+        self.assertEqual("", result)
+
+        # MEASURES GET
+        result = self.retry_gnocchi(
+            5, 'measures', params=("get %s "
+                                   "--aggregation mean "
+                                   "--start 2015-03-06T14:32:00 "
+                                   "--end 2015-03-06T14:36:00"
+                                   ) % metric["id"])
+        measures = self.parser.listing(result)
+        self.assertEqual([{'granularity': '1.0',
+                           'timestamp': '2015-03-06T14:33:57+00:00',
+                           'value': '43.11'},
+                          {'granularity': '1.0',
+                           'timestamp': '2015-03-06T14:34:12+00:00',
+                           'value': '12.0'}], measures)
+
         # LIST
         result = self.gnocchi('metric', params="list")
         metrics = self.parser.listing(result)
@@ -86,6 +109,28 @@ class MetricClientTest(base.ClientTestBase):
         result = self.gnocchi('metric', params="show metric-name metric-res")
         metric_get = self.details_multiple(result)[0]
         self.assertEqual(metric, metric_get)
+
+        # MEASURES ADD
+        result = self.gnocchi('measures',
+                              params=("add metric-name metric-res "
+                                      "-m '2015-03-06T14:33:57@43.11' "
+                                      "--measure '2015-03-06T14:34:12@12'"))
+        self.assertEqual("", result)
+
+        # MEASURES GET
+        result = self.retry_gnocchi(
+            5, 'measures', params=("get metric-name metric-res "
+                                   "--aggregation mean "
+                                   "--start 2015-03-06T14:32:00 "
+                                   "--end 2015-03-06T14:36:00"))
+
+        measures = self.parser.listing(result)
+        self.assertEqual([{'granularity': '1.0',
+                           'timestamp': '2015-03-06T14:33:57+00:00',
+                           'value': '43.11'},
+                          {'granularity': '1.0',
+                           'timestamp': '2015-03-06T14:34:12+00:00',
+                           'value': '12.0'}], measures)
 
         # LIST
         result = self.gnocchi('metric', params="list")
