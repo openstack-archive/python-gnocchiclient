@@ -92,7 +92,7 @@ class CliResourceSearch(CliResourceList):
     def take_action(self, parsed_args):
         resources = self.app.client.resource.search(
             resource_type=parsed_args.resource_type,
-            request=utils.search_query_builder(parsed_args.query),
+            query=utils.search_query_builder(parsed_args.query),
             **self._get_pagination_options(parsed_args))
         return utils.list2cols(self.COLS, resources)
 

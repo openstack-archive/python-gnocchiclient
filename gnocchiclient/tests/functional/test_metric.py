@@ -60,6 +60,22 @@ class MetricClientTest(base.ClientTestBase):
                            'timestamp': '2015-03-06T14:34:12+00:00',
                            'value': '12.0'}], measures)
 
+        # MEASURES AGGREGATION
+        result = self.gnocchi(
+            'measures', params=("aggregation "
+                                "--metric %s "
+                                "--aggregation mean "
+                                "--start 2015-03-06T14:32:00 "
+                                "--end 2015-03-06T14:36:00"
+                                ) % metric["id"])
+        measures = self.parser.listing(result)
+        self.assertEqual([{'granularity': '1.0',
+                           'timestamp': '2015-03-06T14:33:57+00:00',
+                           'value': '43.11'},
+                          {'granularity': '1.0',
+                           'timestamp': '2015-03-06T14:34:12+00:00',
+                           'value': '12.0'}], measures)
+
         # LIST
         result = self.gnocchi('metric', params="list")
         metrics = self.parser.listing(result)
@@ -124,6 +140,23 @@ class MetricClientTest(base.ClientTestBase):
                                    "--start 2015-03-06T14:32:00 "
                                    "--end 2015-03-06T14:36:00"))
 
+        measures = self.parser.listing(result)
+        self.assertEqual([{'granularity': '1.0',
+                           'timestamp': '2015-03-06T14:33:57+00:00',
+                           'value': '43.11'},
+                          {'granularity': '1.0',
+                           'timestamp': '2015-03-06T14:34:12+00:00',
+                           'value': '12.0'}], measures)
+
+        # MEASURES AGGREGATION
+        result = self.gnocchi(
+            'measures', params=("aggregation "
+                                "--query \"id='metric-res'\" "
+                                "-m metric-test2 "
+                                "--aggregation mean "
+                                "--needed-overlap 0 "
+                                "--start 2015-03-06T14:32:00 "
+                                "--end 2015-03-06T14:36:00"))
         measures = self.parser.listing(result)
         self.assertEqual([{'granularity': '1.0',
                            'timestamp': '2015-03-06T14:33:57+00:00',
