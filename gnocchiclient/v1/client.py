@@ -17,6 +17,7 @@ from keystoneclient import session as keystoneclient_session
 
 from gnocchiclient.v1 import archive_policy
 from gnocchiclient.v1 import archive_policy_rule
+from gnocchiclient.v1 import metric
 from gnocchiclient.v1 import resource
 
 
@@ -47,6 +48,7 @@ class Client(object):
         self.archive_policy = archive_policy.ArchivePolicyManager(self)
         self.archive_policy_rule = (
             archive_policy_rule.ArchivePolicyRuleManager(self))
+        self.metric = metric.MetricManager(self)
         self.interface = interface
         self.region_name = region_name
         self._endpoint = endpoint
