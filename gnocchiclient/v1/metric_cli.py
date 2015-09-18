@@ -85,3 +85,56 @@ class CliMetricDelete(command.Command):
     def take_action(self, parsed_args):
         self.app.client.metric.delete(metric=parsed_args.metric,
                                       resource_id=parsed_args.resource_id)
+
+
+class CliMeasuresGet(lister.Lister):
+    COLS = ('timestamp', 'granularity', 'value')
+
+    def get_parser(self, prog_name):
+        parser = super(CliMeasuresGet, self).get_parser(prog_name)
+        parser.add_argument("metric",
+                            help="ID or name of the metric")
+        parser.add_argument("resource_id", nargs='?',
+                            help="ID of the resource")
+        parser.add_argument("--aggregation", nargs=1,
+                            help="aggregation to retrieve")
+        parser.add_argument("--start", nargs=1,
+                            help="start of the period")
+        parser.add_argument("--end", nargs=1,
+                            help="end of the period")
+        return parser
+
+    def take_action(self, parsed_args):
+        measures = self.app.client.metric.get_measures(
+            metric=parsed_args.metric,
+            resource_id=parsed_args.resource_id,
+            aggregation=parsed_args.aggregation,
+            start=parsed_args.start,
+            end=parsed_args.end,
+        )
+        return self.COLS, measures
+
+
+class CliMeasuresAdd(command.Command):
+    def measure(self, measure):
+        timestamp, __, value = measure.rpartition("@")
+        return {'timestamp': timestamp, 'value': float(value)}
+
+    def get_parser(self, prog_name):
+        parser = super(CliMeasuresAdd, self).get_parser(prog_name)
+        parser.add_argument("metric",
+                            help="ID or name of the metric")
+        parser.add_argument("resource_id", nargs='?',
+                            help="ID of the resource")
+        parser.add_argument("-m", "--measure", action='append',
+                            required=True, type=self.measure,
+                            help=("timestamp and value of a measure "
+                                  "separated with a '@'"))
+        return parser
+
+    def take_action(self, parsed_args):
+        self.app.client.metric.add_measures(
+            metric=parsed_args.metric,
+            resource_id=parsed_args.resource_id,
+            measures=parsed_args.measure,
+        )

@@ -45,7 +45,7 @@ set these environment variables::
     export OS_AUTH_TOKEN=3bcc3d3a03f44e3d8377f9247b0ad155
 
 Also, if the server doesn't support authentification, you can provide
-:option:`--os-auth-plugon` gnocchi-noauth, :option:`--endpoint`, :option:`--user-id` 
+:option:`--os-auth-plugon` gnocchi-noauth, :option:`--gnocchi-endpoint`, :option:`--user-id` 
 and :option:`--project-id`. You can alternatively set these environment variables::
 
     export OS_AUTH_PLUGIN=gnocchi-noauth
