@@ -16,7 +16,7 @@ from gnocchiclient.tests.functional import base
 class MetricClientTest(base.ClientTestBase):
     def test_metric_scenario(self):
         # PREPARE AN ACHIVE POLICY
-        self.gnocchi("archive policy", params="create metric-test "
+        self.gnocchi("archive-policy", params="create metric-test "
                      "--back-window 0 -d granularity:1s,points:86400")
 
         # CREATE
@@ -104,7 +104,7 @@ class MetricClientTest(base.ClientTestBase):
 
     def test_metric_by_name_scenario(self):
         # PREPARE REQUIREMENT
-        self.gnocchi("archive policy", params="create metric-test2 "
+        self.gnocchi("archive-policy", params="create metric-test2 "
                      "--back-window 0 -d granularity:1s,points:86400")
         self.gnocchi("resource", params="create generic -a id:metric-res")
 
