@@ -11,6 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import datetime
 import uuid
 
 from oslo_serialization import jsonutils
@@ -97,3 +98,61 @@ class MetricManager(base.Manager):
             url = self.client._build_url("resource/generic/%s/metric/%s" % (
                 resource_id, metric))
         self.client.api.delete(url)
+
+    def add_measures(self, metric, measures, resource_id=None):
+        """Add measurements to a metric
+
+        :param metric: ID or Name of the metric
+        :type metric: str
+        :param resource_id: ID of the resource (required
+                            to get a metric by name)
+        :type resource_id: str
+        :param measures: measurements
+        :type measures: list of dict(timestamp=timestamp, value=float)
+        """
+        if resource_id is None:
+            self._ensure_metric_is_uuid(metric)
+            url = self.client._build_url("metric/%s/measures" % metric)
+        else:
+            url = self.client._build_url(
+                "resource/generic/%s/metric/%s/measures" % (
+                    resource_id, metric))
+        return self.client.api.post(
+            url, headers={'Content-Type': "application/json"},
+            data=jsonutils.dumps(measures))
+
+    def get_measures(self, metric, start=None, end=None, aggregation=None,
+                     resource_id=None, **kwargs):
+        """Get measurements of a metric
+
+        :param metric: ID or Name of the metric
+        :type metric: str
+        :param start: begin of the period
+        :type start: timestamp
+        :param end: end of the period
+        :type end: timestamp
+        :param aggregation: aggregation to retrieve
+        :type aggregation: str
+        :param resource_id: ID of the resource (required
+                            to get a metric by name)
+        :type resource_id: str
+
+        All other arguments are arguments are dedicated to custom aggregation
+        method passed as-is to the Gnocchi.
+        """
+
+        if isinstance(start, datetime.datetime):
+            start = start.isoformat()
+        if isinstance(end, datetime.datetime):
+            end = end.isoformat()
+
+        params = dict(start=start, end=end, aggregation=aggregation)
+        params.update(kwargs)
+        if resource_id is None:
+            self._ensure_metric_is_uuid(metric)
+            url = self.client._build_url("metric/%s/measures" % metric)
+        else:
+            url = self.client._build_url(
+                "resource/generic/%s/metric/%s/measures" % (
+                    resource_id, metric))
+        return self.client.api.get(url, params=params).json()
