@@ -16,6 +16,7 @@ import uuid
 
 from oslo_serialization import jsonutils
 
+from gnocchiclient import utils
 from gnocchiclient.v1 import base
 
 
@@ -29,11 +30,12 @@ class MetricManager(base.Manager):
         return self.client.api.get(url).json()
 
     @staticmethod
-    def _ensure_metric_is_uuid(metric):
+    def _ensure_metric_is_uuid(metric, attribute="resource_id"):
         try:
             uuid.UUID(metric)
         except ValueError:
-            raise TypeError("resource_id is required to get a metric by name")
+            raise TypeError("%s is required to get a metric by name" %
+                            attribute)
 
     def get(self, metric, resource_id=None):
         """Get an metric
@@ -156,3 +158,45 @@ class MetricManager(base.Manager):
                 "resource/generic/%s/metric/%s/measures" % (
                     resource_id, metric))
         return self.client.api.get(url, params=params).json()
+
+    def aggregation(self, metrics, query=None,
+                    start=None, end=None, aggregation=None,
+                    needed_overlap=None):
+        """Get measurements of a aggregated metrics
+
+        :param metrics: IDs of metric or metric name
+        :type metric: list or str
+        :param query: The query dictionary
+        :type query: dict
+        :param start: begin of the period
+        :type start: timestamp
+        :param end: end of the period
+        :type end: timestamp
+        :param aggregation: aggregation to retrieve
+        :type aggregation: str
+
+        See Gnocchi REST API documentation for the format
+        of *query dictionary*
+        http://docs.openstack.org/developer/gnocchi/rest.html#searching-for-resources
+        """
+
+        if isinstance(start, datetime.datetime):
+            start = start.isoformat()
+        if isinstance(end, datetime.datetime):
+            end = end.isoformat()
+
+        params = dict(start=start, end=end, aggregation=aggregation,
+                      needed_overlap=needed_overlap)
+        if query is None:
+            for metric in metrics:
+                self._ensure_metric_is_uuid(metric)
+            params['metric'] = metrics
+            url = self.client._build_url("aggregation/metric")
+            return self.client.api.get(url, params=params).json()
+        else:
+            url = self.client._build_url(
+                "aggregation/resource/generic/metric/%s?%s" % (
+                    metrics, utils.dict_to_querystring(params)))
+            return self.client.api.post(
+                url, headers={'Content-Type': "application/json"},
+                data=jsonutils.dumps(query)).json()
