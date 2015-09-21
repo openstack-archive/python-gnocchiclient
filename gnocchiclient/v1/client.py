@@ -13,8 +13,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from keystoneclient import session as keystoneclient_session
-
 from gnocchiclient.v1 import archive_policy
 from gnocchiclient.v1 import archive_policy_rule
 from gnocchiclient.v1 import metric
@@ -24,44 +22,22 @@ from gnocchiclient.v1 import resource
 class Client(object):
     """Client for the Gnocchi v1 API.
 
-    :param string auth: An optional keystoneclient authentication plugin
-                        to authenticate the session with
-    :type auth: :py:class:`keystoneclient.auth.base.BaseAuthPlugin`
-    :param endpoint: The optional Gnocchi API endpoint
-    :type endpoint: str
-    :param interface: The endpoint interface ('public', 'internal', 'admin')
-    :type interface: str
-    :param region_name: The keystone region name
-    :type region_name: str
-    :param \*\*kwargs: Any option supported by
-                      :py:class:`keystoneclient.session.Session`
-
+    :param string session: session
+    :type session: :py:class:`keystoneauth.adapter.Adapter`
     """
 
     _VERSION = "v1"
 
-    def __init__(self, auth=None, endpoint=None, interface=None,
-                 region_name=None, **kwargs):
-        """Initialize a new client for the Gnocchi v1 API."""
-        self.api = keystoneclient_session.Session(auth, **kwargs)
+    def __init__(self, session=None):
+        """Initialize a new client for the Gnocchi v1 API.
+
+        """
+        self.api = session
         self.resource = resource.ResourceManager(self)
         self.archive_policy = archive_policy.ArchivePolicyManager(self)
         self.archive_policy_rule = (
             archive_policy_rule.ArchivePolicyRuleManager(self))
         self.metric = metric.MetricManager(self)
-        self.interface = interface
-        self.region_name = region_name
-        self._endpoint = endpoint
-
-    @property
-    def endpoint(self):
-        if self._endpoint is None:
-            self._endpoint = self.api.get_endpoint(
-                service_type='metric', interface=self.interface,
-                region_name=self.region_name)
-        return self._endpoint
 
     def _build_url(self, url_suffix):
-        return "%s/%s/%s" % (self.endpoint.rstrip("/"),
-                             self._VERSION,
-                             url_suffix)
+        return "%s/%s" % (self._VERSION, url_suffix)
