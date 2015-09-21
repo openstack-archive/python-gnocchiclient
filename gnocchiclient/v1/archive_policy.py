@@ -18,12 +18,13 @@ from gnocchiclient.v1 import base
 
 class ArchivePolicyManager(base.Manager):
 
+    url = "v1/archive_policy/"
+
     def list(self):
         """List archive policies
 
         """
-        url = self.client._build_url("archive_policy")
-        return self.client.api.get(url).json()
+        return self.client.api.get(self.url).json()
 
     def get(self, name):
         """Get an archive policy
@@ -31,8 +32,7 @@ class ArchivePolicyManager(base.Manager):
         :param name: Name of the archive policy
         :type name: str
         """
-        url = self.client._build_url("archive_policy/%s" % name)
-        return self.client.api.get(url).json()
+        return self.client.api.get(self.url + name).json()
 
     def create(self, archive_policy):
         """Create an archive policy
@@ -41,9 +41,8 @@ class ArchivePolicyManager(base.Manager):
         :type archive_policy: dict
 
         """
-        url = self.client._build_url("archive_policy/")
         return self.client.api.post(
-            url, headers={'Content-Type': "application/json"},
+            self.url, headers={'Content-Type': "application/json"},
             data=jsonutils.dumps(archive_policy)).json()
 
     def delete(self, name):
@@ -52,5 +51,4 @@ class ArchivePolicyManager(base.Manager):
         :param name: Name of the archive policy
         :type name: str
         """
-        url = self.client._build_url("archive_policy/%s" % name)
-        self.client.api.delete(url)
+        self.client.api.delete(self.url + name)

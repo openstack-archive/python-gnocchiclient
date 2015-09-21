@@ -26,8 +26,6 @@ class Client(object):
     :type session: :py:class:`keystoneauth.adapter.Adapter`
     """
 
-    _VERSION = "v1"
-
     def __init__(self, session=None):
         """Initialize a new client for the Gnocchi v1 API.
 
@@ -38,6 +36,3 @@ class Client(object):
         self.archive_policy_rule = (
             archive_policy_rule.ArchivePolicyRuleManager(self))
         self.metric = metric.MetricManager(self)
-
-    def _build_url(self, url_suffix):
-        return "%s/%s" % (self._VERSION, url_suffix)

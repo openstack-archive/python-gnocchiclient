@@ -21,13 +21,14 @@ from gnocchiclient.v1 import base
 
 
 class MetricManager(base.Manager):
+    metric_url = "v1/metric/"
+    resource_url = "v1/resource/generic/%s/metric/"
 
     def list(self):
         """List archive metrics
 
         """
-        url = self.client._build_url("metric")
-        return self.client.api.get(url).json()
+        return self.client.api.get(self.metric_url).json()
 
     @staticmethod
     def _ensure_metric_is_uuid(metric, attribute="resource_id"):
@@ -48,10 +49,9 @@ class MetricManager(base.Manager):
         """
         if resource_id is None:
             self._ensure_metric_is_uuid(metric)
-            url = self.client._build_url("metric/%s" % metric)
+            url = self.metric_url + metric
         else:
-            url = self.client._build_url("resource/generic/%s/metric/%s" % (
-                resource_id, metric))
+            url = (self.resource_url % resource_id) + metric
         return self.client.api.get(url).json()
 
     def create(self, metric, resource_id=None, metric_name=None):
@@ -64,9 +64,8 @@ class MetricManager(base.Manager):
         :type resource_id: str
         """
         if resource_id is None and metric_name is None:
-            url = self.client._build_url("metric")
             metric = self.client.api.post(
-                url, headers={'Content-Type': "application/json"},
+                self.metric_url, headers={'Content-Type': "application/json"},
                 data=jsonutils.dumps(metric)).json()
             # FIXME(sileht): create and get have a
             # different output: LP#1497171
@@ -76,11 +75,10 @@ class MetricManager(base.Manager):
             raise TypeError("resource_id and metric_name are "
                             "mutually required")
         else:
-            url = self.client._build_url("resource/generic/%s/metric" %
-                                         resource_id)
             metric = {metric_name: metric}
             metric = self.client.api.post(
-                url, headers={'Content-Type': "application/json"},
+                self.resource_url % resource_id,
+                headers={'Content-Type': "application/json"},
                 data=jsonutils.dumps(metric))
             return self.get(metric_name, resource_id)
 
@@ -95,10 +93,9 @@ class MetricManager(base.Manager):
         """
         if resource_id is None:
             self._ensure_metric_is_uuid(metric)
-            url = self.client._build_url("metric/%s" % metric)
+            url = self.metric_url + metric
         else:
-            url = self.client._build_url("resource/generic/%s/metric/%s" % (
-                resource_id, metric))
+            url = self.resource_url % resource_id + metric
         self.client.api.delete(url)
 
     def add_measures(self, metric, measures, resource_id=None):
@@ -114,11 +111,9 @@ class MetricManager(base.Manager):
         """
         if resource_id is None:
             self._ensure_metric_is_uuid(metric)
-            url = self.client._build_url("metric/%s/measures" % metric)
+            url = self.metric_url + metric + "/measures"
         else:
-            url = self.client._build_url(
-                "resource/generic/%s/metric/%s/measures" % (
-                    resource_id, metric))
+            url = self.resource_url % resource_id + metric + "/measures"
         return self.client.api.post(
             url, headers={'Content-Type': "application/json"},
             data=jsonutils.dumps(measures))
@@ -152,11 +147,9 @@ class MetricManager(base.Manager):
         params.update(kwargs)
         if resource_id is None:
             self._ensure_metric_is_uuid(metric)
-            url = self.client._build_url("metric/%s/measures" % metric)
+            url = self.metric_url + metric + "/measures"
         else:
-            url = self.client._build_url(
-                "resource/generic/%s/metric/%s/measures" % (
-                    resource_id, metric))
+            url = self.resource_url % resource_id + metric + "/measures"
         return self.client.api.get(url, params=params).json()
 
     def aggregation(self, metrics, query=None,
@@ -191,12 +184,11 @@ class MetricManager(base.Manager):
             for metric in metrics:
                 self._ensure_metric_is_uuid(metric)
             params['metric'] = metrics
-            url = self.client._build_url("aggregation/metric")
-            return self.client.api.get(url, params=params).json()
+            return self.client.api.get("v1/aggregation/metric",
+                                       params=params).json()
         else:
-            url = self.client._build_url(
-                "aggregation/resource/generic/metric/%s?%s" % (
-                    metrics, utils.dict_to_querystring(params)))
             return self.client.api.post(
-                url, headers={'Content-Type': "application/json"},
+                "v1/aggregation/resource/generic/metric/%s?%s" % (
+                    metrics, utils.dict_to_querystring(params)),
+                headers={'Content-Type': "application/json"},
                 data=jsonutils.dumps(query)).json()
