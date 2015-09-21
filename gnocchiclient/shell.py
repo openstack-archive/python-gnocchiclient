@@ -73,7 +73,7 @@ class GnocchiShell(app.App):
         """
         parser = super(GnocchiShell, self).build_option_parser(description,
                                                                version)
-        # Global arguments
+        # Global arguments, one day this should go to keystoneauth1
         parser.add_argument(
             '--os-region-name',
             metavar='<auth-region-name>',
@@ -90,9 +90,13 @@ class GnocchiShell(app.App):
                  ' Valid interface types: [admin, public, internal].'
                  ' (Env: OS_INTERFACE)')
 
+        default = "password"
+        if "help" == sys.argv[1] or "--help" in sys.argv:
+            default = None
+
         loading.register_session_argparse_arguments(parser=parser)
         plugin = loading.register_auth_argparse_arguments(
-            parser=parser, argv=sys.argv, default="password")
+            parser=parser, argv=sys.argv, default=default)
 
         if not isinstance(plugin, noauth.GnocchiNoAuthLoader):
             parser.add_argument(
