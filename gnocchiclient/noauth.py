@@ -13,19 +13,14 @@
 
 import os
 
-from keystoneclient.auth import base
-from oslo_config import cfg
-import six
+from keystoneauth1 import loading
+from keystoneauth1 import plugin
 
 
-class GnocchiNoAuthException(Exception):
-    pass
-
-
-class GnocchiNoAuthPlugin(base.BaseAuthPlugin):
+class GnocchiNoAuthPlugin(plugin.BaseAuthPlugin):
     """No authentication plugin for Gnocchi
 
-    This is a keystoneclient plugin that instead of
+    This is a keystoneauth plugin that instead of
     doing authentication, it just fill the 'x-user-id'
     and 'x-project-id' headers with the user provided one.
     """
@@ -50,51 +45,33 @@ class GnocchiNoAuthPlugin(base.BaseAuthPlugin):
     def get_endpoint(self, session, **kwargs):
         return self._endpoint
 
-    @classmethod
-    def get_options(cls):
-        options = super(GnocchiNoAuthPlugin, cls).get_options()
+
+class GnocchiOpt(loading.Opt):
+    @property
+    def argparse_args(self):
+        return ['--%s' % o.name for o in self._all_opts]
+
+    @property
+    def argparse_default(self):
+        # select the first ENV that is not false-y or return None
+        for o in self._all_opts:
+            v = os.environ.get('GNOCCHI_%s' % o.name.replace('-', '_').upper())
+            if v:
+                return v
+        return self.default
+
+
+class GnocchiNoAuthLoader(loading.BaseLoader):
+    @property
+    def plugin_class(self):
+        return GnocchiNoAuthPlugin
+
+    def get_options(self):
+        options = super(GnocchiNoAuthLoader, self).get_options()
         options.extend([
-            cfg.StrOpt('user-id', help='User ID', required=True),
-            cfg.StrOpt('project-id', help='Project ID', required=True),
-            cfg.StrOpt('gnocchi-endpoint', help='Gnocchi endpoint',
+            GnocchiOpt('user-id', help='User ID', required=True),
+            GnocchiOpt('project-id', help='Project ID', required=True),
+            GnocchiOpt('gnocchi-endpoint', help='Gnocchi endpoint',
                        dest="endpoint", required=True),
         ])
         return options
-
-    @classmethod
-    def register_argparse_arguments(cls, parser):
-        """Register the CLI options provided by a specific plugin.
-
-        Given a plugin class convert it's options into argparse arguments and
-        add them to a parser.
-
-        :param parser: the parser to attach argparse options.
-        :type parser: argparse.ArgumentParser
-        """
-
-        # NOTE(jamielennox): ideally oslo_config would be smart enough to
-        # handle all the Opt manipulation that goes on in this file. However it
-        # is currently not.  Options are handled in as similar a way as
-        # possible to oslo_config such that when available we should be able to
-        # transition.
-
-        # NOTE(sileht): We override the keystoneclient one to remove OS prefix
-        # and allow to use required parameters
-        for opt in cls.get_options():
-            args = []
-            envs = []
-
-            for o in [opt] + opt.deprecated_opts:
-                args.append('--%s' % o.name)
-                envs.append('GNOCCHI_%s' % o.name.replace('-', '_').upper())
-
-            # select the first ENV that is not false-y or return None
-            env_vars = (os.environ.get(e) for e in envs)
-            default = six.next(six.moves.filter(None, env_vars), None)
-
-            parser.add_argument(*args,
-                                default=default or opt.default,
-                                metavar=opt.metavar,
-                                help=opt.help,
-                                dest='os_%s' % opt.dest,
-                                required=opt.required)

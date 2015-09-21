@@ -21,7 +21,8 @@ import warnings
 
 from cliff import app
 from cliff import commandmanager
-from keystoneclient.auth import cli as keystoneclient_cli
+from keystoneauth1 import adapter
+from keystoneauth1 import loading
 from keystoneclient import exceptions
 
 from gnocchiclient import client
@@ -80,25 +81,6 @@ class GnocchiShell(app.App):
             default=os.environ.get('OS_REGION_NAME'),
             help='Authentication region name (Env: OS_REGION_NAME)')
         parser.add_argument(
-            '--os-cacert',
-            metavar='<ca-bundle-file>',
-            dest='cacert',
-            default=os.environ.get('OS_CACERT'),
-            help='CA certificate bundle file (Env: OS_CACERT)')
-        verify_group = parser.add_mutually_exclusive_group()
-        verify_group.add_argument(
-            '--verify',
-            action='store_true',
-            default=None,
-            help='Verify server certificate (default)',
-        )
-        verify_group.add_argument(
-            '--insecure',
-            action='store_true',
-            default=None,
-            help='Disable server certificate verification',
-        )
-        parser.add_argument(
             '--os-interface',
             metavar='<interface>',
             dest='interface',
@@ -108,15 +90,11 @@ class GnocchiShell(app.App):
                  ' Valid interface types: [admin, public, internal].'
                  ' (Env: OS_INTERFACE)')
 
-        parser.add_argument('--timeout',
-                            default=600,
-                            type=_positive_non_zero_int,
-                            help='Number of seconds to wait for a response.')
-
-        plugin = keystoneclient_cli.register_argparse_arguments(
+        loading.register_session_argparse_arguments(parser=parser)
+        plugin = loading.register_auth_argparse_arguments(
             parser=parser, argv=sys.argv, default="password")
 
-        if plugin != noauth.GnocchiNoAuthPlugin:
+        if not isinstance(plugin, noauth.GnocchiNoAuthLoader):
             parser.add_argument(
                 '--gnocchi-endpoint',
                 metavar='<endpoint>',
@@ -129,19 +107,20 @@ class GnocchiShell(app.App):
     def initialize_app(self, argv):
         super(GnocchiShell, self).initialize_app(argv)
         if hasattr(self.options, "endpoint"):
-            endpoint = self.options.endpoint
+            endpoint_override = self.options.endpoint
         else:
-            endpoint = None
-        auth_plugin = keystoneclient_cli.load_from_argparse_arguments(
+            endpoint_override = None
+        auth_plugin = loading.load_auth_from_argparse_arguments(
             self.options)
-        self.client = client.Client(self.api_version,
-                                    auth=auth_plugin,
-                                    endpoint=endpoint,
-                                    region_name=self.options.region_name,
-                                    interface=self.options.interface,
-                                    verify=self.options.verify,
-                                    cert=self.options.cacert,
-                                    timeout=self.options.timeout)
+        session = loading.load_session_from_argparse_arguments(
+            self.options, auth=auth_plugin)
+
+        session = adapter.Adapter(session, service_type='metric',
+                                  interface=self.options.interface,
+                                  region_name=self.options.region_name,
+                                  endpoint_override=endpoint_override)
+
+        self.client = client.Client(self.api_version, session=session)
 
     def clean_up(self, cmd, result, err):
         if err and isinstance(err, exceptions.HttpError):
