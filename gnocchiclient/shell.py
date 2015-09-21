@@ -27,9 +27,38 @@ from keystoneclient import exceptions
 
 from gnocchiclient import client
 from gnocchiclient import noauth
+from gnocchiclient.v1 import archive_policy_cli
+from gnocchiclient.v1 import archive_policy_rule_cli as ap_rule_cli
+from gnocchiclient.v1 import metric_cli
+from gnocchiclient.v1 import resource_cli
 from gnocchiclient.version import __version__
 
 LOG = logging.getLogger(__name__)
+
+SHELL_COMMANDS = {
+    "resource_list": resource_cli.CliResourceList,
+    "resource_show": resource_cli.CliResourceShow,
+    "resource_history": resource_cli.CliResourceHistory,
+    "resource_search": resource_cli.CliResourceSearch,
+    "resource_create": resource_cli.CliResourceCreate,
+    "resource_update": resource_cli.CliResourceUpdate,
+    "resource_delete": resource_cli.CliResourceDelete,
+    "archive_policy_list": archive_policy_cli.CliArchivePolicyList,
+    "archive_policy_show": archive_policy_cli.CliArchivePolicyShow,
+    "archive_policy_create": archive_policy_cli.CliArchivePolicyCreate,
+    "archive_policy_delete": archive_policy_cli.CliArchivePolicyDelete,
+    "archive_policy_rule_list": ap_rule_cli.CliArchivePolicyRuleList,
+    "archive_policy_rule_show": ap_rule_cli.CliArchivePolicyRuleShow,
+    "archive_policy_rule_create": ap_rule_cli.CliArchivePolicyRuleCreate,
+    "archive_policy_rule_delete": ap_rule_cli.CliArchivePolicyRuleDelete,
+    "metric_list": metric_cli.CliMetricList,
+    "metric_show": metric_cli.CliMetricShow,
+    "metric_create": metric_cli.CliMetricCreate,
+    "metric_delete": metric_cli.CliMetricDelete,
+    "measures_get": metric_cli.CliMeasuresGet,
+    "measures_add": metric_cli.CliMeasuresAdd,
+    "measures_aggregation": metric_cli.CliMeasuresAggregation,
+}
 
 
 def _positive_non_zero_int(argument_value):
@@ -46,14 +75,21 @@ def _positive_non_zero_int(argument_value):
     return value
 
 
+class GnocchiCommandManager(commandmanager.CommandManager):
+    def load_commands(self, namespace):
+        for name, command_class in SHELL_COMMANDS.items():
+            self.add_command(
+                name.replace('_', ' ') if self.convert_underscores else name,
+                command_class)
+
+
 class GnocchiShell(app.App):
     def __init__(self, api_version):
         super(GnocchiShell, self).__init__(
             description='Gnocchi command line client',
             # FIXME(sileht): get version from pbr
             version=__version__,
-            command_manager=commandmanager.CommandManager(
-                'gnocchi.cli.v%s' % api_version),
+            command_manager=GnocchiCommandManager(None),
             deferred_help=True,
             )
 
