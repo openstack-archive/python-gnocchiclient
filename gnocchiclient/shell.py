@@ -58,7 +58,7 @@ class GnocchiShell(app.App):
             )
 
         self.api_version = api_version
-        self.client = None
+        self._client = None
 
     def build_option_parser(self, description, version):
         """Return an argparse option parser for this application.
@@ -73,7 +73,7 @@ class GnocchiShell(app.App):
         """
         parser = super(GnocchiShell, self).build_option_parser(description,
                                                                version)
-        # Global arguments
+        # Global arguments, one day this should go to keystoneauth1
         parser.add_argument(
             '--os-region-name',
             metavar='<auth-region-name>',
@@ -104,23 +104,27 @@ class GnocchiShell(app.App):
 
         return parser
 
-    def initialize_app(self, argv):
-        super(GnocchiShell, self).initialize_app(argv)
-        if hasattr(self.options, "endpoint"):
-            endpoint_override = self.options.endpoint
-        else:
-            endpoint_override = None
-        auth_plugin = loading.load_auth_from_argparse_arguments(
-            self.options)
-        session = loading.load_session_from_argparse_arguments(
-            self.options, auth=auth_plugin)
+    @property
+    def client(self):
+        # NOTE(sileht): we lazy load the client to not
+        # load/connect auth stuffs
+        if self._client is None:
+            if hasattr(self.options, "endpoint"):
+                endpoint_override = self.options.endpoint
+            else:
+                endpoint_override = None
+            auth_plugin = loading.load_auth_from_argparse_arguments(
+                self.options)
+            session = loading.load_session_from_argparse_arguments(
+                self.options, auth=auth_plugin)
 
-        session = adapter.Adapter(session, service_type='metric',
-                                  interface=self.options.interface,
-                                  region_name=self.options.region_name,
-                                  endpoint_override=endpoint_override)
+            session = adapter.Adapter(session, service_type='metric',
+                                      interface=self.options.interface,
+                                      region_name=self.options.region_name,
+                                      endpoint_override=endpoint_override)
 
-        self.client = client.Client(self.api_version, session=session)
+            self._client = client.Client(self.api_version, session=session)
+        return self._client
 
     def clean_up(self, cmd, result, err):
         if err and isinstance(err, exceptions.HttpError):
