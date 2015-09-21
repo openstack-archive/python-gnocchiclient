@@ -30,10 +30,15 @@ def _get_pagination_options(details=False, history=False,
         options.append("marker=%s" % urllib_parse.quote(marker))
     for sort in sorts or []:
         options.append("sort=%s" % urllib_parse.quote(sort))
-    return "&".join(options)
+    if options:
+        return "?%s" % "&".join(options)
+    else:
+        return ""
 
 
 class ResourceManager(base.Manager):
+    url = "v1/resource/"
+
     def list(self, resource_type="generic", details=False, history=False,
              limit=None, marker=None, sorts=None):
         """List resources
@@ -53,8 +58,7 @@ class ResourceManager(base.Manager):
         :type sorts: list of str
         """
         qs = _get_pagination_options(details, history, limit, marker, sorts)
-        url = self.client._build_url("resource/%s?%s" % (resource_type, qs))
-        return self.client.api.get(url).json()
+        return self.client.api.get(self.url + resource_type + qs).json()
 
     def get(self, resource_type, resource_id, history=False):
         """Get a resource
@@ -67,8 +71,7 @@ class ResourceManager(base.Manager):
         :type history: bool
         """
         history = "/history" if history else ""
-        url = self.client._build_url("resource/%s/%s%s" % (
-            resource_type, resource_id, history))
+        url = self.url + "%s/%s%s" % (resource_type, resource_id, history)
         return self.client.api.get(url).json()
 
     def history(self, resource_type, resource_id, details=False,
@@ -90,8 +93,7 @@ class ResourceManager(base.Manager):
         :type sorts: list of str
         """
         qs = _get_pagination_options(details, False, limit, marker, sorts)
-        url = self.client._build_url("resource/%s/%s/history?%s" % (
-            resource_type, resource_id, qs))
+        url = "%s%s/%s/history?%s" % (self.url, resource_type, resource_id, qs)
         return self.client.api.get(url).json()
 
     def create(self, resource_type, resource):
@@ -102,9 +104,9 @@ class ResourceManager(base.Manager):
         :param resource: Attribute of the resource
         :type resource: dict
         """
-        url = self.client._build_url("resource/%s" % resource_type)
         return self.client.api.post(
-            url, headers={'Content-Type': "application/json"},
+            self.url + resource_type,
+            headers={'Content-Type': "application/json"},
             data=jsonutils.dumps(resource)).json()
 
     def update(self, resource_type, resource_id, resource):
@@ -118,10 +120,9 @@ class ResourceManager(base.Manager):
         :type resource: dict
         """
 
-        url = self.client._build_url("resource/%s/%s" % (resource_type,
-                                                         resource_id))
         return self.client.api.patch(
-            url, headers={'Content-Type': "application/json"},
+            self.url + resource_type + "/" + resource_id,
+            headers={'Content-Type': "application/json"},
             data=jsonutils.dumps(resource)).json()
 
     def delete(self, resource_id):
@@ -130,8 +131,7 @@ class ResourceManager(base.Manager):
         :param resource_id: ID of the resource
         :type resource_id: str
         """
-        url = self.client._build_url("resource/generic/%s" % (resource_id))
-        self.client.api.delete(url)
+        self.client.api.delete(self.url + "generic/" + resource_id)
 
     def search(self, resource_type="generic", query=None, details=False,
                history=False, limit=None, marker=None, sorts=None):
@@ -160,8 +160,7 @@ class ResourceManager(base.Manager):
 
         query = query or {}
         qs = _get_pagination_options(details, False, limit, marker, sorts)
-        url = self.client._build_url(
-            "search/resource/%s?%s" % (resource_type, qs))
+        url = "v1/search/resource/%s?%s" % (resource_type, qs)
         return self.client.api.post(
             url, headers={'Content-Type': "application/json"},
             data=jsonutils.dumps(query)).json()
