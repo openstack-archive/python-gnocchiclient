@@ -58,7 +58,7 @@ class ResourceManager(base.Manager):
         :type sorts: list of str
         """
         qs = _get_pagination_options(details, history, limit, marker, sorts)
-        return self.client.api.get(self.url + resource_type + qs).json()
+        return self._get(self.url + resource_type + qs).json()
 
     def get(self, resource_type, resource_id, history=False):
         """Get a resource
@@ -72,7 +72,7 @@ class ResourceManager(base.Manager):
         """
         history = "/history" if history else ""
         url = self.url + "%s/%s%s" % (resource_type, resource_id, history)
-        return self.client.api.get(url).json()
+        return self._get(url).json()
 
     def history(self, resource_type, resource_id, details=False,
                 limit=None, marker=None, sorts=None):
@@ -94,7 +94,7 @@ class ResourceManager(base.Manager):
         """
         qs = _get_pagination_options(details, False, limit, marker, sorts)
         url = "%s%s/%s/history?%s" % (self.url, resource_type, resource_id, qs)
-        return self.client.api.get(url).json()
+        return self._get(url).json()
 
     def create(self, resource_type, resource):
         """Create a resource
@@ -104,7 +104,7 @@ class ResourceManager(base.Manager):
         :param resource: Attribute of the resource
         :type resource: dict
         """
-        return self.client.api.post(
+        return self._post(
             self.url + resource_type,
             headers={'Content-Type': "application/json"},
             data=jsonutils.dumps(resource)).json()
@@ -120,7 +120,7 @@ class ResourceManager(base.Manager):
         :type resource: dict
         """
 
-        return self.client.api.patch(
+        return self._patch(
             self.url + resource_type + "/" + resource_id,
             headers={'Content-Type': "application/json"},
             data=jsonutils.dumps(resource)).json()
@@ -131,7 +131,7 @@ class ResourceManager(base.Manager):
         :param resource_id: ID of the resource
         :type resource_id: str
         """
-        self.client.api.delete(self.url + "generic/" + resource_id)
+        self._delete(self.url + "generic/" + resource_id)
 
     def search(self, resource_type="generic", query=None, details=False,
                history=False, limit=None, marker=None, sorts=None):
@@ -161,6 +161,6 @@ class ResourceManager(base.Manager):
         query = query or {}
         qs = _get_pagination_options(details, False, limit, marker, sorts)
         url = "v1/search/resource/%s?%s" % (resource_type, qs)
-        return self.client.api.post(
+        return self._post(
             url, headers={'Content-Type': "application/json"},
             data=jsonutils.dumps(query)).json()
