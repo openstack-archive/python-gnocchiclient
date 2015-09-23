@@ -36,28 +36,28 @@ from gnocchiclient.version import __version__
 LOG = logging.getLogger(__name__)
 
 SHELL_COMMANDS = {
-    "resource_list": resource_cli.CliResourceList,
-    "resource_show": resource_cli.CliResourceShow,
-    "resource_history": resource_cli.CliResourceHistory,
-    "resource_search": resource_cli.CliResourceSearch,
-    "resource_create": resource_cli.CliResourceCreate,
-    "resource_update": resource_cli.CliResourceUpdate,
-    "resource_delete": resource_cli.CliResourceDelete,
-    "archive_policy_list": archive_policy_cli.CliArchivePolicyList,
-    "archive_policy_show": archive_policy_cli.CliArchivePolicyShow,
-    "archive_policy_create": archive_policy_cli.CliArchivePolicyCreate,
-    "archive_policy_delete": archive_policy_cli.CliArchivePolicyDelete,
-    "archive_policy_rule_list": ap_rule_cli.CliArchivePolicyRuleList,
-    "archive_policy_rule_show": ap_rule_cli.CliArchivePolicyRuleShow,
-    "archive_policy_rule_create": ap_rule_cli.CliArchivePolicyRuleCreate,
-    "archive_policy_rule_delete": ap_rule_cli.CliArchivePolicyRuleDelete,
-    "metric_list": metric_cli.CliMetricList,
-    "metric_show": metric_cli.CliMetricShow,
-    "metric_create": metric_cli.CliMetricCreate,
-    "metric_delete": metric_cli.CliMetricDelete,
-    "measures_get": metric_cli.CliMeasuresGet,
-    "measures_add": metric_cli.CliMeasuresAdd,
-    "measures_aggregation": metric_cli.CliMeasuresAggregation,
+    "resource list": resource_cli.CliResourceList,
+    "resource show": resource_cli.CliResourceShow,
+    "resource history": resource_cli.CliResourceHistory,
+    "resource search": resource_cli.CliResourceSearch,
+    "resource create": resource_cli.CliResourceCreate,
+    "resource update": resource_cli.CliResourceUpdate,
+    "resource delete": resource_cli.CliResourceDelete,
+    "archive-policy list": archive_policy_cli.CliArchivePolicyList,
+    "archive-policy show": archive_policy_cli.CliArchivePolicyShow,
+    "archive-policy create": archive_policy_cli.CliArchivePolicyCreate,
+    "archive-policy delete": archive_policy_cli.CliArchivePolicyDelete,
+    "archive-policy-rule list": ap_rule_cli.CliArchivePolicyRuleList,
+    "archive-policy-rule show": ap_rule_cli.CliArchivePolicyRuleShow,
+    "archive-policy-rule create": ap_rule_cli.CliArchivePolicyRuleCreate,
+    "archive-policy-rule delete": ap_rule_cli.CliArchivePolicyRuleDelete,
+    "metric list": metric_cli.CliMetricList,
+    "metric show": metric_cli.CliMetricShow,
+    "metric create": metric_cli.CliMetricCreate,
+    "metric delete": metric_cli.CliMetricDelete,
+    "measures get": metric_cli.CliMeasuresGet,
+    "measures add": metric_cli.CliMeasuresAdd,
+    "measures aggregation": metric_cli.CliMeasuresAggregation,
 }
 
 
@@ -78,9 +78,7 @@ def _positive_non_zero_int(argument_value):
 class GnocchiCommandManager(commandmanager.CommandManager):
     def load_commands(self, namespace):
         for name, command_class in SHELL_COMMANDS.items():
-            self.add_command(
-                name.replace('_', ' ') if self.convert_underscores else name,
-                command_class)
+            self.add_command(name, command_class)
 
 
 class GnocchiShell(app.App):
