@@ -24,7 +24,7 @@ class ArchivePolicyManager(base.Manager):
         """List archive policies
 
         """
-        return self.client.api.get(self.url).json()
+        return self._get(self.url).json()
 
     def get(self, name):
         """Get an archive policy
@@ -32,7 +32,7 @@ class ArchivePolicyManager(base.Manager):
         :param name: Name of the archive policy
         :type name: str
         """
-        return self.client.api.get(self.url + name).json()
+        return self._get(self.url + name).json()
 
     def create(self, archive_policy):
         """Create an archive policy
@@ -41,7 +41,7 @@ class ArchivePolicyManager(base.Manager):
         :type archive_policy: dict
 
         """
-        return self.client.api.post(
+        return self._post(
             self.url, headers={'Content-Type': "application/json"},
             data=jsonutils.dumps(archive_policy)).json()
 
@@ -51,4 +51,4 @@ class ArchivePolicyManager(base.Manager):
         :param name: Name of the archive policy
         :type name: str
         """
-        self.client.api.delete(self.url + name)
+        self._delete(self.url + name)
