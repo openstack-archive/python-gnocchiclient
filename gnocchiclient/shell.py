@@ -164,7 +164,8 @@ class GnocchiShell(app.App):
 
     def clean_up(self, cmd, result, err):
         if err and isinstance(err, exceptions.HttpError):
-            print(err.details)
+            error = err.response.json()
+            print(error['description'])
 
     def configure_logging(self):
         if self.options.debug:

@@ -39,6 +39,8 @@ def _get_pagination_options(details=False, history=False,
 class ResourceManager(base.Manager):
     url = "v1/resource/"
 
+    DEFAULT_HEADERS = {"Accept": "application/json, */*"}
+
     def list(self, resource_type="generic", details=False, history=False,
              limit=None, marker=None, sorts=None):
         """List resources
@@ -58,7 +60,8 @@ class ResourceManager(base.Manager):
         :type sorts: list of str
         """
         qs = _get_pagination_options(details, history, limit, marker, sorts)
-        return self.client.api.get(self.url + resource_type + qs).json()
+        return self.client.api.get(self.url + resource_type + qs,
+                                   headers=self.DEFAULT_HEADERS).json()
 
     def get(self, resource_type, resource_id, history=False):
         """Get a resource
@@ -72,7 +75,8 @@ class ResourceManager(base.Manager):
         """
         history = "/history" if history else ""
         url = self.url + "%s/%s%s" % (resource_type, resource_id, history)
-        return self.client.api.get(url).json()
+        return self.client.api.get(url,
+                                   headers=self.DEFAULT_HEADERS).json()
 
     def history(self, resource_type, resource_id, details=False,
                 limit=None, marker=None, sorts=None):
@@ -104,9 +108,11 @@ class ResourceManager(base.Manager):
         :param resource: Attribute of the resource
         :type resource: dict
         """
+        headers = {'Content-Type': "application/json"}
+        headers.update(self.DEFAULT_HEADERS)
         return self.client.api.post(
             self.url + resource_type,
-            headers={'Content-Type': "application/json"},
+            headers=headers,
             data=jsonutils.dumps(resource)).json()
 
     def update(self, resource_type, resource_id, resource):
@@ -119,10 +125,11 @@ class ResourceManager(base.Manager):
         :param resource: Attribute of the resource
         :type resource: dict
         """
-
+        headers = {'Content-Type': "application/json"}
+        headers.update(self.DEFAULT_HEADERS)
         return self.client.api.patch(
             self.url + resource_type + "/" + resource_id,
-            headers={'Content-Type': "application/json"},
+            headers=headers,
             data=jsonutils.dumps(resource)).json()
 
     def delete(self, resource_id):
@@ -131,7 +138,8 @@ class ResourceManager(base.Manager):
         :param resource_id: ID of the resource
         :type resource_id: str
         """
-        self.client.api.delete(self.url + "generic/" + resource_id)
+        self.client.api.delete(self.url + "generic/" + resource_id,
+                               headers=self.DEFAULT_HEADERS)
 
     def search(self, resource_type="generic", query=None, details=False,
                history=False, limit=None, marker=None, sorts=None):
@@ -157,10 +165,11 @@ class ResourceManager(base.Manager):
         of *query dictionary*
         http://docs.openstack.org/developer/gnocchi/rest.html#searching-for-resources
         """
-
+        headers = {'Content-Type': "application/json"}
+        headers.update(self.DEFAULT_HEADERS)
         query = query or {}
         qs = _get_pagination_options(details, False, limit, marker, sorts)
         url = "v1/search/resource/%s?%s" % (resource_type, qs)
         return self.client.api.post(
-            url, headers={'Content-Type': "application/json"},
+            url, headers=headers,
             data=jsonutils.dumps(query)).json()
