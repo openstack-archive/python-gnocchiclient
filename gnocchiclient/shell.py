@@ -22,8 +22,8 @@ import warnings
 from cliff import app
 from cliff import commandmanager
 from keystoneauth1 import adapter
+from keystoneauth1 import exceptions
 from keystoneauth1 import loading
-from keystoneclient import exceptions
 
 from gnocchiclient import client
 from gnocchiclient import noauth
