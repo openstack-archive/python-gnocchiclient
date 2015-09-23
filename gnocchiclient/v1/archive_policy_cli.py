@@ -72,8 +72,8 @@ class CliArchivePolicyCreate(show.ShowOne):
         parser.add_argument("-d", "--definition", action='append',
                             required=True, type=archive_policy_definition,
                             metavar="<DEFINITION>",
-                            help=("two attributes (separated by ',') of a "
-                                  "archive policy defintion with its name and "
+                            help=("two attributes (separated by ',') of an "
+                                  "archive policy definition with its name and "
                                   "value separated with a ':'"))
         return parser
 
