@@ -73,7 +73,7 @@ class CliArchivePolicyCreate(show.ShowOne):
                             required=True, type=archive_policy_definition,
                             metavar="<DEFINITION>",
                             help=("two attributes (separated by ',') of a "
-                                  "archive policy defintion with its name and "
+                                  "archive policy definition with its name and "
                                   "value separated with a ':'"))
         return parser
 

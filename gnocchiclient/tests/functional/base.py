@@ -24,7 +24,7 @@ from tempest_lib import exceptions
 class GnocchiClient(object):
     """Gnocchi Client for tempest-lib
 
-    This client doesn't use any authentification system
+    This client doesn't use any authentication system
     """
 
     def __init__(self):
