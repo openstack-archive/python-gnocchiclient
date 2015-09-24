@@ -1,6 +1,6 @@
-===============================
-python-gnocchiclient
-===============================
+=============
+gnocchiclient
+=============
 
 Python bindings to the OpenStack Gnocchi API
 
