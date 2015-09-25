@@ -9,7 +9,7 @@ The :mod:`gnocchiclient` Python API
 Usage
 -----
 
-To use python-gnocchiclient in a project::
+To use gnocchiclient in a project::
 
     >>> from gnocchiclient.v1 import client
     >>> gnocchi = client.Client(...)

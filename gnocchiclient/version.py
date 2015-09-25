@@ -15,4 +15,4 @@
 import pbr.version
 
 
-__version__ = pbr.version.VersionInfo('python-gnocchiclient').version_string()
+__version__ = pbr.version.VersionInfo('gnocchiclient').version_string()
