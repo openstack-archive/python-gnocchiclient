@@ -19,7 +19,20 @@ class MetricClientTest(base.ClientTestBase):
         self.gnocchi("archive-policy", params="create metric-test "
                      "--back-window 0 -d granularity:1s,points:86400")
 
-        # CREATE
+        # CREATE WITH NAME
+        result = self.gnocchi(
+            u'metric', params=u"create"
+            u" --archive-policy-name metric-test some-name")
+        metric = self.details_multiple(result)[0]
+        self.assertIsNotNone(metric["id"])
+        self.assertEqual(self.clients.project_id,
+                         metric["created_by_project_id"])
+        self.assertEqual(self.clients.user_id, metric["created_by_user_id"])
+        self.assertEqual('some-name', metric["name"])
+        self.assertEqual('None', metric["resource"])
+        self.assertIn("metric-test", metric["archive_policy/name"])
+
+        # CREATE WITHOUT NAME
         result = self.gnocchi(
             u'metric', params=u"create"
             u" --archive-policy-name metric-test")
@@ -80,11 +93,11 @@ class MetricClientTest(base.ClientTestBase):
         result = self.gnocchi('metric', params="list")
         metrics = self.parser.listing(result)
         metric_from_list = [p for p in metrics
-                            if p['archive_policy/name'] == 'metric-test'][0]
+                            if p['id'] == metric['id']][0]
         for field in ["id", "archive_policy/name", "name"]:
             # FIXME(sileht): add "resource_id" or "resource"
             # when LP#1497171 is fixed
-            self.assertEqual(metric[field], metric_from_list[field])
+            self.assertEqual(metric[field], metric_from_list[field], field)
 
         # DELETE
         result = self.gnocchi('metric', params="delete %s" % metric["id"])

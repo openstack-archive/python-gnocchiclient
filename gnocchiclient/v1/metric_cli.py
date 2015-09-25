@@ -54,20 +54,20 @@ class CliMetricCreate(show.ShowOne):
         parser.add_argument("--archive-policy-name", "-a",
                             dest="archive_policy_name",
                             help=("name of the archive policy"))
-        parser.add_argument("--resource", "-r", nargs=2,
-                            metavar=("RESOURCE_ID", "METRIC_NAME"),
+        parser.add_argument("--resource-id", "-r",
+                            dest="resource_id",
                             help="ID of the resource")
+        parser.add_argument("name", nargs='?',
+                            metavar="METRIC_NAME",
+                            help="Name of the metric")
         return parser
 
     def take_action(self, parsed_args):
         metric = utils.dict_from_parsed_args(parsed_args,
-                                             ["archive_policy_name"])
-        kwds = {'metric': metric}
-        if parsed_args.resource is not None:
-            kwds['resource_id'] = parsed_args.resource[0]
-            kwds['metric_name'] = parsed_args.resource[1]
-
-        metric = self.app.client.metric.create(**kwds)
+                                             ["archive_policy_name",
+                                              "name",
+                                              "resource_id"])
+        metric = self.app.client.metric.create(metric)
         utils.format_archive_policy(metric["archive_policy"])
         utils.format_move_dict_to_root(metric, "archive_policy")
         return self.dict2columns(metric)

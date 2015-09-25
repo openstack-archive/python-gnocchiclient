@@ -54,33 +54,34 @@ class MetricManager(base.Manager):
             url = (self.resource_url % resource_id) + metric
         return self._get(url).json()
 
-    def create(self, metric, resource_id=None, metric_name=None):
+    def create(self, metric):
         """Create an metric
 
         :param metric: The metric
         :type metric: str
-        :param resource_id: ID of the resource (required
-                            to get a metric by name)
-        :type resource_id: str
         """
-        if resource_id is None and metric_name is None:
+        resource_id = metric.get('resource_id')
+
+        if resource_id is None:
             metric = self._post(
                 self.metric_url, headers={'Content-Type': "application/json"},
                 data=jsonutils.dumps(metric)).json()
             # FIXME(sileht): create and get have a
             # different output: LP#1497171
             return self.get(metric["id"])
-        elif ((resource_id is None and metric_name is not None) or
-                (resource_id is not None and metric_name is None)):
-            raise TypeError("resource_id and metric_name are "
-                            "mutually required")
-        else:
-            metric = {metric_name: metric}
-            metric = self._post(
-                self.resource_url % resource_id,
-                headers={'Content-Type': "application/json"},
-                data=jsonutils.dumps(metric))
-            return self.get(metric_name, resource_id)
+
+        metric_name = metric.get('name')
+
+        if metric_name is None:
+            raise TypeError("metric_name is required if resource_id is set")
+
+        del metric['resource_id']
+        metric = {metric_name: metric}
+        metric = self._post(
+            self.resource_url % resource_id,
+            headers={'Content-Type': "application/json"},
+            data=jsonutils.dumps(metric))
+        return self.get(metric_name, resource_id)
 
     def delete(self, metric, resource_id=None):
         """Delete an metric
