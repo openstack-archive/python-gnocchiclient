@@ -13,6 +13,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from gnocchiclient import client
 from gnocchiclient.v1 import archive_policy
 from gnocchiclient.v1 import archive_policy_rule
 from gnocchiclient.v1 import metric
@@ -26,11 +27,11 @@ class Client(object):
     :type session: :py:class:`keystoneauth.adapter.Adapter`
     """
 
-    def __init__(self, session=None):
+    def __init__(self, session=None, service_type='metric', **kwargs):
         """Initialize a new client for the Gnocchi v1 API.
-
         """
-        self.api = session
+        self.api = client.SessionClient(session, service_type=service_type,
+                                        **kwargs)
         self.resource = resource.ResourceManager(self)
         self.archive_policy = archive_policy.ArchivePolicyManager(self)
         self.archive_policy_rule = (
