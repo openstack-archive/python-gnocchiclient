@@ -106,14 +106,16 @@ class MetricClientTest(base.ClientTestBase):
         # GET FAIL
         result = self.gnocchi('metric', params="show %s" % metric["id"],
                               fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(result.split('\n'),
-                                       "Not Found (HTTP 404)")
+        self.assertFirstLineStartsWith(
+            result.split('\n'),
+            "Metric %s does not exist (HTTP 404)" % metric["id"])
 
         # DELETE FAIL
         result = self.gnocchi('metric', params="delete %s" % metric["id"],
                               fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(result.split('\n'),
-                                       "Not Found (HTTP 404)")
+        self.assertFirstLineStartsWith(
+            result.split('\n'),
+            "Metric %s does not exist (HTTP 404)" % metric["id"])
 
     def test_metric_by_name_scenario(self):
         # PREPARE REQUIREMENT
@@ -195,11 +197,29 @@ class MetricClientTest(base.ClientTestBase):
         # GET FAIL
         result = self.gnocchi('metric', params="show metric-name metric-res",
                               fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(result.split('\n'),
-                                       "Not Found (HTTP 404)")
+        self.assertFirstLineStartsWith(
+            result.split('\n'),
+            "Metric metric-name does not exist (HTTP 404)")
 
         # DELETE FAIL
         result = self.gnocchi('metric', params="delete metric-name metric-res",
                               fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(result.split('\n'),
-                                       "Not Found (HTTP 404)")
+        self.assertFirstLineStartsWith(
+            result.split('\n'),
+            "Metric metric-name does not exist (HTTP 404)")
+
+        # GET RESOURCE ID
+        result = self.gnocchi(
+            'resource', params="show generic metric-res")
+        resource_id = self.details_multiple(result)[0]["id"]
+
+        # DELETE RESOURCE
+        result = self.gnocchi('resource', params="delete metric-res")
+        self.assertEqual("", result)
+
+        # GET FAIL WITH RESOURCE ERROR
+        result = self.gnocchi('metric', params="show metric-name metric-res",
+                              fail_ok=True, merge_stderr=True)
+        self.assertFirstLineStartsWith(
+            result.split('\n'),
+            "Resource %s does not exist (HTTP 404)" % resource_id)

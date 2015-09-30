@@ -46,12 +46,14 @@ class ArchivePolicyRuleClientTest(base.ClientTestBase):
         result = self.gnocchi('archive-policy-rule',
                               params="show test",
                               fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(result.split('\n'),
-                                       "Not Found (HTTP 404)")
+        self.assertFirstLineStartsWith(
+            result.split('\n'),
+            "Archive policy rule test does not exist (HTTP 404)")
 
         # DELETE FAIL
         result = self.gnocchi('archive-policy-rule',
                               params="delete test",
                               fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(result.split('\n'),
-                                       "Not Found (HTTP 404)")
+        self.assertFirstLineStartsWith(
+            result.split('\n'),
+            "Archive policy rule test does not exist (HTTP 404)")

@@ -20,7 +20,6 @@ import warnings
 
 from cliff import app
 from cliff import commandmanager
-from keystoneauth1 import adapter
 from keystoneauth1 import exceptions
 from keystoneauth1 import loading
 
@@ -137,12 +136,10 @@ class GnocchiShell(app.App):
             session = loading.load_session_from_argparse_arguments(
                 self.options, auth=auth_plugin)
 
-            session = adapter.Adapter(session, service_type='metric',
-                                      interface=self.options.interface,
-                                      region_name=self.options.region_name,
-                                      endpoint_override=endpoint_override)
-
-            self._client = client.Client(self.api_version, session=session)
+            self._client = client.Client(self.api_version, session=session,
+                                         interface=self.options.interface,
+                                         region_name=self.options.region_name,
+                                         endpoint_override=endpoint_override)
         return self._client
 
     def clean_up(self, cmd, result, err):
