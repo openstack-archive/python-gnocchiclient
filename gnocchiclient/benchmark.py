@@ -100,7 +100,7 @@ class BenchmarkPool(futurist.ThreadPoolExecutor):
 class CliBenchmarkMetricCreate(metric_cli.CliMetricCreateBase):
     def get_parser(self, prog_name):
         parser = super(CliBenchmarkMetricCreate, self).get_parser(prog_name)
-        parser.add_argument("--number", "-n",
+        parser.add_argument("--count", "-n",
                             required=True,
                             type=_positive_non_zero_int,
                             help="Number of metrics to create")
@@ -117,7 +117,7 @@ class CliBenchmarkMetricCreate(metric_cli.CliMetricCreateBase):
         pool = BenchmarkPool(parsed_args.workers)
 
         LOG.info("Creating metrics")
-        futures = pool.submit_job(parsed_args.number,
+        futures = pool.submit_job(parsed_args.count,
                                   self.app.client.metric.create,
                                   metric, refetch_metric=False)
         created_metrics, stats = pool.wait_job("create", futures)
