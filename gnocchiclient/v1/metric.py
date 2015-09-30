@@ -54,7 +54,8 @@ class MetricManager(base.Manager):
             url = (self.resource_url % resource_id) + metric
         return self._get(url).json()
 
-    def create(self, metric):
+    # FIXME(jd): remove refetch_metric when LP#1497171 is fixed
+    def create(self, metric, refetch_metric=True):
         """Create an metric
 
         :param metric: The metric
@@ -68,7 +69,9 @@ class MetricManager(base.Manager):
                 data=jsonutils.dumps(metric)).json()
             # FIXME(sileht): create and get have a
             # different output: LP#1497171
-            return self.get(metric["id"])
+            if refetch_metric:
+                return self.get(metric["id"])
+            return metric
 
         metric_name = metric.get('name')
 
