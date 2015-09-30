@@ -15,6 +15,7 @@
 
 from gnocchiclient.v1 import archive_policy
 from gnocchiclient.v1 import archive_policy_rule
+from gnocchiclient.v1 import capabilities
 from gnocchiclient.v1 import metric
 from gnocchiclient.v1 import resource
 
@@ -36,3 +37,4 @@ class Client(object):
         self.archive_policy_rule = (
             archive_policy_rule.ArchivePolicyRuleManager(self))
         self.metric = metric.MetricManager(self)
+        self.capabilities = capabilities.CapabilitiesManager(self)
