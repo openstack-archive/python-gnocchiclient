@@ -13,7 +13,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import argparse
 import logging
 import os
 import sys
@@ -35,20 +34,6 @@ from gnocchiclient.v1 import resource_cli
 from gnocchiclient.version import __version__
 
 LOG = logging.getLogger(__name__)
-
-
-def _positive_non_zero_int(argument_value):
-    if argument_value is None:
-        return None
-    try:
-        value = int(argument_value)
-    except ValueError:
-        msg = "%s must be an integer" % argument_value
-        raise argparse.ArgumentTypeError(msg)
-    if value <= 0:
-        msg = "%s must be greater than 0" % argument_value
-        raise argparse.ArgumentTypeError(msg)
-    return value
 
 
 class GnocchiCommandManager(commandmanager.CommandManager):
