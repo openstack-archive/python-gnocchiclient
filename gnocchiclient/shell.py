@@ -33,8 +33,6 @@ from gnocchiclient.v1 import metric_cli
 from gnocchiclient.v1 import resource_cli
 from gnocchiclient.version import __version__
 
-LOG = logging.getLogger(__name__)
-
 
 class GnocchiCommandManager(commandmanager.CommandManager):
     SHELL_COMMANDS = {
