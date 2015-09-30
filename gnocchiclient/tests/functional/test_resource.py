@@ -119,15 +119,17 @@ class ResourceClientTest(base.ClientTestBase):
                               params="show --type generic %s" %
                               self.RESOURCE_ID,
                               fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(result.split('\n'),
-                                       "Not Found (HTTP 404)")
+        self.assertFirstLineStartsWith(
+            result.split('\n'),
+            "Resource %s does not exist (HTTP 404)" % self.RESOURCE_ID)
 
         # DELETE FAIL
         result = self.gnocchi('resource',
                               params="delete %s" % self.RESOURCE_ID,
                               fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(result.split('\n'),
-                                       "Not Found (HTTP 404)")
+        self.assertFirstLineStartsWith(
+            result.split('\n'),
+            "Resource %s does not exist (HTTP 404)" % self.RESOURCE_ID)
 
         # LIST EMPTY
         result = self.gnocchi('resource', params="list -t generic")

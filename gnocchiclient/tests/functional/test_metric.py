@@ -40,11 +40,13 @@ class MetricClientTest(base.ClientTestBase):
         result = self.gnocchi('metric', params="show %s" % metric1["id"],
                               fail_ok=True, merge_stderr=True)
         self.assertFirstLineStartsWith(result.split('\n'),
-                                       "Not Found (HTTP 404)")
+                                       "Metric %s does not exist (HTTP 404)" %
+                                       metric1["id"])
         result = self.gnocchi('metric', params="show %s" % metric2["id"],
                               fail_ok=True, merge_stderr=True)
         self.assertFirstLineStartsWith(result.split('\n'),
-                                       "Not Found (HTTP 404)")
+                                       "Metric %s does not exist (HTTP 404)" %
+                                       metric2["id"])
 
     def test_metric_scenario(self):
         # PREPARE AN ACHIVE POLICY
@@ -138,14 +140,16 @@ class MetricClientTest(base.ClientTestBase):
         # GET FAIL
         result = self.gnocchi('metric', params="show %s" % metric["id"],
                               fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(result.split('\n'),
-                                       "Not Found (HTTP 404)")
+        self.assertFirstLineStartsWith(
+            result.split('\n'),
+            "Metric %s does not exist (HTTP 404)" % metric["id"])
 
         # DELETE FAIL
         result = self.gnocchi('metric', params="delete %s" % metric["id"],
                               fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(result.split('\n'),
-                                       "Not Found (HTTP 404)")
+        self.assertFirstLineStartsWith(
+            result.split('\n'),
+            "Metric %s does not exist (HTTP 404)" % metric["id"])
 
     def test_metric_by_name_scenario(self):
         # PREPARE REQUIREMENT
@@ -230,12 +234,31 @@ class MetricClientTest(base.ClientTestBase):
         result = self.gnocchi('metric',
                               params="show -r metric-res metric-name",
                               fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(result.split('\n'),
-                                       "Not Found (HTTP 404)")
+        self.assertFirstLineStartsWith(
+            result.split('\n'),
+            "Metric metric-name does not exist (HTTP 404)")
 
         # DELETE FAIL
         result = self.gnocchi('metric',
                               params="delete -r metric-res metric-name",
                               fail_ok=True, merge_stderr=True)
-        self.assertFirstLineStartsWith(result.split('\n'),
-                                       "Not Found (HTTP 404)")
+        self.assertFirstLineStartsWith(
+            result.split('\n'),
+            "Metric metric-name does not exist (HTTP 404)")
+
+        # GET RESOURCE ID
+        result = self.gnocchi(
+            'resource', params="show -t generic metric-res")
+        resource_id = self.details_multiple(result)[0]["id"]
+
+        # DELETE RESOURCE
+        result = self.gnocchi('resource', params="delete metric-res")
+        self.assertEqual("", result)
+
+        # GET FAIL WITH RESOURCE ERROR
+        result = self.gnocchi('metric',
+                              params="show metric-name -r metric-res",
+                              fail_ok=True, merge_stderr=True)
+        self.assertFirstLineStartsWith(
+            result.split('\n'),
+            "Resource %s does not exist (HTTP 404)" % resource_id)
