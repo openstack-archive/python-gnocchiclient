@@ -15,7 +15,7 @@ import argparse
 import logging
 import time
 
-from cliff import command
+from cliff import show
 import futurist
 from oslo_utils import timeutils
 import six.moves
@@ -98,7 +98,7 @@ class BenchmarkPool(futurist.ThreadPoolExecutor):
         }
 
 
-class CliBenchmarkBase(command.Command):
+class CliBenchmarkBase(show.ShowOne):
     def get_parser(self, prog_name):
         parser = super(CliBenchmarkBase, self).get_parser(prog_name)
         parser.add_argument("--workers", "-w",
@@ -109,7 +109,7 @@ class CliBenchmarkBase(command.Command):
 
 
 class CliBenchmarkMetricShow(CliBenchmarkBase,
-                             metric_cli.CliMetricShowBase):
+                             metric_cli.CliMetricWithResourceID):
     def get_parser(self, prog_name):
         parser = super(CliBenchmarkMetricShow, self).get_parser(prog_name)
         parser.add_argument("metric", nargs='+',
