@@ -15,6 +15,7 @@ import argparse
 import logging
 import time
 
+from cliff import command
 import futurist
 from oslo_utils import timeutils
 import six.moves
@@ -97,7 +98,40 @@ class BenchmarkPool(futurist.ThreadPoolExecutor):
         }
 
 
-class CliBenchmarkMetricCreate(metric_cli.CliMetricCreateBase):
+class CliBenchmarkBase(command.Command):
+    def get_parser(self, prog_name):
+        parser = super(CliBenchmarkBase, self).get_parser(prog_name)
+        parser.add_argument("--workers", "-w",
+                            default=None,
+                            type=_positive_non_zero_int,
+                            help="Number of workers to use")
+        return parser
+
+
+class CliBenchmarkMetricShow(CliBenchmarkBase,
+                             metric_cli.CliMetricShowBase):
+    def get_parser(self, prog_name):
+        parser = super(CliBenchmarkMetricShow, self).get_parser(prog_name)
+        parser.add_argument("metric", nargs='+',
+                            help="ID or name of the metrics")
+        parser.add_argument("--count", "-n",
+                            required=True,
+                            type=_positive_non_zero_int,
+                            help="Number of metrics to get")
+        return parser
+
+    def take_action(self, parsed_args):
+        pool = BenchmarkPool(parsed_args.workers)
+        LOG.info("Getting metrics")
+        futures = pool.map_job(self.app.client.metric.get,
+                               parsed_args.metric * parsed_args.count,
+                               resource_id=parsed_args.resource_id)
+        result, stats = pool.wait_job("show", futures)
+        return self.dict2columns(stats)
+
+
+class CliBenchmarkMetricCreate(CliBenchmarkBase,
+                               metric_cli.CliMetricCreateBase):
     def get_parser(self, prog_name):
         parser = super(CliBenchmarkMetricCreate, self).get_parser(prog_name)
         parser.add_argument("--count", "-n",
@@ -107,10 +141,6 @@ class CliBenchmarkMetricCreate(metric_cli.CliMetricCreateBase):
         parser.add_argument("--keep", "-k",
                             action='store_true',
                             help="Keep created metrics")
-        parser.add_argument("--workers", "-w",
-                            default=None,
-                            type=_positive_non_zero_int,
-                            help="Number of workers to use")
         return parser
 
     def _take_action(self, metric, parsed_args):
