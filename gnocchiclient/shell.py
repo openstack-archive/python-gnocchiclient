@@ -27,6 +27,7 @@ from keystoneauth1 import loading
 
 from gnocchiclient import client
 from gnocchiclient import noauth
+from gnocchiclient import utils
 from gnocchiclient.v1 import archive_policy_cli
 from gnocchiclient.v1 import archive_policy_rule_cli as ap_rule_cli
 from gnocchiclient.v1 import capabilities_cli
@@ -84,7 +85,7 @@ class GnocchiCommandManager(commandmanager.CommandManager):
 
 
 class GnocchiShell(app.App):
-    def __init__(self, api_version):
+    def __init__(self):
         super(GnocchiShell, self).__init__(
             description='Gnocchi command line client',
             # FIXME(sileht): get version from pbr
@@ -93,7 +94,6 @@ class GnocchiShell(app.App):
             deferred_help=True,
             )
 
-        self.api_version = api_version
         self._client = None
 
     def build_option_parser(self, description, version):
@@ -125,7 +125,12 @@ class GnocchiShell(app.App):
             help='Select an interface type.'
                  ' Valid interface types: [admin, public, internal].'
                  ' (Env: OS_INTERFACE)')
-
+        parser.add_argument(
+            '--gnocchi-api-version',
+            default=utils.env('GNOCCHI_API_VERSION', default='1'),
+            help='Defaults to env[GNOCCHI_API_VERSION] or 1.')
+        parser.add_argument('--gnocchi_api_version',
+                            help=argparse.SUPPRESS)
         loading.register_session_argparse_arguments(parser=parser)
         plugin = loading.register_auth_argparse_arguments(
             parser=parser, argv=sys.argv, default="password")
@@ -159,7 +164,8 @@ class GnocchiShell(app.App):
                                       region_name=self.options.region_name,
                                       endpoint_override=endpoint_override)
 
-            self._client = client.Client(self.api_version, session=session)
+            self._client = client.Client(self.options.gnocchi_api_version,
+                                         session=session)
         return self._client
 
     def clean_up(self, cmd, result, err):
@@ -216,6 +222,4 @@ class GnocchiShell(app.App):
 def main(args=None):
     if args is None:
         args = sys.argv[1:]
-    # FIXME(sileht): read this from argv and env
-    api_version = "1"
-    return GnocchiShell(api_version).run(args)
+    return GnocchiShell().run(args)

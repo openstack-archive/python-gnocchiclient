@@ -12,7 +12,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-
+import os
 import pyparsing as pp
 
 uninary_operators = ("not", )
@@ -125,3 +125,16 @@ def dict_to_querystring(objs):
     return "&".join(["%s=%s" % (k, v)
                      for k, v in objs.items()
                      if v is not None])
+
+
+def env(*vars, **kwargs):
+    """Search for the first defined of possibly many env vars.
+
+    Returns the first environment variable defined in vars, or
+    returns the default defined in kwargs.
+    """
+    for v in vars:
+        value = os.environ.get(v, None)
+        if value:
+            return value
+    return kwargs.get('default', '')
