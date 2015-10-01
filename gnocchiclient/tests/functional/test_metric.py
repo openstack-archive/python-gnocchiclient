@@ -135,7 +135,8 @@ class MetricClientTest(base.ClientTestBase):
         self.assertIn("metric-test", metric["archive_policy/name"])
 
         # GET
-        result = self.gnocchi('metric', params="show metric-name metric-res")
+        result = self.gnocchi('metric',
+                              params="show -r metric-res metric-name")
         metric_get = self.details_multiple(result)[0]
         self.assertEqual(metric, metric_get)
 
@@ -193,7 +194,8 @@ class MetricClientTest(base.ClientTestBase):
         self.assertEqual("", result)
 
         # GET FAIL
-        result = self.gnocchi('metric', params="show metric-name metric-res",
+        result = self.gnocchi('metric',
+                              params="show -r metric-res metric-name",
                               fail_ok=True, merge_stderr=True)
         self.assertFirstLineStartsWith(result.split('\n'),
                                        "Not Found (HTTP 404)")
