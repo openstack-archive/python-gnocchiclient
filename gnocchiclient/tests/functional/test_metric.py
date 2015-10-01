@@ -9,11 +9,43 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import uuid
 
 from gnocchiclient.tests.functional import base
 
 
 class MetricClientTest(base.ClientTestBase):
+    def test_delete_several_metrics(self):
+        apname = str(uuid.uuid4())
+        # PREPARE AN ACHIVE POLICY
+        self.gnocchi("archive-policy", params="create %s "
+                     "--back-window 0 -d granularity:1s,points:86400" % apname)
+        # Create 2 metrics
+        result = self.gnocchi(
+            u'metric', params=u"create"
+            u" --archive-policy-name %s" % apname)
+        metric1 = self.details_multiple(result)[0]
+
+        result = self.gnocchi(
+            u'metric', params=u"create"
+            u" --archive-policy-name %s" % apname)
+        metric2 = self.details_multiple(result)[0]
+
+        # DELETE
+        result = self.gnocchi('metric', params="delete %s %s"
+                              % (metric1["id"], metric2["id"]))
+        self.assertEqual("", result)
+
+        # GET FAIL
+        result = self.gnocchi('metric', params="show %s" % metric1["id"],
+                              fail_ok=True, merge_stderr=True)
+        self.assertFirstLineStartsWith(result.split('\n'),
+                                       "Not Found (HTTP 404)")
+        result = self.gnocchi('metric', params="show %s" % metric2["id"],
+                              fail_ok=True, merge_stderr=True)
+        self.assertFirstLineStartsWith(result.split('\n'),
+                                       "Not Found (HTTP 404)")
+
     def test_metric_scenario(self):
         # PREPARE AN ACHIVE POLICY
         self.gnocchi("archive-policy", params="create metric-test "
@@ -189,7 +221,8 @@ class MetricClientTest(base.ClientTestBase):
             self.assertEqual(metric[field], metric_from_list[field])
 
         # DELETE
-        result = self.gnocchi('metric', params="delete metric-name metric-res")
+        result = self.gnocchi('metric',
+                              params="delete -r metric-res metric-name")
         self.assertEqual("", result)
 
         # GET FAIL
@@ -199,7 +232,8 @@ class MetricClientTest(base.ClientTestBase):
                                        "Not Found (HTTP 404)")
 
         # DELETE FAIL
-        result = self.gnocchi('metric', params="delete metric-name metric-res",
+        result = self.gnocchi('metric',
+                              params="delete -r metric-res metric-name",
                               fail_ok=True, merge_stderr=True)
         self.assertFirstLineStartsWith(result.split('\n'),
                                        "Not Found (HTTP 404)")
