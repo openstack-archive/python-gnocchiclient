@@ -29,13 +29,19 @@ class CliMetricList(lister.Lister):
         return utils.list2cols(self.COLS, metrics)
 
 
-class CliMetricShow(show.ShowOne):
+class CliMetricShowBase(show.ShowOne):
+    def get_parser(self, prog_name):
+        parser = super(CliMetricShowBase, self).get_parser(prog_name)
+        parser.add_argument("--resource-id", "-r",
+                            help="ID of the resource")
+        return parser
+
+
+class CliMetricShow(CliMetricShowBase):
     def get_parser(self, prog_name):
         parser = super(CliMetricShow, self).get_parser(prog_name)
         parser.add_argument("metric",
                             help="ID or name of the metric")
-        parser.add_argument("resource_id", nargs='?',
-                            help="ID of the resource")
         return parser
 
     def take_action(self, parsed_args):
