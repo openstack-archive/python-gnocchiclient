@@ -29,6 +29,7 @@ from gnocchiclient import client
 from gnocchiclient import noauth
 from gnocchiclient.v1 import archive_policy_cli
 from gnocchiclient.v1 import archive_policy_rule_cli as ap_rule_cli
+from gnocchiclient.v1 import capabilities_cli
 from gnocchiclient.v1 import metric_cli
 from gnocchiclient.v1 import resource_cli
 from gnocchiclient.version import __version__
@@ -58,6 +59,7 @@ SHELL_COMMANDS = {
     "measures get": metric_cli.CliMeasuresGet,
     "measures add": metric_cli.CliMeasuresAdd,
     "measures aggregation": metric_cli.CliMeasuresAggregation,
+    "capabilities list": capabilities_cli.CliCapabilitiesList,
 }
 
 
