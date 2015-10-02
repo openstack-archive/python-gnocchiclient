@@ -31,6 +31,15 @@ class ResourceClientTest(base.ClientTestBase):
         self.assertEqual('None', resource["project_id"])
         self.assertNotEqual('None', resource["started_at"])
 
+        # CREATE FAIL
+        result = self.gnocchi('resource',
+                              params="create generic -a id:%s" %
+                              self.RESOURCE_ID,
+                              fail_ok=True, merge_stderr=True)
+        self.assertFirstLineStartsWith(
+            result.split('\n'),
+            "Resource %s already exists (HTTP 409)" % self.RESOURCE_ID)
+
         # UPDATE
         result = self.gnocchi(
             'resource', params=("update -t generic %s -a project_id:%s "

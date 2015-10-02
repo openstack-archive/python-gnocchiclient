@@ -23,6 +23,15 @@ class ArchivePolicyRuleClientTest(base.ClientTestBase):
         policy_rule = self.details_multiple(result)[0]
         self.assertEqual('test', policy_rule["name"])
 
+        # CREATE FAIL
+        result = self.gnocchi(
+            u'archive-policy-rule', params=u"create test"
+            u" --archive-policy high"
+            u" --metric-pattern 'disk.io.*'",
+            fail_ok=True, merge_stderr=True)
+        self.assertFirstLineStartsWith(
+            result.split('\n'),
+            "Archive policy Rule low already exists (HTTP 409)")
         # GET
         result = self.gnocchi(
             'archive-policy-rule', params="show test")
