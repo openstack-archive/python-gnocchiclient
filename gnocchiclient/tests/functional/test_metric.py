@@ -136,6 +136,15 @@ class MetricClientTest(base.ClientTestBase):
         self.assertNotEqual('None', metric["resource"])
         self.assertIn("metric-test", metric["archive_policy/name"])
 
+        # CREATE FAIL
+        result = self.gnocchi(
+            u'metric', params=u"create"
+            u" --archive-policy-name metric-test2 -r metric-res metric-name",
+            fail_ok=True, merge_stderr=True)
+        self.assertFirstLineStartsWith(
+            result.split('\n'),
+            "Named metric metric-name already exists (HTTP 409)")
+
         # GET
         result = self.gnocchi('metric', params="show metric-name metric-res")
         metric_get = self.details_multiple(result)[0]
