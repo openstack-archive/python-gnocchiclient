@@ -114,6 +114,26 @@ class Conflict(ClientException):
     message = "Conflict"
 
 
+class NamedMetricAreadyExists(Conflict, MutipleMeaningException):
+    message = "Named metric already exists"
+    match = re.compile("Named metric .* does not exist")
+
+
+class ResourceAlreadyExists(Conflict, MutipleMeaningException):
+    message = "Resource already exists"
+    match = re.compile("Resource .* already exists")
+
+
+class ArchivePolicyAlreadyExists(Conflict, MutipleMeaningException):
+    message = "Archive policy already exists"
+    match = re.compile("Archive policy .* already exists")
+
+
+class ArchivePolicyRuleAlreadyExists(Conflict, MutipleMeaningException):
+    message = "Archive policy rule already exists"
+    match = re.compile("Archive policy Rule .* already exists")
+
+
 class OverLimit(RetryAfterException):
     """HTTP 413 - Over limit:
 
@@ -148,6 +168,9 @@ _error_classes = [BadRequest, Unauthorized, Forbidden, NotFound,
 _error_classes_enhanced = {
     NotFound: [MetricNotFound, ResourceNotFound, ArchivePolicyNotFound,
                ArchivePolicyRuleNotFound],
+    Conflict: [NamedMetricAreadyExists, ResourceAlreadyExists,
+               ArchivePolicyAlreadyExists,
+               ArchivePolicyRuleAlreadyExists]
 }
 _code_map = dict(
     (c.http_status, (c, _error_classes_enhanced.get(c, [])))
