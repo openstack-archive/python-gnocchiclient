@@ -62,6 +62,7 @@ class GnocchiCommandManager(commandmanager.CommandManager):
         "capabilities list": capabilities_cli.CliCapabilitiesList,
         "benchmark metric create": benchmark.CliBenchmarkMetricCreate,
         "benchmark metric get": benchmark.CliBenchmarkMetricShow,
+        "benchmark measures add": benchmark.CliBenchmarkMeasuresAdd,
     }
 
     def load_commands(self, namespace):
