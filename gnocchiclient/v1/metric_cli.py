@@ -125,15 +125,20 @@ class CliMeasuresGet(CliMetricWithResourceID, lister.Lister):
         return self.COLS, measures
 
 
-class CliMeasuresAdd(CliMetricWithResourceID):
+class CliMeasuresAddBase(CliMetricWithResourceID):
+    def get_parser(self, prog_name):
+        parser = super(CliMeasuresAddBase, self).get_parser(prog_name)
+        parser.add_argument("metric", help="ID or name of the metric")
+        return parser
+
+
+class CliMeasuresAdd(CliMeasuresAddBase):
     def measure(self, measure):
         timestamp, __, value = measure.rpartition("@")
         return {'timestamp': timestamp, 'value': float(value)}
 
     def get_parser(self, prog_name):
         parser = super(CliMeasuresAdd, self).get_parser(prog_name)
-        parser.add_argument("metric",
-                            help="ID or name of the metric")
         parser.add_argument("-m", "--measure", action='append',
                             required=True, type=self.measure,
                             help=("timestamp and value of a measure "
