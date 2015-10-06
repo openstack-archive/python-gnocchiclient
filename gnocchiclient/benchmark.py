@@ -12,12 +12,14 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 import argparse
+import copy_reg
 import datetime
 import functools
 import itertools
 import logging
 import random
 import time
+import types
 
 from cliff import show
 import futurist
@@ -27,6 +29,15 @@ import six.moves
 from gnocchiclient.v1 import metric_cli
 
 LOG = logging.getLogger(__name__)
+
+
+def _pickle_method(m):
+    if m.im_self is None:
+        return getattr, (m.im_class, m.im_func.func_name)
+    else:
+        return getattr, (m.im_self, m.im_func.func_name)
+
+copy_reg.pickle(types.MethodType, _pickle_method)
 
 
 def grouper(iterable, n, fillvalue=None):
@@ -50,7 +61,7 @@ def _positive_non_zero_int(argument_value):
     return value
 
 
-class BenchmarkPool(futurist.ThreadPoolExecutor):
+class BenchmarkPool(futurist.ProcessPoolExecutor):
     def submit_job(self, times, fn, *args, **kwargs):
         self.sw = timeutils.StopWatch()
         self.sw.start()
