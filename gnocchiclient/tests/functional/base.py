@@ -37,9 +37,9 @@ class GnocchiClient(object):
                 fail_ok=False, merge_stderr=False):
         creds = ("--os-auth-plugin gnocchi-noauth "
                  "--user-id %s --project-id %s "
-                 "--gnocchi-endpoint %s") % (self.user_id,
-                                             self.project_id,
-                                             self.endpoint)
+                 "--endpoint %s") % (self.user_id,
+                                     self.project_id,
+                                     self.endpoint)
 
         flags = creds + ' ' + flags
 
