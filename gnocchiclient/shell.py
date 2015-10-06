@@ -115,9 +115,7 @@ class GnocchiShell(app.App):
 
         if not isinstance(plugin, noauth.GnocchiNoAuthLoader):
             parser.add_argument(
-                '--gnocchi-endpoint',
-                metavar='<endpoint>',
-                dest='endpoint',
+                '--endpoint',
                 default=os.environ.get('GNOCCHI_ENDPOINT'),
                 help='Gnocchi endpoint (Env: GNOCCHI_ENDPOINT)')
 
