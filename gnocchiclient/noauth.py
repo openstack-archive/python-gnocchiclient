@@ -62,9 +62,7 @@ class GnocchiOpt(loading.Opt):
 
 
 class GnocchiNoAuthLoader(loading.BaseLoader):
-    @property
-    def plugin_class(self):
-        return GnocchiNoAuthPlugin
+    plugin_class = GnocchiNoAuthPlugin
 
     def get_options(self):
         options = super(GnocchiNoAuthLoader, self).get_options()
