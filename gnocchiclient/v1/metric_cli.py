@@ -47,26 +47,36 @@ class CliMetricShow(show.ShowOne):
         return self.dict2columns(metric)
 
 
-class CliMetricCreate(show.ShowOne):
-
+class CliMetricCreateBase(show.ShowOne):
     def get_parser(self, prog_name):
-        parser = super(CliMetricCreate, self).get_parser(prog_name)
+        parser = super(CliMetricCreateBase, self).get_parser(prog_name)
         parser.add_argument("--archive-policy-name", "-a",
                             dest="archive_policy_name",
                             help=("name of the archive policy"))
         parser.add_argument("--resource-id", "-r",
                             dest="resource_id",
                             help="ID of the resource")
-        parser.add_argument("name", nargs='?',
-                            metavar="METRIC_NAME",
-                            help="Name of the metric")
         return parser
 
     def take_action(self, parsed_args):
         metric = utils.dict_from_parsed_args(parsed_args,
                                              ["archive_policy_name",
-                                              "name",
                                               "resource_id"])
+        return self._take_action(metric, parsed_args)
+
+
+class CliMetricCreate(CliMetricCreateBase):
+
+    def get_parser(self, prog_name):
+        parser = super(CliMetricCreate, self).get_parser(prog_name)
+        parser.add_argument("name", nargs='?',
+                            metavar="METRIC_NAME",
+                            help="Name of the metric")
+        return parser
+
+    def _take_action(self, metric, parsed_args):
+        if parsed_args.name:
+            metric['name'] = parsed_args.name
         metric = self.app.client.metric.create(metric)
         utils.format_archive_policy(metric["archive_policy"])
         utils.format_move_dict_to_root(metric, "archive_policy")

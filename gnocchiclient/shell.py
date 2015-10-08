@@ -24,6 +24,7 @@ from keystoneauth1 import adapter
 from keystoneauth1 import exceptions
 from keystoneauth1 import loading
 
+from gnocchiclient import benchmark
 from gnocchiclient import client
 from gnocchiclient import noauth
 from gnocchiclient.v1 import archive_policy_cli
@@ -61,6 +62,7 @@ class GnocchiCommandManager(commandmanager.CommandManager):
         "measures add": metric_cli.CliMeasuresAdd,
         "measures aggregation": metric_cli.CliMeasuresAggregation,
         "capabilities list": capabilities_cli.CliCapabilitiesList,
+        "benchmark metric create": benchmark.CliBenchmarkMetricCreate,
     }
 
     def load_commands(self, namespace):
