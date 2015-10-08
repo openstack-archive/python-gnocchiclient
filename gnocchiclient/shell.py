@@ -31,11 +31,13 @@ from gnocchiclient.v1 import archive_policy_rule_cli as ap_rule_cli
 from gnocchiclient.v1 import capabilities_cli
 from gnocchiclient.v1 import metric_cli
 from gnocchiclient.v1 import resource_cli
+from gnocchiclient.v1 import status_cli
 from gnocchiclient.version import __version__
 
 
 class GnocchiCommandManager(commandmanager.CommandManager):
     SHELL_COMMANDS = {
+        "status": status_cli.CliStatusShow,
         "resource list": resource_cli.CliResourceList,
         "resource show": resource_cli.CliResourceShow,
         "resource history": resource_cli.CliResourceHistory,
