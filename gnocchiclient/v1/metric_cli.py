@@ -76,15 +76,16 @@ class CliMetricCreate(show.ShowOne):
 class CliMetricDelete(command.Command):
     def get_parser(self, prog_name):
         parser = super(CliMetricDelete, self).get_parser(prog_name)
-        parser.add_argument("metric",
-                            help="ID or name of the metric")
-        parser.add_argument("resource_id", nargs='?',
+        parser.add_argument("metric", nargs='+',
+                            help="IDs or names of the metric")
+        parser.add_argument("--resource-id", "-r",
                             help="ID of the resource")
         return parser
 
     def take_action(self, parsed_args):
-        self.app.client.metric.delete(metric=parsed_args.metric,
-                                      resource_id=parsed_args.resource_id)
+        for metric in parsed_args.metric:
+            self.app.client.metric.delete(metric=metric,
+                                          resource_id=parsed_args.resource_id)
 
 
 class CliMeasuresGet(lister.Lister):
