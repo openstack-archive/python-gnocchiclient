@@ -253,3 +253,27 @@ class CliBenchmarkMeasuresAdd(CliBenchmarkBase,
         )
 
         return self.dict2columns(stats)
+
+
+class CliBenchmarkMeasuresShow(CliBenchmarkBase,
+                               metric_cli.CliMeasuresShow):
+    def get_parser(self, prog_name):
+        parser = super(CliBenchmarkMeasuresShow, self).get_parser(prog_name)
+        parser.add_argument("--count", "-n",
+                            required=True,
+                            type=_positive_non_zero_int,
+                            help="Number of total measures to send")
+        return parser
+
+    def take_action(self, parsed_args):
+        pool = BenchmarkPool(parsed_args.workers)
+        LOG.info("Getting measures")
+        futures = pool.submit_job(parsed_args.count,
+                                  self.app.client.metric.get_measures,
+                                  metric=parsed_args.metric,
+                                  resource_id=parsed_args.resource_id,
+                                  aggregation=parsed_args.aggregation,
+                                  start=parsed_args.start,
+                                  end=parsed_args.end)
+        result, runtime, stats = pool.wait_job("show", futures)
+        return self.dict2columns(stats)
