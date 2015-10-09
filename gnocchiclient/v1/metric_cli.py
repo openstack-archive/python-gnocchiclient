@@ -18,6 +18,14 @@ from cliff import show
 from gnocchiclient import utils
 
 
+class CliMetricWithResourceID(command.Command):
+    def get_parser(self, prog_name):
+        parser = super(CliMetricWithResourceID, self).get_parser(prog_name)
+        parser.add_argument("--resource-id", "-r",
+                            help="ID of the resource")
+        return parser
+
+
 class CliMetricList(lister.Lister):
     COLS = ('id', 'archive_policy/name', 'name', 'resource_id')
 
@@ -29,15 +37,7 @@ class CliMetricList(lister.Lister):
         return utils.list2cols(self.COLS, metrics)
 
 
-class CliMetricShowBase(show.ShowOne):
-    def get_parser(self, prog_name):
-        parser = super(CliMetricShowBase, self).get_parser(prog_name)
-        parser.add_argument("--resource-id", "-r",
-                            help="ID of the resource")
-        return parser
-
-
-class CliMetricShow(CliMetricShowBase):
+class CliMetricShow(CliMetricWithResourceID, show.ShowOne):
     def get_parser(self, prog_name):
         parser = super(CliMetricShow, self).get_parser(prog_name)
         parser.add_argument("metric",
@@ -53,15 +53,12 @@ class CliMetricShow(CliMetricShowBase):
         return self.dict2columns(metric)
 
 
-class CliMetricCreateBase(show.ShowOne):
+class CliMetricCreateBase(show.ShowOne, CliMetricWithResourceID):
     def get_parser(self, prog_name):
         parser = super(CliMetricCreateBase, self).get_parser(prog_name)
         parser.add_argument("--archive-policy-name", "-a",
                             dest="archive_policy_name",
                             help=("name of the archive policy"))
-        parser.add_argument("--resource-id", "-r",
-                            dest="resource_id",
-                            help="ID of the resource")
         return parser
 
     def take_action(self, parsed_args):
@@ -89,13 +86,11 @@ class CliMetricCreate(CliMetricCreateBase):
         return self.dict2columns(metric)
 
 
-class CliMetricDelete(command.Command):
+class CliMetricDelete(CliMetricWithResourceID):
     def get_parser(self, prog_name):
         parser = super(CliMetricDelete, self).get_parser(prog_name)
         parser.add_argument("metric", nargs='+',
                             help="IDs or names of the metric")
-        parser.add_argument("--resource-id", "-r",
-                            help="ID of the resource")
         return parser
 
     def take_action(self, parsed_args):
@@ -104,15 +99,13 @@ class CliMetricDelete(command.Command):
                                           resource_id=parsed_args.resource_id)
 
 
-class CliMeasuresGet(lister.Lister):
+class CliMeasuresGet(CliMetricWithResourceID, lister.Lister):
     COLS = ('timestamp', 'granularity', 'value')
 
     def get_parser(self, prog_name):
         parser = super(CliMeasuresGet, self).get_parser(prog_name)
         parser.add_argument("metric",
                             help="ID or name of the metric")
-        parser.add_argument("resource_id", nargs='?',
-                            help="ID of the resource")
         parser.add_argument("--aggregation",
                             help="aggregation to retrieve")
         parser.add_argument("--start",
@@ -132,7 +125,7 @@ class CliMeasuresGet(lister.Lister):
         return self.COLS, measures
 
 
-class CliMeasuresAdd(command.Command):
+class CliMeasuresAdd(CliMetricWithResourceID):
     def measure(self, measure):
         timestamp, __, value = measure.rpartition("@")
         return {'timestamp': timestamp, 'value': float(value)}
@@ -141,8 +134,6 @@ class CliMeasuresAdd(command.Command):
         parser = super(CliMeasuresAdd, self).get_parser(prog_name)
         parser.add_argument("metric",
                             help="ID or name of the metric")
-        parser.add_argument("resource_id", nargs='?',
-                            help="ID of the resource")
         parser.add_argument("-m", "--measure", action='append',
                             required=True, type=self.measure,
                             help=("timestamp and value of a measure "

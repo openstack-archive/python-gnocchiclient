@@ -174,14 +174,14 @@ class MetricClientTest(base.ClientTestBase):
 
         # MEASURES ADD
         result = self.gnocchi('measures',
-                              params=("add metric-name metric-res "
+                              params=("add metric-name -r metric-res "
                                       "-m '2015-03-06T14:33:57@43.11' "
                                       "--measure '2015-03-06T14:34:12@12'"))
         self.assertEqual("", result)
 
         # MEASURES GET
         result = self.retry_gnocchi(
-            5, 'measures', params=("get metric-name metric-res "
+            5, 'measures', params=("get metric-name -r metric-res "
                                    "--aggregation mean "
                                    "--start 2015-03-06T14:32:00 "
                                    "--end 2015-03-06T14:36:00"))
