@@ -92,7 +92,7 @@ class MetricClientTest(base.ClientTestBase):
 
         # MEASURES GET
         result = self.retry_gnocchi(
-            5, 'measures', params=("get %s "
+            5, 'measures', params=("show %s "
                                    "--aggregation mean "
                                    "--start 2015-03-06T14:32:00 "
                                    "--end 2015-03-06T14:36:00"
@@ -181,7 +181,7 @@ class MetricClientTest(base.ClientTestBase):
 
         # MEASURES GET
         result = self.retry_gnocchi(
-            5, 'measures', params=("get metric-name -r metric-res "
+            5, 'measures', params=("show metric-name -r metric-res "
                                    "--aggregation mean "
                                    "--start 2015-03-06T14:32:00 "
                                    "--end 2015-03-06T14:36:00"))
