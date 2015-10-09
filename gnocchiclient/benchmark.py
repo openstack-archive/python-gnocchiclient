@@ -15,6 +15,7 @@ import argparse
 import datetime
 import functools
 import logging
+import math
 import random
 import time
 import types
@@ -59,12 +60,19 @@ def _positive_non_zero_int(argument_value):
     return value
 
 
+def measure_job(fn, *args, **kwargs):
+    # NOTE(sileht): This is not part of BenchmarkPool
+    # because we cannot pickle BenchmarkPool class
+    sw = timeutils.StopWatch().start()
+    return fn(*args, **kwargs), sw.elapsed()
+
+
 class BenchmarkPool(futurist.ProcessPoolExecutor):
     def submit_job(self, times, fn, *args, **kwargs):
         self.sw = timeutils.StopWatch()
         self.sw.start()
         self.times = times
-        return [self.submit(fn, *args, **kwargs)
+        return [self.submit(self._do_job, fn, *args, **kwargs)
                 for i in six.moves.range(times)]
 
     def map_job(self, fn, iterable, **kwargs):
@@ -73,7 +81,7 @@ class BenchmarkPool(futurist.ProcessPoolExecutor):
         r = []
         self.times = 0
         for item in iterable:
-            r.append(self.submit(fn, item, **kwargs))
+            r.append(self.submit(measure_job, fn, item, **kwargs))
             self.times += 1
         return r
 
@@ -95,11 +103,15 @@ class BenchmarkPool(futurist.ProcessPoolExecutor):
         self.shutdown(wait=True)
         runtime = self.sw.elapsed()
         results = []
+        latencies = []
         for f in futures:
             try:
-                results.append(f.result())
+                result, latency = f.result()
+                results.append(result)
+                latencies.append(latency)
             except Exception as e:
                 LOG.error("Error with %s metric: %s" % (verb, e))
+        latencies = sorted(latencies)
         return results, runtime, {
             'client workers': self._max_workers,
             verb + ' runtime': "%.2f seconds" % runtime,
@@ -115,7 +127,29 @@ class BenchmarkPool(futurist.ProcessPoolExecutor):
                     / float(self.statistics.executed)
                 )
             ),
+            verb + ' latency min': min(latencies),
+            verb + ' latency max': max(latencies),
+            verb + ' latency mean': sum(latencies) / len(latencies),
+            verb + ' latency median': self._percentile(latencies, 0.5),
+            verb + ' latency 95%\'ile': self._percentile(latencies, 0.95),
+            verb + ' latency 99%\'ile': self._percentile(latencies, 0.99),
+            verb + ' latency 99.9%\'ile': self._percentile(latencies, 0.999),
+
         }
+
+    @staticmethod
+    def _percentile(sorted_list, percent):
+        # NOTE(sileht): we don't to want depends on numpy
+        if not sorted_list:
+            return None
+        k = (len(sorted_list)-1) * percent
+        f = math.floor(k)
+        c = math.ceil(k)
+        if f == c:
+            return sorted_list[int(k)]
+        d0 = sorted_list[int(f)] * (c-k)
+        d1 = sorted_list[int(c)] * (k-f)
+        return d0+d1
 
 
 class CliBenchmarkBase(show.ShowOne):
