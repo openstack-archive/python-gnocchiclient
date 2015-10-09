@@ -23,7 +23,7 @@ class ResourceClientTest(base.ClientTestBase):
     def test_resource_scenario(self):
         # CREATE
         result = self.gnocchi(
-            u'resource', params=u"create --type generic -a id:%s" %
+            u'resource', params=u"create %s --type generic" %
             self.RESOURCE_ID)
         resource = self.details_multiple(result)
         resource = self.details_multiple(result)[0]
@@ -84,8 +84,7 @@ class ResourceClientTest(base.ClientTestBase):
 
         # CREATE 2
         result = self.gnocchi(
-            'resource', params=("create -t generic "
-                                "-a id:%s "
+            'resource', params=("create %s -t generic "
                                 "-a project_id:%s"
                                 ) % (self.RESOURCE_ID2, self.PROJECT_ID))
         resource2 = self.details_multiple(result)[0]

@@ -151,7 +151,7 @@ class MetricClientTest(base.ClientTestBase):
         # PREPARE REQUIREMENT
         self.gnocchi("archive-policy", params="create metric-test2 "
                      "--back-window 0 -d granularity:1s,points:86400")
-        self.gnocchi("resource", params="create -a id:metric-res")
+        self.gnocchi("resource", params="create metric-res")
 
         # CREATE
         result = self.gnocchi(

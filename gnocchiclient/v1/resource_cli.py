@@ -123,6 +123,8 @@ class CliResourceCreate(show.ShowOne):
         parser = super(CliResourceCreate, self).get_parser(prog_name)
         parser.add_argument("--type", "-t", dest="resource_type",
                             default="generic", help="Type of resource")
+        parser.add_argument("resource_id",
+                            help="ID of the resource")
         parser.add_argument("-a", "--attribute", action='append',
                             help=("name and value of a attribute "
                                   "separated with a ':'"))
@@ -132,15 +134,16 @@ class CliResourceCreate(show.ShowOne):
                                   "To remove a metric use 'name:-'."))
         return parser
 
-    def _resource_from_args(self, parsed_args):
+    def _resource_from_args(self, parsed_args, update=False):
         resource = {}
+        if not update:
+            resource['id'] = parsed_args.resource_id
         if parsed_args.attribute:
             for attr in parsed_args.attribute:
                 attr, __, value = attr.partition(":")
                 resource[attr] = value
         if parsed_args.metric:
-            rid = getattr(parsed_args, 'resource_id', None)
-            if rid:
+            if update:
                 r = self.app.client.resource.get(parsed_args.resource_type,
                                                  parsed_args.resource_id)
                 default = r['metrics']
@@ -168,14 +171,8 @@ class CliResourceCreate(show.ShowOne):
 
 
 class CliResourceUpdate(CliResourceCreate):
-    def get_parser(self, prog_name):
-        parser = super(CliResourceUpdate, self).get_parser(prog_name)
-        parser.add_argument("resource_id",
-                            help="ID of the resource")
-        return parser
-
     def take_action(self, parsed_args):
-        resource = self._resource_from_args(parsed_args)
+        resource = self._resource_from_args(parsed_args, update=True)
         res = self.app.client.resource.update(
             resource_type=parsed_args.resource_type,
             resource_id=parsed_args.resource_id,
