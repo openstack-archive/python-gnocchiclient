@@ -99,11 +99,11 @@ class CliMetricDelete(CliMetricWithResourceID):
                                           resource_id=parsed_args.resource_id)
 
 
-class CliMeasuresGet(CliMetricWithResourceID, lister.Lister):
+class CliMeasuresShow(CliMetricWithResourceID, lister.Lister):
     COLS = ('timestamp', 'granularity', 'value')
 
     def get_parser(self, prog_name):
-        parser = super(CliMeasuresGet, self).get_parser(prog_name)
+        parser = super(CliMeasuresShow, self).get_parser(prog_name)
         parser.add_argument("metric",
                             help="ID or name of the metric")
         parser.add_argument("--aggregation",
