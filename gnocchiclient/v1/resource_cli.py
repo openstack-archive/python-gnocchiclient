@@ -42,10 +42,8 @@ class CliResourceList(lister.Lister):
         parser.add_argument("--sort", action="append", metavar="<SORT>",
                             help=("Sort of resource attribute ",
                                   "(example: user_id:desc-nullslast"))
-        parser.add_argument("resource_type",
-                            default="generic",
-                            nargs='?',
-                            help="Type of resource")
+        parser.add_argument("--type", "-t", dest="resource_type",
+                            default="generic", help="Type of resource")
         return parser
 
     def take_action(self, parsed_args):
@@ -106,10 +104,8 @@ def normalize_metrics(res):
 class CliResourceShow(show.ShowOne):
     def get_parser(self, prog_name):
         parser = super(CliResourceShow, self).get_parser(prog_name)
-        parser.add_argument("resource_type",
-                            default="generic",
-                            nargs='?',
-                            help="Type of resource")
+        parser.add_argument("--type", "-t", dest="resource_type",
+                            default="generic", help="Type of resource")
         parser.add_argument("resource_id",
                             help="ID of a resource")
         return parser
@@ -125,10 +121,8 @@ class CliResourceShow(show.ShowOne):
 class CliResourceCreate(show.ShowOne):
     def get_parser(self, prog_name):
         parser = super(CliResourceCreate, self).get_parser(prog_name)
-        parser.add_argument("resource_type",
-                            default="generic",
-                            nargs='?',
-                            help="Type of resource")
+        parser.add_argument("--type", "-t", dest="resource_type",
+                            default="generic", help="Type of resource")
         parser.add_argument("-a", "--attribute", action='append',
                             help=("name and value of a attribute "
                                   "separated with a ':'"))

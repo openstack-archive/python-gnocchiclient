@@ -23,7 +23,8 @@ class ResourceClientTest(base.ClientTestBase):
     def test_resource_scenario(self):
         # CREATE
         result = self.gnocchi(
-            u'resource', params=u"create generic -a id:%s" % self.RESOURCE_ID)
+            u'resource', params=u"create --type generic -a id:%s" %
+            self.RESOURCE_ID)
         resource = self.details_multiple(result)
         resource = self.details_multiple(result)[0]
         self.assertEqual(self.RESOURCE_ID, resource["id"])
@@ -32,7 +33,7 @@ class ResourceClientTest(base.ClientTestBase):
 
         # UPDATE
         result = self.gnocchi(
-            'resource', params=("update generic %s -a project_id:%s "
+            'resource', params=("update -t generic %s -a project_id:%s "
                                 "-m temperature:high" %
                                 (self.RESOURCE_ID, self.PROJECT_ID)))
         resource_updated = self.details_multiple(result)[0]
@@ -44,7 +45,7 @@ class ResourceClientTest(base.ClientTestBase):
 
         # GET
         result = self.gnocchi(
-            'resource', params="show generic %s" % self.RESOURCE_ID)
+            'resource', params="show -t generic %s" % self.RESOURCE_ID)
         resource_got = self.details_multiple(result)[0]
         self.assertEqual(self.RESOURCE_ID, resource_got["id"])
         self.assertEqual(self.PROJECT_ID, resource_got["project_id"])
@@ -53,7 +54,7 @@ class ResourceClientTest(base.ClientTestBase):
 
         # HISTORY
         result = self.gnocchi(
-            'resource', params="history generic %s" % self.RESOURCE_ID)
+            'resource', params="history --type generic %s" % self.RESOURCE_ID)
         resource_history = self.parser.listing(result)
         self.assertEqual(2, len(resource_history))
         self.assertEqual(self.RESOURCE_ID, resource_history[0]["id"])
@@ -62,7 +63,7 @@ class ResourceClientTest(base.ClientTestBase):
         self.assertEqual(self.PROJECT_ID, resource_history[1]["project_id"])
 
         # LIST
-        result = self.gnocchi('resource', params="list generic")
+        result = self.gnocchi('resource', params="list -t generic")
         self.assertIn(self.RESOURCE_ID,
                       [r['id'] for r in self.parser.listing(result)])
         resource_list = [r for r in self.parser.listing(result)
@@ -73,7 +74,7 @@ class ResourceClientTest(base.ClientTestBase):
 
         # Search
         result = self.gnocchi('resource',
-                              params=("search generic "
+                              params=("search --type generic "
                                       "--query 'project_id=%s'"
                                       ) % self.PROJECT_ID)
         resource_list = self.parser.listing(result)[0]
@@ -83,7 +84,7 @@ class ResourceClientTest(base.ClientTestBase):
 
         # CREATE 2
         result = self.gnocchi(
-            'resource', params=("create generic "
+            'resource', params=("create -t generic "
                                 "-a id:%s "
                                 "-a project_id:%s"
                                 ) % (self.RESOURCE_ID2, self.PROJECT_ID))
@@ -94,7 +95,8 @@ class ResourceClientTest(base.ClientTestBase):
 
         # Search + limit + short
         result = self.gnocchi('resource',
-                              params=("search generic "
+                              params=("search "
+                                      "-t generic "
                                       "--query 'project_id=%s' "
                                       "--sort started_at:asc "
                                       "--marker %s "
@@ -115,7 +117,8 @@ class ResourceClientTest(base.ClientTestBase):
 
         # GET FAIL
         result = self.gnocchi('resource',
-                              params="show generic %s" % self.RESOURCE_ID,
+                              params="show --type generic %s" %
+                              self.RESOURCE_ID,
                               fail_ok=True, merge_stderr=True)
         self.assertFirstLineStartsWith(result.split('\n'),
                                        "Not Found (HTTP 404)")
@@ -128,7 +131,7 @@ class ResourceClientTest(base.ClientTestBase):
                                        "Not Found (HTTP 404)")
 
         # LIST EMPTY
-        result = self.gnocchi('resource', params="list generic")
+        result = self.gnocchi('resource', params="list -t generic")
         resource_ids = [r['id'] for r in self.parser.listing(result)]
         self.assertNotIn(self.RESOURCE_ID, resource_ids)
         self.assertNotIn(self.RESOURCE_ID2, resource_ids)
