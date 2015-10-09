@@ -81,3 +81,21 @@ class BenchmarkMetricTest(base.ClientTestBase):
         result = self.details_multiple(result)[0]
         self.assertEqual(2, int(result['push executed']))
         self.assertLessEqual(int(result['push failures']), 2)
+
+    def test_benchmark_measures_show(self):
+        apname = str(uuid.uuid4())
+        # PREPARE AN ACHIVE POLICY
+        self.gnocchi("archive-policy", params="create %s "
+                     "--back-window 0 -d granularity:1s,points:86400" % apname)
+
+        result = self.gnocchi(
+            u'metric', params=u"create -a %s" % apname)
+        metric = self.details_multiple(result)[0]
+
+        result = self.gnocchi(
+            u'benchmark',
+            params=u"measures show -n 2 %s"
+            % metric['id'])
+        result = self.details_multiple(result)[0]
+        self.assertEqual(2, int(result['show executed']))
+        self.assertLessEqual(int(result['show failures']), 2)
