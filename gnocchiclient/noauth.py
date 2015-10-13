@@ -24,17 +24,19 @@ class GnocchiNoAuthPlugin(plugin.BaseAuthPlugin):
     doing authentication, it just fill the 'x-user-id'
     and 'x-project-id' headers with the user provided one.
     """
-    def __init__(self, user_id, project_id, endpoint):
+    def __init__(self, user_id, project_id, roles, endpoint):
         self._user_id = user_id
         self._project_id = project_id
         self._endpoint = endpoint
+        self._roles = roles
 
     def get_token(self, session, **kwargs):
         return '<no-token-needed>'
 
     def get_headers(self, session, **kwargs):
         return {'x-user-id': self._user_id,
-                'x-project-id': self._project_id}
+                'x-project-id': self._project_id,
+                'x-roles': self._roles}
 
     def get_user_id(self, session, **kwargs):
         return self._user_id
@@ -69,6 +71,7 @@ class GnocchiNoAuthLoader(loading.BaseLoader):
         options.extend([
             GnocchiOpt('user-id', help='User ID', required=True),
             GnocchiOpt('project-id', help='Project ID', required=True),
+            GnocchiOpt('roles', help='Roles', default="admin"),
             GnocchiOpt('gnocchi-endpoint', help='Gnocchi endpoint',
                        dest="endpoint", required=True),
         ])
