@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 set -e -x
 
 wait_for_line () {
@@ -8,10 +8,9 @@ wait_for_line () {
     done < "$2"
     # Read the fifo for ever otherwise process would block
     cat "$2" &
-#    cat "$2" >/dev/null &
 }
 
-clean_exit (){
+clean_exit () {
     local error_code="$?"
     kill $(jobs -p)
     rm -rf "$@"
@@ -36,8 +35,6 @@ echo '{"default": ""}' > ${GNOCCHI_DATA}/policy.json
 cat > ${GNOCCHI_DATA}/gnocchi.conf <<EOF
 [oslo_policy]
 policy_file = ${GNOCCHI_DATA}/policy.json
-[api]
-middlewares = 
 [storage]
 metric_processing_delay = 1
 file_basepath = ${GNOCCHI_DATA}
@@ -46,7 +43,13 @@ coordination_url = file://${GNOCCHI_DATA}
 [indexer]
 url = mysql+pymysql://root@localhost/test?unix_socket=${MYSQL_DATA}/mysql.socket&charset=utf8
 EOF
-gnocchi-dbsync --config-file ${GNOCCHI_DATA}/gnocchi.conf 
+cat ${GNOCCHI_DATA}/api-paste.ini <<EOF
+[pipeline:main]
+pipeline = gnocchi
+[app:gnocchi]
+paste.app_factory = gnocchi.rest.app:app_factory
+EOF
+gnocchi-dbsync --config-file ${GNOCCHI_DATA}/gnocchi.conf
 gnocchi-metricd --config-file ${GNOCCHI_DATA}/gnocchi.conf &>/dev/null &
 gnocchi-api --config-file ${GNOCCHI_DATA}/gnocchi.conf &> ${GNOCCHI_DATA}/out &
 # Wait for Gnocchi to start
