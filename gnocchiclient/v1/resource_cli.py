@@ -10,9 +10,6 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-
-import uuid
-
 from cliff import command
 from cliff import lister
 from cliff import show
@@ -126,12 +123,18 @@ class CliResourceCreate(show.ShowOne):
         parser.add_argument("resource_id",
                             help="ID of the resource")
         parser.add_argument("-a", "--attribute", action='append',
+                            default=[],
                             help=("name and value of a attribute "
                                   "separated with a ':'"))
-        parser.add_argument("-m", "--metric", action='append',
-                            help=("To add a metric use 'name:id' or "
-                                  "'name:archive_policy_name'. "
-                                  "To remove a metric use 'name:-'."))
+        parser.add_argument("-m", "--add-metric", action='append',
+                            default=[],
+                            help="name:id of a metric to add"),
+        parser.add_argument(
+            "-n", "--create-metric", action='append',
+            help="name:archive_policy_name of a metric to create"),
+        parser.add_argument("-d", "--delete-metric", action='append',
+                            default=[],
+                            help="Name of a metric to delete"),
         return parser
 
     def _resource_from_args(self, parsed_args, update=False):
@@ -142,7 +145,9 @@ class CliResourceCreate(show.ShowOne):
             for attr in parsed_args.attribute:
                 attr, __, value = attr.partition(":")
                 resource[attr] = value
-        if parsed_args.metric:
+        if (parsed_args.add_metric
+           or parsed_args.create_metric
+           or parsed_args.delete_metric):
             if update:
                 r = self.app.client.resource.get(parsed_args.resource_type,
                                                  parsed_args.resource_id)
@@ -150,16 +155,18 @@ class CliResourceCreate(show.ShowOne):
             else:
                 default = {}
             resource['metrics'] = default
-            for metric in parsed_args.metric:
-                name, __, value = metric.partition(":")
-                if value == '-' or not value:
-                    resource['metrics'].pop(name, None)
+            for metric in parsed_args.add_metric:
+                name, _, value = metric.partition(":")
+                resource['metrics'][name] = value
+            for metric in parsed_args.delete_metric:
+                resource['metrics'].pop(name, None)
+            for metric in parsed_args.create_metric:
+                name, _, value = metric.partition(":")
+                if value is "":
+                    resource['metrics'][name] = {}
                 else:
-                    try:
-                        value = uuid.UUID(value)
-                    except ValueError:
-                        value = {'archive_policy_name': value}
-                    resource['metrics'][name] = value
+                    resource['metrics'][name] = {'archive_policy_name': value}
+
         return resource
 
     def take_action(self, parsed_args):
