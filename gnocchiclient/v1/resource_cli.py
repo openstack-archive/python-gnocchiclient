@@ -34,14 +34,14 @@ class CliResourceList(lister.Lister):
             parser.add_argument("--history", action='store_true',
                                 help="Show history of the resources"),
         parser.add_argument("--limit", type=int, metavar="<LIMIT>",
-                            help=("Number of resources to return "
-                                  "(Default is server default)"))
+                            help="Number of resources to return "
+                            "(Default is server default)")
         parser.add_argument("--marker", metavar="<MARKER>",
-                            help=("Last item of the previous listing. "
-                                  "Return the next results after this value"))
+                            help="Last item of the previous listing. "
+                            "Return the next results after this value")
         parser.add_argument("--sort", action="append", metavar="<SORT>",
-                            help=("Sort of resource attribute ",
-                                  "(example: user_id:desc-nullslast"))
+                            help="Sort of resource attribute "
+                            "(example: user_id:desc-nullslast")
         parser.add_argument("--type", "-t", dest="resource_type",
                             default="generic", help="Type of resource")
         return parser
