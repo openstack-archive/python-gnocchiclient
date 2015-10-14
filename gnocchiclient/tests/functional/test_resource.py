@@ -21,6 +21,12 @@ class ResourceClientTest(base.ClientTestBase):
     PROJECT_ID = str(uuid.uuid4())
 
     def test_resource_scenario(self):
+        apname = str(uuid.uuid4())
+        # Create an archive policy
+        self.gnocchi(
+            u'archive-policy', params=u"create %s"
+            u" -d granularity:1s,points:86400" % apname)
+
         # CREATE
         result = self.gnocchi(
             u'resource', params=u"create %s --type generic" %
@@ -34,8 +40,8 @@ class ResourceClientTest(base.ClientTestBase):
         # UPDATE
         result = self.gnocchi(
             'resource', params=("update -t generic %s -a project_id:%s "
-                                "-n temperature:high" %
-                                (self.RESOURCE_ID, self.PROJECT_ID)))
+                                "-n temperature:%s" %
+                                (self.RESOURCE_ID, self.PROJECT_ID, apname)))
         resource_updated = self.details_multiple(result)[0]
         self.assertEqual(self.RESOURCE_ID, resource_updated["id"])
         self.assertEqual(self.PROJECT_ID, resource_updated["project_id"])
