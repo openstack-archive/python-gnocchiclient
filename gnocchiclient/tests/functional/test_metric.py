@@ -97,7 +97,7 @@ class MetricClientTest(base.ClientTestBase):
             5, 'measures', params=("show %s "
                                    "--aggregation mean "
                                    "--start 2015-03-06T14:32:00 "
-                                   "--end 2015-03-06T14:36:00"
+                                   "--stop 2015-03-06T14:36:00"
                                    ) % metric["id"])
         measures = self.parser.listing(result)
         self.assertEqual([{'granularity': '1.0',
@@ -113,7 +113,7 @@ class MetricClientTest(base.ClientTestBase):
                                 "--metric %s "
                                 "--aggregation mean "
                                 "--start 2015-03-06T14:32:00 "
-                                "--end 2015-03-06T14:36:00"
+                                "--stop 2015-03-06T14:36:00"
                                 ) % metric["id"])
         measures = self.parser.listing(result)
         self.assertEqual([{'granularity': '1.0',
@@ -188,7 +188,7 @@ class MetricClientTest(base.ClientTestBase):
             5, 'measures', params=("show metric-name -r metric-res "
                                    "--aggregation mean "
                                    "--start 2015-03-06T14:32:00 "
-                                   "--end 2015-03-06T14:36:00"))
+                                   "--stop 2015-03-06T14:36:00"))
 
         measures = self.parser.listing(result)
         self.assertEqual([{'granularity': '1.0',
@@ -206,7 +206,7 @@ class MetricClientTest(base.ClientTestBase):
                                 "--aggregation mean "
                                 "--needed-overlap 0 "
                                 "--start 2015-03-06T14:32:00 "
-                                "--end 2015-03-06T14:36:00"))
+                                "--stop 2015-03-06T14:36:00"))
         measures = self.parser.listing(result)
         self.assertEqual([{'granularity': '1.0',
                            'timestamp': '2015-03-06T14:33:57+00:00',

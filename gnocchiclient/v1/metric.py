@@ -122,16 +122,16 @@ class MetricManager(base.Manager):
             url, headers={'Content-Type': "application/json"},
             data=jsonutils.dumps(measures))
 
-    def get_measures(self, metric, start=None, end=None, aggregation=None,
+    def get_measures(self, metric, start=None, stop=None, aggregation=None,
                      resource_id=None, **kwargs):
         """Get measurements of a metric
 
         :param metric: ID or Name of the metric
         :type metric: str
-        :param start: begin of the period
+        :param start: beginning of the period
         :type start: timestamp
-        :param end: end of the period
-        :type end: timestamp
+        :param stop: end of the period
+        :type stop: timestamp
         :param aggregation: aggregation to retrieve
         :type aggregation: str
         :param resource_id: ID of the resource (required
@@ -144,10 +144,10 @@ class MetricManager(base.Manager):
 
         if isinstance(start, datetime.datetime):
             start = start.isoformat()
-        if isinstance(end, datetime.datetime):
-            end = end.isoformat()
+        if isinstance(stop, datetime.datetime):
+            stop = stop.isoformat()
 
-        params = dict(start=start, end=end, aggregation=aggregation)
+        params = dict(start=start, stop=stop, aggregation=aggregation)
         params.update(kwargs)
         if resource_id is None:
             self._ensure_metric_is_uuid(metric)
@@ -157,7 +157,7 @@ class MetricManager(base.Manager):
         return self._get(url, params=params).json()
 
     def aggregation(self, metrics, query=None,
-                    start=None, end=None, aggregation=None,
+                    start=None, stop=None, aggregation=None,
                     needed_overlap=None):
         """Get measurements of a aggregated metrics
 
@@ -165,10 +165,10 @@ class MetricManager(base.Manager):
         :type metric: list or str
         :param query: The query dictionary
         :type query: dict
-        :param start: begin of the period
+        :param start: beginning of the period
         :type start: timestamp
-        :param end: end of the period
-        :type end: timestamp
+        :param stop: end of the period
+        :type stop: timestamp
         :param aggregation: aggregation to retrieve
         :type aggregation: str
 
@@ -179,10 +179,10 @@ class MetricManager(base.Manager):
 
         if isinstance(start, datetime.datetime):
             start = start.isoformat()
-        if isinstance(end, datetime.datetime):
-            end = end.isoformat()
+        if isinstance(stop, datetime.datetime):
+            stop = stop.isoformat()
 
-        params = dict(start=start, end=end, aggregation=aggregation,
+        params = dict(start=start, stop=stop, aggregation=aggregation,
                       needed_overlap=needed_overlap)
         if query is None:
             for metric in metrics:
