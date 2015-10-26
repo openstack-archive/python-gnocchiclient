@@ -27,6 +27,8 @@ class CliMetricWithResourceID(command.Command):
 
 
 class CliMetricList(lister.Lister):
+    """List metrics"""
+
     COLS = ('id', 'archive_policy/name', 'name', 'resource_id')
 
     def take_action(self, parsed_args):
@@ -38,6 +40,8 @@ class CliMetricList(lister.Lister):
 
 
 class CliMetricShow(CliMetricWithResourceID, show.ShowOne):
+    """Show an metric"""
+
     def get_parser(self, prog_name):
         parser = super(CliMetricShow, self).get_parser(prog_name)
         parser.add_argument("metric",
@@ -69,6 +73,7 @@ class CliMetricCreateBase(show.ShowOne, CliMetricWithResourceID):
 
 
 class CliMetricCreate(CliMetricCreateBase):
+    """Create an metric"""
 
     def get_parser(self, prog_name):
         parser = super(CliMetricCreate, self).get_parser(prog_name)
@@ -87,6 +92,8 @@ class CliMetricCreate(CliMetricCreateBase):
 
 
 class CliMetricDelete(CliMetricWithResourceID):
+    """Delete an metric"""
+
     def get_parser(self, prog_name):
         parser = super(CliMetricDelete, self).get_parser(prog_name)
         parser.add_argument("metric", nargs='+',
@@ -100,6 +107,8 @@ class CliMetricDelete(CliMetricWithResourceID):
 
 
 class CliMeasuresShow(CliMetricWithResourceID, lister.Lister):
+    """Get measurements of a metric"""
+
     COLS = ('timestamp', 'granularity', 'value')
 
     def get_parser(self, prog_name):
@@ -133,6 +142,8 @@ class CliMeasuresAddBase(CliMetricWithResourceID):
 
 
 class CliMeasuresAdd(CliMeasuresAddBase):
+    """Add measurements to a metric"""
+
     def measure(self, measure):
         timestamp, __, value = measure.rpartition("@")
         return {'timestamp': timestamp, 'value': float(value)}
@@ -154,6 +165,8 @@ class CliMeasuresAdd(CliMeasuresAddBase):
 
 
 class CliMeasuresAggregation(lister.Lister):
+    """Get measurements of aggregated metrics"""
+
     COLS = ('timestamp', 'granularity', 'value')
 
     def get_parser(self, prog_name):

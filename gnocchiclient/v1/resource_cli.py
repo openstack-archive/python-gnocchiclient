@@ -21,6 +21,8 @@ from gnocchiclient import utils
 
 
 class CliResourceList(lister.Lister):
+    """List resources"""
+
     COLS = ('id', 'type',
             'project_id', 'user_id',
             'started_at', 'ended_at',
@@ -66,6 +68,8 @@ class CliResourceList(lister.Lister):
 
 
 class CliResourceHistory(CliResourceList):
+    """Show the history of a resource"""
+
     def get_parser(self, prog_name):
         parser = super(CliResourceHistory, self).get_parser(prog_name,
                                                             history=False)
@@ -82,6 +86,8 @@ class CliResourceHistory(CliResourceList):
 
 
 class CliResourceSearch(CliResourceList):
+    """Search resources with specified query rules"""
+
     def get_parser(self, prog_name):
         parser = super(CliResourceSearch, self).get_parser(prog_name)
         parser.add_argument("--query", help="Query"),
@@ -102,6 +108,8 @@ def normalize_metrics(res):
 
 
 class CliResourceShow(show.ShowOne):
+    """Show a resource"""
+
     def get_parser(self, prog_name):
         parser = super(CliResourceShow, self).get_parser(prog_name)
         parser.add_argument("--type", "-t", dest="resource_type",
@@ -119,6 +127,8 @@ class CliResourceShow(show.ShowOne):
 
 
 class CliResourceCreate(show.ShowOne):
+    """Create a resource"""
+
     def get_parser(self, prog_name):
         parser = super(CliResourceCreate, self).get_parser(prog_name)
         parser.add_argument("--type", "-t", dest="resource_type",
@@ -171,6 +181,8 @@ class CliResourceCreate(show.ShowOne):
 
 
 class CliResourceUpdate(CliResourceCreate):
+    """Update a resource"""
+
     def take_action(self, parsed_args):
         resource = self._resource_from_args(parsed_args, update=True)
         res = self.app.client.resource.update(
@@ -182,6 +194,8 @@ class CliResourceUpdate(CliResourceCreate):
 
 
 class CliResourceDelete(command.Command):
+    """Delete a resource"""
+
     def get_parser(self, prog_name):
         parser = super(CliResourceDelete, self).get_parser(prog_name)
         parser.add_argument("resource_id",
