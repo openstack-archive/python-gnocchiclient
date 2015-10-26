@@ -164,6 +164,8 @@ class CliBenchmarkBase(show.ShowOne):
 
 class CliBenchmarkMetricShow(CliBenchmarkBase,
                              metric_cli.CliMetricWithResourceID):
+    """Do benchmark testing of metric show"""
+
     def get_parser(self, prog_name):
         parser = super(CliBenchmarkMetricShow, self).get_parser(prog_name)
         parser.add_argument("metric", nargs='+',
@@ -186,6 +188,8 @@ class CliBenchmarkMetricShow(CliBenchmarkBase,
 
 class CliBenchmarkMetricCreate(CliBenchmarkBase,
                                metric_cli.CliMetricCreateBase):
+    """Do benchmark testing of metric creation"""
+
     def get_parser(self, prog_name):
         parser = super(CliBenchmarkMetricCreate, self).get_parser(prog_name)
         parser.add_argument("--count", "-n",
@@ -219,6 +223,8 @@ class CliBenchmarkMetricCreate(CliBenchmarkBase,
 
 class CliBenchmarkMeasuresAdd(CliBenchmarkBase,
                               metric_cli.CliMeasuresAddBase):
+    """Do benchmark testing of adding measurements"""
+
     def get_parser(self, prog_name):
         parser = super(CliBenchmarkMeasuresAdd, self).get_parser(prog_name)
         parser.add_argument("--count", "-n",
@@ -291,6 +297,8 @@ class CliBenchmarkMeasuresAdd(CliBenchmarkBase,
 
 class CliBenchmarkMeasuresShow(CliBenchmarkBase,
                                metric_cli.CliMeasuresShow):
+    """Do benchmark testing of measurements show"""
+
     def get_parser(self, prog_name):
         parser = super(CliBenchmarkMeasuresShow, self).get_parser(prog_name)
         parser.add_argument("--count", "-n",

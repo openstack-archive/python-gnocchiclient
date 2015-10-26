@@ -15,6 +15,8 @@ from cliff import show
 
 
 class CliStatusShow(show.ShowOne):
+    """Show the status of measurements processing"""
+
     def take_action(self, parsed_args):
         status = self.app.client.status.get()
 

@@ -15,6 +15,7 @@ from cliff import show
 
 
 class CliCapabilitiesList(show.ShowOne):
+    """List capabilities"""
 
     def take_action(self, parsed_args):
         caps = self.app.client.capabilities.list()
