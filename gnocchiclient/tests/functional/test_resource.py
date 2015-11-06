@@ -20,6 +20,11 @@ class ResourceClientTest(base.ClientTestBase):
     RESOURCE_ID2 = str(uuid.uuid4())
     PROJECT_ID = str(uuid.uuid4())
 
+    def test_help(self):
+        self.gnocchi("help", params="resource list")
+        self.gnocchi("help", params="resource history")
+        self.gnocchi("help", params="resource search")
+
     def test_resource_scenario(self):
         # CREATE
         result = self.gnocchi(
