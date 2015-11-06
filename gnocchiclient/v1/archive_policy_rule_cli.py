@@ -19,6 +19,8 @@ from gnocchiclient import utils
 
 
 class CliArchivePolicyRuleList(lister.Lister):
+    """List archive policy rules"""
+
     COLS = ('name', 'archive_policy_name', 'metric_pattern')
 
     def take_action(self, parsed_args):
@@ -27,6 +29,8 @@ class CliArchivePolicyRuleList(lister.Lister):
 
 
 class CliArchivePolicyRuleShow(show.ShowOne):
+    """Show an archive policy rule"""
+
     def get_parser(self, prog_name):
         parser = super(CliArchivePolicyRuleShow, self).get_parser(prog_name)
         parser.add_argument("name",
@@ -40,6 +44,8 @@ class CliArchivePolicyRuleShow(show.ShowOne):
 
 
 class CliArchivePolicyRuleCreate(show.ShowOne):
+    """Create an archive policy rule"""
+
     def get_parser(self, prog_name):
         parser = super(CliArchivePolicyRuleCreate, self).get_parser(prog_name)
         parser.add_argument("name",
@@ -61,6 +67,8 @@ class CliArchivePolicyRuleCreate(show.ShowOne):
 
 
 class CliArchivePolicyRuleDelete(command.Command):
+    """Delete an archive policy rule"""
+
     def get_parser(self, prog_name):
         parser = super(CliArchivePolicyRuleDelete, self).get_parser(prog_name)
         parser.add_argument("name",
