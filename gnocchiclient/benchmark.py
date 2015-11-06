@@ -316,6 +316,6 @@ class CliBenchmarkMeasuresShow(CliBenchmarkBase,
                                   resource_id=parsed_args.resource_id,
                                   aggregation=parsed_args.aggregation,
                                   start=parsed_args.start,
-                                  end=parsed_args.end)
+                                  stop=parsed_args.stop)
         result, runtime, stats = pool.wait_job("show", futures)
         return self.dict2columns(stats)

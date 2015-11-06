@@ -118,8 +118,8 @@ class CliMeasuresShow(CliMetricWithResourceID, lister.Lister):
         parser.add_argument("--aggregation",
                             help="aggregation to retrieve")
         parser.add_argument("--start",
-                            help="start of the period")
-        parser.add_argument("--end",
+                            help="beginning of the period")
+        parser.add_argument("--stop",
                             help="end of the period")
         return parser
 
@@ -129,7 +129,7 @@ class CliMeasuresShow(CliMetricWithResourceID, lister.Lister):
             resource_id=parsed_args.resource_id,
             aggregation=parsed_args.aggregation,
             start=parsed_args.start,
-            end=parsed_args.end,
+            stop=parsed_args.stop,
         )
         return self.COLS, measures
 
@@ -176,8 +176,8 @@ class CliMeasuresAggregation(lister.Lister):
         parser.add_argument("--aggregation",
                             help="aggregation to retrieve")
         parser.add_argument("--start",
-                            help="start of the period")
-        parser.add_argument("--end",
+                            help="beginning of the period")
+        parser.add_argument("--stop",
                             help="end of the period")
         parser.add_argument("--needed-overlap", type=float,
                             help=("percent of datapoints in each "
@@ -198,7 +198,7 @@ class CliMeasuresAggregation(lister.Lister):
             query=query,
             aggregation=parsed_args.aggregation,
             start=parsed_args.start,
-            end=parsed_args.end,
+            stop=parsed_args.stop,
             needed_overlap=parsed_args.needed_overlap,
         )
         return self.COLS, measures
