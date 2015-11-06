@@ -56,7 +56,4 @@ gnocchi-api --config-file ${GNOCCHI_DATA}/gnocchi.conf &> ${GNOCCHI_DATA}/out &
 wait_for_line "Running on http://0.0.0.0:8041/" ${GNOCCHI_DATA}/out
 export GNOCCHI_ENDPOINT=http://localhost:8041/
 
-create_archive_policy() { curl -X POST -H "X-USER-ID: $(uuidgen)" -H "X-PROJECT-ID: $(uuidgen)" -H "Content-Type: application/json" -d "$1" ${GNOCCHI_ENDPOINT}v1/archive_policy ; }
-create_archive_policy '{"name":"high","definition":[{"granularity": "1s","points": 86400},{"granularity": "1m","points": 43200},{"granularity": "1h","points": 8760}]}'
-
 $*

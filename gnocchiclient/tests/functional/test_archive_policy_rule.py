@@ -9,17 +9,24 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import uuid
 
 from gnocchiclient.tests.functional import base
 
 
 class ArchivePolicyRuleClientTest(base.ClientTestBase):
     def test_archive_policy_rule_scenario(self):
+        apname = str(uuid.uuid4())
+        # Create an archive policy
+        self.gnocchi(
+            u'archive-policy', params=u"create %s"
+            u" -d granularity:1s,points:86400" % apname)
+
         # CREATE
         result = self.gnocchi(
             u'archive-policy-rule', params=u"create test"
-            u" --archive-policy high"
-            u" --metric-pattern 'disk.io.*'")
+            u" --archive-policy %s"
+            u" --metric-pattern 'disk.io.*'" % apname)
         policy_rule = self.details_multiple(result)[0]
         self.assertEqual('test', policy_rule["name"])
 
