@@ -51,6 +51,7 @@ class MetricManager(base.Manager):
             self._ensure_metric_is_uuid(metric)
             url = self.metric_url + metric
         else:
+            resource_id = utils.encode_resource_id(resource_id)
             url = (self.resource_url % resource_id) + metric
         return self._get(url).json()
 
@@ -73,6 +74,7 @@ class MetricManager(base.Manager):
                 return self.get(metric["id"])
             return metric
 
+        encoded_resource_id = utils.encode_resource_id(resource_id)
         metric_name = metric.get('name')
 
         if metric_name is None:
@@ -81,7 +83,7 @@ class MetricManager(base.Manager):
         del metric['resource_id']
         metric = {metric_name: metric}
         metric = self._post(
-            self.resource_url % resource_id,
+            self.resource_url % encoded_resource_id,
             headers={'Content-Type': "application/json"},
             data=jsonutils.dumps(metric))
         return self.get(metric_name, resource_id)
@@ -99,6 +101,7 @@ class MetricManager(base.Manager):
             self._ensure_metric_is_uuid(metric)
             url = self.metric_url + metric
         else:
+            resource_id = utils.encode_resource_id(resource_id)
             url = self.resource_url % resource_id + metric
         self._delete(url)
 
@@ -117,6 +120,7 @@ class MetricManager(base.Manager):
             self._ensure_metric_is_uuid(metric)
             url = self.metric_url + metric + "/measures"
         else:
+            resource_id = utils.encode_resource_id(resource_id)
             url = self.resource_url % resource_id + metric + "/measures"
         return self._post(
             url, headers={'Content-Type': "application/json"},
@@ -153,6 +157,7 @@ class MetricManager(base.Manager):
             self._ensure_metric_is_uuid(metric)
             url = self.metric_url + metric + "/measures"
         else:
+            resource_id = utils.encode_resource_id(resource_id)
             url = self.resource_url % resource_id + metric + "/measures"
         return self._get(url, params=params).json()
 

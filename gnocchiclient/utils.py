@@ -14,6 +14,7 @@
 
 
 import pyparsing as pp
+from six.moves.urllib import parse as urlparse
 
 uninary_operators = ("not", )
 binary_operator = (u">=", u"<=", u"!=", u">", u"<", u"=", u"==", u"eq", u"ne",
@@ -88,6 +89,10 @@ def search_query_builder(query):
 def list2cols(cols, objs):
     return cols, [tuple([o[k] for k in cols])
                   for o in objs]
+
+
+def encode_resource_id(resource_id):
+    return urlparse.quote(resource_id, safe="")
 
 
 def format_string_list(objs, field):
