@@ -49,7 +49,7 @@ pipeline = gnocchi
 [app:gnocchi]
 paste.app_factory = gnocchi.rest.app:app_factory
 EOF
-gnocchi-dbsync --config-file ${GNOCCHI_DATA}/gnocchi.conf
+gnocchi-upgrade --config-file ${GNOCCHI_DATA}/gnocchi.conf
 gnocchi-metricd --config-file ${GNOCCHI_DATA}/gnocchi.conf &>/dev/null &
 gnocchi-api --config-file ${GNOCCHI_DATA}/gnocchi.conf &> ${GNOCCHI_DATA}/out &
 # Wait for Gnocchi to start
