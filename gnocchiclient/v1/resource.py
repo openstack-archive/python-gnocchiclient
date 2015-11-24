@@ -31,7 +31,7 @@ def _get_pagination_options(details=False, history=False,
     for sort in sorts or []:
         options.append("sort=%s" % urllib_parse.quote(sort))
     if options:
-        return "?%s" % "&".join(options)
+        return "%s" % "&".join(options)
     else:
         return ""
 
@@ -58,7 +58,8 @@ class ResourceManager(base.Manager):
         :type sorts: list of str
         """
         qs = _get_pagination_options(details, history, limit, marker, sorts)
-        return self._get(self.url + resource_type + qs).json()
+        url = "%s%s?%s" % (self.url, resource_type, qs)
+        return self._get(url).json()
 
     def get(self, resource_type, resource_id, history=False):
         """Get a resource
@@ -159,7 +160,7 @@ class ResourceManager(base.Manager):
         """
 
         query = query or {}
-        qs = _get_pagination_options(details, False, limit, marker, sorts)
+        qs = _get_pagination_options(details, history, limit, marker, sorts)
         url = "v1/search/resource/%s?%s" % (resource_type, qs)
         return self._post(
             url, headers={'Content-Type': "application/json"},
