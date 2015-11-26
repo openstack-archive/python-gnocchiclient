@@ -156,7 +156,7 @@ class MetricManager(base.Manager):
             url = self.resource_url % resource_id + metric + "/measures"
         return self._get(url, params=params).json()
 
-    def aggregation(self, metrics, query=None,
+    def aggregation(self, metrics=None, query=None,
                     start=None, stop=None, aggregation=None,
                     needed_overlap=None):
         """Get measurements of a aggregated metrics
@@ -184,15 +184,17 @@ class MetricManager(base.Manager):
 
         params = dict(start=start, stop=stop, aggregation=aggregation,
                       needed_overlap=needed_overlap)
-        if query is None:
+        if metrics is not None:
             for metric in metrics:
                 self._ensure_metric_is_uuid(metric)
             params['metric'] = metrics
             return self._get("v1/aggregation/metric",
                              params=params).json()
-        else:
+        elif query is not None:
             return self._post(
                 "v1/aggregation/resource/generic/metric/%s?%s" % (
                     metrics, utils.dict_to_querystring(params)),
                 headers={'Content-Type': "application/json"},
                 data=jsonutils.dumps(query)).json()
+        else:
+            raise TypeError("metrics or query is required")
