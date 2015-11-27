@@ -66,12 +66,12 @@ Examples
 
 Create a resource::
 
-    gnocchi resource create instance --attribute id:5a301761-f78b-46e2-8900-8b4f6fe6675a --attribute project_id:eba5c38f-c3dd-4d9c-9235-32d430471f94 --metric temperature:high
+    gnocchi resource create --attribute id:5a301761-f78b-46e2-8900-8b4f6fe6675a --attribute project_id:eba5c38f-c3dd-4d9c-9235-32d430471f94 -n temperature:high instance
 
 List resources::
 
-    gnocchi resource list instance
+    gnocchi resource list --type instance
 
 Search of resources::
 
-    gnocchi resource search -q "project_id=5a301761-f78b-46e2-8900-8b4f6fe6675a and not (name like '%foobar%' or name='my_resource')"
+    gnocchi resource search --query "project_id=5a301761-f78b-46e2-8900-8b4f6fe6675a and type=instance"
