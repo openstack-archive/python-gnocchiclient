@@ -183,6 +183,8 @@ class CliMeasuresAggregation(lister.Lister):
                             help=("percent of datapoints in each "
                                   "metrics required"))
         parser.add_argument("--query", help="Query"),
+        parser.add_argument("--resource-type", default="generic",
+                            help="Resource type to query"),
         return parser
 
     def take_action(self, parsed_args):
@@ -200,5 +202,6 @@ class CliMeasuresAggregation(lister.Lister):
             start=parsed_args.start,
             stop=parsed_args.stop,
             needed_overlap=parsed_args.needed_overlap,
+            resource_type=parsed_args.resource_type,
         )
         return self.COLS, measures

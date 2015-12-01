@@ -158,7 +158,7 @@ class MetricManager(base.Manager):
 
     def aggregation(self, metrics, query=None,
                     start=None, stop=None, aggregation=None,
-                    needed_overlap=None):
+                    needed_overlap=None, resource_type="generic"):
         """Get measurements of a aggregated metrics
 
         :param metrics: IDs of metric or metric name
@@ -171,6 +171,8 @@ class MetricManager(base.Manager):
         :type stop: timestamp
         :param aggregation: aggregation to retrieve
         :type aggregation: str
+        :param resource_type: type of resource for the query
+        :type resource_type: str
 
         See Gnocchi REST API documentation for the format
         of *query dictionary*
@@ -192,7 +194,8 @@ class MetricManager(base.Manager):
                              params=params).json()
         else:
             return self._post(
-                "v1/aggregation/resource/generic/metric/%s?%s" % (
-                    metrics, utils.dict_to_querystring(params)),
+                "v1/aggregation/resource/%s/metric/%s?%s" % (
+                    resource_type, metrics,
+                    utils.dict_to_querystring(params)),
                 headers={'Content-Type': "application/json"},
                 data=jsonutils.dumps(query)).json()
