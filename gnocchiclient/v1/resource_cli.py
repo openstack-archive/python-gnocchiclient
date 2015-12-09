@@ -140,7 +140,7 @@ class CliResourceCreate(show.ShowOne):
                             default=[],
                             help="name:id of a metric to add"),
         parser.add_argument(
-            "-n", "--create-metric", action='append',
+            "-n", "--create-metric", action='append', default=[],
             help="name:archive_policy_name of a metric to create"),
         parser.add_argument("-d", "--delete-metric", action='append',
                             default=[],
@@ -168,8 +168,8 @@ class CliResourceCreate(show.ShowOne):
             for metric in parsed_args.add_metric:
                 name, _, value = metric.partition(":")
                 resource['metrics'][name] = value
-            for metric in parsed_args.delete_metric:
-                resource['metrics'].pop(name, None)
+            for metric_name in parsed_args.delete_metric:
+                resource['metrics'].pop(metric_name, None)
             for metric in parsed_args.create_metric:
                 name, _, value = metric.partition(":")
                 if value is "":
