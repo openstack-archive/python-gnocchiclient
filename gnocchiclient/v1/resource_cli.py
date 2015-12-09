@@ -168,8 +168,8 @@ class CliResourceCreate(show.ShowOne):
             for metric in parsed_args.add_metric:
                 name, _, value = metric.partition(":")
                 resource['metrics'][name] = value
-            for metric in parsed_args.delete_metric:
-                resource['metrics'].pop(name, None)
+            for metric_name in parsed_args.delete_metric:
+                resource['metrics'].pop(metric_name, None)
             for metric in parsed_args.create_metric:
                 name, _, value = metric.partition(":")
                 if value is "":
