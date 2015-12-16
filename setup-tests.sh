@@ -21,6 +21,7 @@ GNOCCHI_DATA=`mktemp -d /tmp/gnocchi-data-XXXXX`
 MYSQL_DATA=`mktemp -d /tmp/gnocchi-mysql-XXXXX`
 trap "clean_exit \"$GNOCCHI_DATA\" \"$MYSQL_DATA\"" EXIT
 
+mysqld --initialize-insecure --datadir=${MYSQL_DATA} || true
 mkfifo ${MYSQL_DATA}/out
 PATH=$PATH:/usr/libexec
 mysqld --no-defaults --datadir=${MYSQL_DATA} --pid-file=${MYSQL_DATA}/mysql.pid --socket=${MYSQL_DATA}/mysql.socket --skip-networking --skip-grant-tables &> ${MYSQL_DATA}/out &
