@@ -14,6 +14,6 @@ tempest-lib>=0.6.1
 testrepository>=0.0.18
 testscenarios>=0.4
 testtools>=1.4.0
-http://tarballs.openstack.org/gnocchi/gnocchi-master.tar.gz#egg=gnocchi
+http://tarballs.openstack.org/gnocchi/gnocchi-master.tar.gz#egg=gnocchi[mysql,file]
 # FIXME(sileht): should be in gnocchi ?
 keystonemiddleware
