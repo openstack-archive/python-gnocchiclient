@@ -63,7 +63,7 @@ class MetricClientTest(base.ClientTestBase):
                          metric["created_by_project_id"])
         self.assertEqual(self.clients.user_id, metric["created_by_user_id"])
         self.assertEqual('some-name', metric["name"])
-        self.assertEqual('None', metric["resource"])
+        self.assertEqual('None', metric["resource_id"])
         self.assertIn("metric-test", metric["archive_policy/name"])
 
         # CREATE WITHOUT NAME
@@ -76,7 +76,7 @@ class MetricClientTest(base.ClientTestBase):
                          metric["created_by_project_id"])
         self.assertEqual(self.clients.user_id, metric["created_by_user_id"])
         self.assertEqual('None', metric["name"])
-        self.assertEqual('None', metric["resource"])
+        self.assertEqual('None', metric["resource_id"])
         self.assertIn("metric-test", metric["archive_policy/name"])
 
         # GET
