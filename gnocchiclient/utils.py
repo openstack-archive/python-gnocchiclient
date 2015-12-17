@@ -26,8 +26,8 @@ null = pp.Regex("None|none|null").setParseAction(pp.replaceWith(None))
 boolean = "False|True|false|true"
 boolean = pp.Regex(boolean).setParseAction(lambda t: t[0].lower() == "true")
 hex_string = lambda n: pp.Word(pp.hexnums, exact=n)
-uuid = pp.Combine(hex_string(8) + ("-" + hex_string(4)) * 3 +
-                  "-" + hex_string(12))
+uuid = pp.Combine(hex_string(8) + (pp.Optional("-") + hex_string(4)) * 3 +
+                  pp.Optional("-") + hex_string(12))
 number = r"[+-]?\d+(:?\.\d*)?(:?[eE][+-]?\d+)?"
 number = pp.Regex(number).setParseAction(lambda t: float(t[0]))
 identifier = pp.Word(pp.alphas, pp.alphanums + "_")
