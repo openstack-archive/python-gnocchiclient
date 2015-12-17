@@ -142,9 +142,6 @@ class CliResourceCreate(show.ShowOne):
         parser.add_argument(
             "-n", "--create-metric", action='append', default=[],
             help="name:archive_policy_name of a metric to create"),
-        parser.add_argument("-d", "--delete-metric", action='append',
-                            default=[],
-                            help="Name of a metric to delete"),
         return parser
 
     def _resource_from_args(self, parsed_args, update=False):
@@ -189,6 +186,13 @@ class CliResourceCreate(show.ShowOne):
 
 class CliResourceUpdate(CliResourceCreate):
     """Update a resource"""
+
+    def get_parser(self, prog_name):
+        parser = super(CliResourceUpdate, self).get_parser(prog_name)
+        parser.add_argument("-d", "--delete-metric", action='append',
+                            default=[],
+                            help="Name of a metric to delete"),
+        return parser
 
     def take_action(self, parsed_args):
         resource = self._resource_from_args(parsed_args, update=True)
