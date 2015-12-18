@@ -131,7 +131,7 @@ class ArchivePolicyAlreadyExists(Conflict, MutipleMeaningException):
 
 class ArchivePolicyRuleAlreadyExists(Conflict, MutipleMeaningException):
     message = "Archive policy rule already exists"
-    match = re.compile("Archive policy Rule .* already exists")
+    match = re.compile("Archive policy rule .* already exists")
 
 
 class OverLimit(RetryAfterException):
