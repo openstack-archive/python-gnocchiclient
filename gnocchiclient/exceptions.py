@@ -183,7 +183,7 @@ def from_response(response, method=None):
 
         resp, body = requests.request(...)
         if resp.status_code != 200:
-            raise exception_from_response(resp)
+            raise from_response(resp)
     """
 
     if response.status_code:
