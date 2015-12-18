@@ -176,7 +176,7 @@ _code_map = dict(
     for c in _error_classes)
 
 
-def from_response(response, url, method=None):
+def from_response(response, method=None):
     """Return an instance of one of the ClientException on an requests response.
 
     Usage::
@@ -196,7 +196,7 @@ def from_response(response, url, method=None):
     kwargs = {
         'code': response.status_code,
         'method': method,
-        'url': url,
+        'url': response.url,
         'request_id': req_id,
     }
 
