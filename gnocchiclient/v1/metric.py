@@ -23,6 +23,7 @@ from gnocchiclient.v1 import base
 class MetricManager(base.Manager):
     metric_url = "v1/metric/"
     resource_url = "v1/resource/generic/%s/metric/"
+    batch_measures_url = "v1/batch/measures"
 
     def list(self):
         """List archive metrics
@@ -120,6 +121,17 @@ class MetricManager(base.Manager):
             url = self.resource_url % resource_id + metric + "/measures"
         return self._post(
             url, headers={'Content-Type': "application/json"},
+            data=jsonutils.dumps(measures))
+
+    def add_measures_batch(self, measures):
+        """Add measurements to several metrics in a batch.
+
+        :param measures: Mapping between metric IDs and measurements
+        :type metric: dict
+        """
+        return self._post(
+            self.batch_measures_url,
+            headers={'Content-Type': "application/json"},
             data=jsonutils.dumps(measures))
 
     def get_measures(self, metric, start=None, stop=None, aggregation=None,
