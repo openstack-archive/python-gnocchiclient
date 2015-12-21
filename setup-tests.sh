@@ -21,6 +21,8 @@ GNOCCHI_DATA=`mktemp -d /tmp/gnocchi-data-XXXXX`
 MYSQL_DATA=`mktemp -d /tmp/gnocchi-mysql-XXXXX`
 trap "clean_exit \"$GNOCCHI_DATA\" \"$MYSQL_DATA\"" EXIT
 
+pip install http://tarballs.openstack.org/gnocchi/gnocchi-master.tar.gz#egg=gnocchi[mysql,file] keystonemiddleware
+
 mysqld --initialize-insecure --datadir=${MYSQL_DATA} || true
 mkfifo ${MYSQL_DATA}/out
 PATH=$PATH:/usr/libexec
@@ -29,7 +31,6 @@ mysqld --no-defaults --datadir=${MYSQL_DATA} --pid-file=${MYSQL_DATA}/mysql.pid 
 wait_for_line "mysqld: ready for connections." ${MYSQL_DATA}/out
 export GNOCCHI_TEST_INDEXER_URL="mysql+pymysql://root@localhost/test?unix_socket=${MYSQL_DATA}/mysql.socket&charset=utf8"
 mysql --no-defaults -S ${MYSQL_DATA}/mysql.socket -e 'CREATE DATABASE test;'
-
 
 mkfifo ${GNOCCHI_DATA}/out
 echo '{"default": ""}' > ${GNOCCHI_DATA}/policy.json
