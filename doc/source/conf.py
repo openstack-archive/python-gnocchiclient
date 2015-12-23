@@ -64,8 +64,7 @@ gen_ref("v1", "Version 1 API", ["client", "resource", "archive_policy",
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
     'sphinx.ext.autodoc',
-    #'sphinx.ext.intersphinx',
-    'oslosphinx'
+    #'sphinx.ext.intersphinx'
 ]
 
 # autodoc generation is a bit aggressive and a nuisance when doing heavy
@@ -99,6 +98,15 @@ pygments_style = 'sphinx'
 # html_theme_path = ["."]
 # html_theme = '_theme'
 # html_static_path = ['static']
+html_theme = 'openstack'
+
+if html_theme == "sphinx_rtd_theme":
+    import sphinx_rtd_theme
+    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+else:
+    import oslosphinx
+    html_theme_path = [os.path.join(os.path.dirname(oslosphinx.__file__),
+                                    'theme')]
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = '%sdoc' % project
