@@ -54,4 +54,4 @@ ChangeLog
 .*sw?
 
 # generated docs
-doc/source/ref/
+doc/source/api
