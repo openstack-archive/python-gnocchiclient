@@ -110,7 +110,7 @@ class BenchmarkPool(futurist.ProcessPoolExecutor):
                 results.append(result)
                 latencies.append(latency)
             except Exception as e:
-                LOG.error("Error with %s metric: %s" % (verb, e))
+                LOG.error(u"Error with %s metric: %s" % (verb, e))
         latencies = sorted(latencies)
         return results, runtime, {
             'client workers': self._max_workers,
