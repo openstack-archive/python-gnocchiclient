@@ -139,7 +139,7 @@ class ResourceManager(base.Manager):
         """List resources
 
         :param resource_type: Type of the resource
-        :param resource_type: str
+        :type resource_type: str
         :param query: The query dictionary
         :type query: dict
         :param details: Show all attributes of resources
