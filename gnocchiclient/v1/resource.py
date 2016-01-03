@@ -51,8 +51,9 @@ class ResourceManager(base.Manager):
         :type history: bool
         :param limit: maximum number of resources to return
         :type limit: int
-        :param marker: the last item of the previous page; we returns the next
+        :param marker: the last item of the previous page; we return the next
                        results after this value.
+        :type marker: str
         :param sorts: list of resource attributes to order by. (example
                       ["user_id:desc-nullslast", "project_id:asc"]
         :type sorts: list of str
@@ -89,6 +90,7 @@ class ResourceManager(base.Manager):
         :type limit: int
         :param marker: the last item of the previous page; we returns the next
                        results after this value.
+        :type marker: str
         :param sorts: list of resource attributes to order by. (example
                       ["user_id:desc-nullslast", "project_id:asc"]
         :type sorts: list of str
@@ -150,6 +152,7 @@ class ResourceManager(base.Manager):
         :type limit: int
         :param marker: the last item of the previous page; we returns the next
                        results after this value.
+        :type marker: str
         :param sorts: list of resource attributes to order by. (example
                       ["user_id:desc-nullslast", "project_id:asc"]
         :type sorts: list of str
