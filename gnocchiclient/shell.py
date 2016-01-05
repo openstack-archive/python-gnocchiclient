@@ -31,6 +31,7 @@ from gnocchiclient.v1 import archive_policy_rule_cli as ap_rule_cli
 from gnocchiclient.v1 import capabilities_cli
 from gnocchiclient.v1 import metric_cli
 from gnocchiclient.v1 import resource_cli
+from gnocchiclient.v1 import resource_type_cli
 from gnocchiclient.v1 import status_cli
 from gnocchiclient.version import __version__
 
@@ -45,6 +46,7 @@ class GnocchiCommandManager(commandmanager.CommandManager):
         "resource create": resource_cli.CliResourceCreate,
         "resource update": resource_cli.CliResourceUpdate,
         "resource delete": resource_cli.CliResourceDelete,
+        "resource-type list": resource_type_cli.CliResourceTypeList,
         "archive-policy list": archive_policy_cli.CliArchivePolicyList,
         "archive-policy show": archive_policy_cli.CliArchivePolicyShow,
         "archive-policy create": archive_policy_cli.CliArchivePolicyCreate,
