@@ -168,3 +168,13 @@ class ResourceManager(base.Manager):
         return self._post(
             url, headers={'Content-Type': "application/json"},
             data=jsonutils.dumps(query)).json()
+
+    def list_types(self):
+        """List the resource types supported by gnocchi"""
+        # (Note/jzl)Based on the discussion result, keep the keyword
+        # 'resource-type' and use the command 'resource list-types' to
+        # list the types supported by gnocchi.
+        # Opened a reminding bug to me to handle with it,
+        # when resource-type is ready
+        # https://bugs.launchpad.net/python-gnocchiclient/+bug/1535176
+        return self._get(self.url).json()
