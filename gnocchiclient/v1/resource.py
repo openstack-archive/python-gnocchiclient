@@ -168,3 +168,8 @@ class ResourceManager(base.Manager):
         return self._post(
             url, headers={'Content-Type': "application/json"},
             data=jsonutils.dumps(query)).json()
+
+    def list_type(self):
+        """List the resource types
+        """
+        return self._get(self.url).json()
