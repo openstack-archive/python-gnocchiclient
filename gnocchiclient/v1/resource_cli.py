@@ -211,3 +211,25 @@ class CliResourceDelete(command.Command):
 
     def take_action(self, parsed_args):
         self.app.client.resource.delete(parsed_args.resource_id)
+
+class CliResourceType(lister.Lister):
+    """List the resource types that gnocchi supports
+       The output of the command:
+       +---------------+-------------------------------------------+
+       | resource_type | resource_controller_url                   |
+       +---------------+-------------------------------------------+
+       | network       | http://10.0.2.15:8041/v1/resource/network |
+       | instance      | http://10.0.2.15:8041/v1/resource/instance|
+       | generic       | http://10.0.2.15:8041/v1/resource/generic |
+       | ipmi          | http://10.0.2.15:8041/v1/resource/ipmi    |
+       | image         | http://10.0.2.15:8041/v1/resource/image   |
+       | volume        | http://10.0.2.15:8041/v1/resource/volume  |
+       +---------------+-------------------------------------------+
+    """
+
+    COLS = ('resource_type',
+            'resource_controller_url')
+
+    def take_action(self, parsed_args):
+        resources = self.app.client.resource.list_type()
+        return self.COLS, [(k, v) for (k, v) in resources.items()]
