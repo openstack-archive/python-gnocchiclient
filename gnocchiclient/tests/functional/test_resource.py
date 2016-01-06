@@ -9,7 +9,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-
+import time
 import uuid
 
 from gnocchiclient.tests.functional import base
@@ -71,6 +71,12 @@ class ResourceClientTest(base.ClientTestBase):
         self.assertEqual(resource["started_at"], resource_got["started_at"])
         self.assertIn("temperature", resource_updated["metrics"])
 
+        # UPDATE to create a new revision
+        self.gnocchi(
+            'resource', params=("update -t generic %s "
+                                "-a ended_at:%d" %
+                                (self.RESOURCE_ID, time.time())))
+
         # HISTORY
         result = self.gnocchi(
             'resource', params="history --type generic %s" % self.RESOURCE_ID)
@@ -78,7 +84,7 @@ class ResourceClientTest(base.ClientTestBase):
         self.assertEqual(2, len(resource_history))
         self.assertEqual(self.RESOURCE_ID, resource_history[0]["id"])
         self.assertEqual(self.RESOURCE_ID, resource_history[1]["id"])
-        self.assertEqual("None", resource_history[0]["project_id"])
+        self.assertEqual(self.PROJECT_ID, resource_history[0]["project_id"])
         self.assertEqual(self.PROJECT_ID, resource_history[1]["project_id"])
 
         # LIST
