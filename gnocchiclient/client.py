@@ -35,5 +35,5 @@ class SessionClient(adapter.Adapter):
                                                   **kwargs)
 
         if raise_exc and resp.status_code >= 400:
-            raise exceptions.from_response(resp, url, method)
+            raise exceptions.from_response(resp, method)
         return resp

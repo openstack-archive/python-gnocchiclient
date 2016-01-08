@@ -27,5 +27,5 @@ class ExceptionsTest(base.BaseTestCase):
         r._content = json.dumps(
             {"description": "Archive policy rule foobar does not exist"}
         ).encode('utf-8')
-        exc = exceptions.from_response(r, "http://foobar")
+        exc = exceptions.from_response(r)
         self.assertIsInstance(exc, exceptions.ArchivePolicyRuleNotFound)
