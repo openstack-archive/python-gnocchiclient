@@ -21,7 +21,7 @@ Reference
 For more information, see the reference:
 
 .. toctree::
-   :maxdepth: 2 
+   :maxdepth: 2
 
-   ref/v1/index
+   api/autoindex
 
