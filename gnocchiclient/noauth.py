@@ -69,10 +69,17 @@ class GnocchiNoAuthLoader(loading.BaseLoader):
     def get_options(self):
         options = super(GnocchiNoAuthLoader, self).get_options()
         options.extend([
-            GnocchiOpt('user-id', help='User ID', required=True),
-            GnocchiOpt('project-id', help='Project ID', required=True),
-            GnocchiOpt('roles', help='Roles', default="admin"),
-            GnocchiOpt('gnocchi-endpoint', help='Gnocchi endpoint',
-                       dest="endpoint", required=True),
+            GnocchiOpt('user-id', help='User ID', required=True,
+                       metavar="<gnocchi user id>"),
+            GnocchiOpt('project-id', help='Project ID', required=True,
+                       metavar="<gnocchi project id>"),
+            GnocchiOpt('roles', help='Roles', default="admin",
+                       metavar="<gnocchi roles>"),
+            GnocchiOpt('endpoint', help='Gnocchi endpoint',
+                       deprecated=[
+                           GnocchiOpt('gnocchi-endpoint'),
+                       ],
+                       dest="endpoint", required=True,
+                       metavar="<gnocchi endpoint>"),
         ])
         return options
