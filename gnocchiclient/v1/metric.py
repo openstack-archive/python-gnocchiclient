@@ -123,7 +123,7 @@ class MetricManager(base.Manager):
             data=jsonutils.dumps(measures))
 
     def get_measures(self, metric, start=None, stop=None, aggregation=None,
-                     resource_id=None, **kwargs):
+                     granularity=None, resource_id=None, **kwargs):
         """Get measurements of a metric
 
         :param metric: ID or Name of the metric
@@ -134,6 +134,8 @@ class MetricManager(base.Manager):
         :type stop: timestamp
         :param aggregation: aggregation to retrieve
         :type aggregation: str
+        :param granularity: granularity to retrieve (in seconds)
+        :type granularity: int
         :param resource_id: ID of the resource (required
                             to get a metric by name)
         :type resource_id: str
@@ -147,7 +149,8 @@ class MetricManager(base.Manager):
         if isinstance(stop, datetime.datetime):
             stop = stop.isoformat()
 
-        params = dict(start=start, stop=stop, aggregation=aggregation)
+        params = dict(start=start, stop=stop, aggregation=aggregation,
+                      granularity=granularity)
         params.update(kwargs)
         if resource_id is None:
             self._ensure_metric_is_uuid(metric)
