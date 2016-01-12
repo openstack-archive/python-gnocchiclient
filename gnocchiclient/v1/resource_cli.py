@@ -18,7 +18,7 @@ from gnocchiclient import utils
 
 
 class CliResourceList(lister.Lister):
-    """List resources"""
+    """List resources."""
 
     COLS = ('id', 'type',
             'project_id', 'user_id',
@@ -28,21 +28,21 @@ class CliResourceList(lister.Lister):
     def get_parser(self, prog_name, history=True):
         parser = super(CliResourceList, self).get_parser(prog_name)
         parser.add_argument("--details", action='store_true',
-                            help="Show all attributes of generic resources"),
+                            help="Show all attributes of generic resources."),
         if history:
             parser.add_argument("--history", action='store_true',
-                                help="Show history of the resources"),
+                                help="Show history of the resources."),
         parser.add_argument("--limit", type=int, metavar="<LIMIT>",
                             help="Number of resources to return "
-                            "(Default is server default)")
+                            "(Default is server default).")
         parser.add_argument("--marker", metavar="<MARKER>",
                             help="Last item of the previous listing. "
-                            "Return the next results after this value")
+                            "Return the next results after this value.")
         parser.add_argument("--sort", action="append", metavar="<SORT>",
                             help="Sort of resource attribute "
-                            "(example: user_id:desc-nullslast")
+                            "(example: user_id:desc-nullslast.")
         parser.add_argument("--type", "-t", dest="resource_type",
-                            default="generic", help="Type of resource")
+                            default="generic", help="Type of resource.")
         return parser
 
     def take_action(self, parsed_args):
@@ -65,13 +65,13 @@ class CliResourceList(lister.Lister):
 
 
 class CliResourceHistory(CliResourceList):
-    """Show the history of a resource"""
+    """Show the history of a resource."""
 
     def get_parser(self, prog_name):
         parser = super(CliResourceHistory, self).get_parser(prog_name,
                                                             history=False)
         parser.add_argument("resource_id",
-                            help="ID of a resource")
+                            help="ID of a resource.")
         return parser
 
     def take_action(self, parsed_args):
@@ -83,11 +83,11 @@ class CliResourceHistory(CliResourceList):
 
 
 class CliResourceSearch(CliResourceList):
-    """Search resources with specified query rules"""
+    """Search resources with specified query rules."""
 
     def get_parser(self, prog_name):
         parser = super(CliResourceSearch, self).get_parser(prog_name)
-        parser.add_argument("--query", help="Query"),
+        parser.add_argument("--query", help="Query."),
         return parser
 
     def take_action(self, parsed_args):
@@ -105,14 +105,14 @@ def normalize_metrics(res):
 
 
 class CliResourceShow(show.ShowOne):
-    """Show a resource"""
+    """Show a resource."""
 
     def get_parser(self, prog_name):
         parser = super(CliResourceShow, self).get_parser(prog_name)
         parser.add_argument("--type", "-t", dest="resource_type",
-                            default="generic", help="Type of resource")
+                            default="generic", help="Type of the resource.")
         parser.add_argument("resource_id",
-                            help="ID of a resource")
+                            help="ID of a resource.")
         return parser
 
     def take_action(self, parsed_args):
@@ -124,24 +124,24 @@ class CliResourceShow(show.ShowOne):
 
 
 class CliResourceCreate(show.ShowOne):
-    """Create a resource"""
+    """Create a resource."""
 
     def get_parser(self, prog_name):
         parser = super(CliResourceCreate, self).get_parser(prog_name)
         parser.add_argument("--type", "-t", dest="resource_type",
-                            default="generic", help="Type of resource")
+                            default="generic", help="Type of the resource.")
         parser.add_argument("resource_id",
-                            help="ID of the resource")
+                            help="ID of the resource.")
         parser.add_argument("-a", "--attribute", action='append',
                             default=[],
-                            help=("name and value of a attribute "
-                                  "separated with a ':'"))
+                            help=("Name and value of a attribute "
+                                  "separated with a ':'."))
         parser.add_argument("-m", "--add-metric", action='append',
                             default=[],
-                            help="name:id of a metric to add"),
+                            help="name:id of a metric to add."),
         parser.add_argument(
             "-n", "--create-metric", action='append', default=[],
-            help="name:archive_policy_name of a metric to create"),
+            help="name:archive_policy_name of a metric to create."),
         return parser
 
     def _resource_from_args(self, parsed_args, update=False):
@@ -185,13 +185,13 @@ class CliResourceCreate(show.ShowOne):
 
 
 class CliResourceUpdate(CliResourceCreate):
-    """Update a resource"""
+    """Update a resource."""
 
     def get_parser(self, prog_name):
         parser = super(CliResourceUpdate, self).get_parser(prog_name)
         parser.add_argument("-d", "--delete-metric", action='append',
                             default=[],
-                            help="Name of a metric to delete"),
+                            help="Name of a metric to delete."),
         return parser
 
     def take_action(self, parsed_args):
@@ -205,12 +205,12 @@ class CliResourceUpdate(CliResourceCreate):
 
 
 class CliResourceDelete(command.Command):
-    """Delete a resource"""
+    """Delete a resource."""
 
     def get_parser(self, prog_name):
         parser = super(CliResourceDelete, self).get_parser(prog_name)
         parser.add_argument("resource_id",
-                            help="ID of the resource")
+                            help="ID of the resource.")
         return parser
 
     def take_action(self, parsed_args):

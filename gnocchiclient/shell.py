@@ -103,7 +103,7 @@ class GnocchiShell(app.App):
             metavar='<auth-region-name>',
             dest='region_name',
             default=os.environ.get('OS_REGION_NAME'),
-            help='Authentication region name (Env: OS_REGION_NAME)')
+            help='Authentication region name (Env: OS_REGION_NAME).')
         parser.add_argument(
             '--os-interface',
             metavar='<interface>',

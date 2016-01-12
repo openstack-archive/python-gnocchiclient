@@ -19,7 +19,7 @@ from gnocchiclient import utils
 
 
 class CliArchivePolicyRuleList(lister.Lister):
-    """List archive policy rules"""
+    """List archive policy rules."""
 
     COLS = ('name', 'archive_policy_name', 'metric_pattern')
 
@@ -29,12 +29,12 @@ class CliArchivePolicyRuleList(lister.Lister):
 
 
 class CliArchivePolicyRuleShow(show.ShowOne):
-    """Show an archive policy rule"""
+    """Show an archive policy rule."""
 
     def get_parser(self, prog_name):
         parser = super(CliArchivePolicyRuleShow, self).get_parser(prog_name)
         parser.add_argument("name",
-                            help="Name of the archive policy rule")
+                            help="Name of the archive policy rule.")
         return parser
 
     def take_action(self, parsed_args):
@@ -44,19 +44,19 @@ class CliArchivePolicyRuleShow(show.ShowOne):
 
 
 class CliArchivePolicyRuleCreate(show.ShowOne):
-    """Create an archive policy rule"""
+    """Create an archive policy rule."""
 
     def get_parser(self, prog_name):
         parser = super(CliArchivePolicyRuleCreate, self).get_parser(prog_name)
         parser.add_argument("name",
-                            help=("Rule name"))
+                            help=("Rule name."))
         parser.add_argument("-a", "--archive-policy-name",
                             dest="archive_policy_name",
                             required=True,
-                            help=("Archive policy name"))
+                            help=("Archive policy name."))
         parser.add_argument("-m", "--metric-pattern",
                             dest="metric_pattern", required=True,
-                            help=("Wildcard of metric name to match"))
+                            help=("Wildcard of metric name to match."))
         return parser
 
     def take_action(self, parsed_args):
@@ -67,12 +67,12 @@ class CliArchivePolicyRuleCreate(show.ShowOne):
 
 
 class CliArchivePolicyRuleDelete(command.Command):
-    """Delete an archive policy rule"""
+    """Delete an archive policy rule."""
 
     def get_parser(self, prog_name):
         parser = super(CliArchivePolicyRuleDelete, self).get_parser(prog_name)
         parser.add_argument("name",
-                            help="Name of the archive policy rule")
+                            help="Name of the archive policy rule.")
         return parser
 
     def take_action(self, parsed_args):

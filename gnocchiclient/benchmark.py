@@ -40,7 +40,7 @@ six.moves.copyreg.pickle(types.MethodType, _pickle_method)
 
 
 def grouper(iterable, n, fillvalue=None):
-    "Collect data into fixed-length chunks or blocks"
+    "Collect data into fixed-length chunks or blocks."
     # grouper('ABCDEFG', 3, 'x') --> ABC DEF
     args = [iter(iterable)] * n
     return six.moves.zip(*args)
@@ -164,7 +164,7 @@ class CliBenchmarkBase(show.ShowOne):
 
 class CliBenchmarkMetricShow(CliBenchmarkBase,
                              metric_cli.CliMetricWithResourceID):
-    """Do benchmark testing of metric show"""
+    """Do benchmark testing of metric show."""
 
     def get_parser(self, prog_name):
         parser = super(CliBenchmarkMetricShow, self).get_parser(prog_name)
@@ -188,7 +188,7 @@ class CliBenchmarkMetricShow(CliBenchmarkBase,
 
 class CliBenchmarkMetricCreate(CliBenchmarkBase,
                                metric_cli.CliMetricCreateBase):
-    """Do benchmark testing of metric creation"""
+    """Do benchmark testing of metric creation."""
 
     def get_parser(self, prog_name):
         parser = super(CliBenchmarkMetricCreate, self).get_parser(prog_name)
@@ -223,28 +223,28 @@ class CliBenchmarkMetricCreate(CliBenchmarkBase,
 
 class CliBenchmarkMeasuresAdd(CliBenchmarkBase,
                               metric_cli.CliMeasuresAddBase):
-    """Do benchmark testing of adding measurements"""
+    """Do benchmark testing of adding measurements."""
 
     def get_parser(self, prog_name):
         parser = super(CliBenchmarkMeasuresAdd, self).get_parser(prog_name)
         parser.add_argument("--count", "-n",
                             required=True,
                             type=_positive_non_zero_int,
-                            help="Number of total measures to send")
+                            help="Number of total measures to send.")
         parser.add_argument("--batch", "-b",
                             default=1,
                             type=_positive_non_zero_int,
-                            help="Number of measures to send in each batch")
+                            help="Number of measures to send in each batch.")
         parser.add_argument("--timestamp-start", "-s",
                             default=(
                                 timeutils.utcnow(True)
                                 - datetime.timedelta(days=365)),
                             type=timeutils.parse_isotime,
-                            help="First timestamp to use")
+                            help="First timestamp to use.")
         parser.add_argument("--timestamp-end", "-e",
                             default=timeutils.utcnow(True),
                             type=timeutils.parse_isotime,
-                            help="Last timestamp to use")
+                            help="Last timestamp to use.")
         return parser
 
     def take_action(self, parsed_args):
@@ -297,14 +297,14 @@ class CliBenchmarkMeasuresAdd(CliBenchmarkBase,
 
 class CliBenchmarkMeasuresShow(CliBenchmarkBase,
                                metric_cli.CliMeasuresShow):
-    """Do benchmark testing of measurements show"""
+    """Do benchmark testing of measurements show."""
 
     def get_parser(self, prog_name):
         parser = super(CliBenchmarkMeasuresShow, self).get_parser(prog_name)
         parser.add_argument("--count", "-n",
                             required=True,
                             type=_positive_non_zero_int,
-                            help="Number of total measures to send")
+                            help="Number of total measures to send.")
         return parser
 
     def take_action(self, parsed_args):

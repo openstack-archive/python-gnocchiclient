@@ -22,12 +22,12 @@ class CliMetricWithResourceID(command.Command):
     def get_parser(self, prog_name):
         parser = super(CliMetricWithResourceID, self).get_parser(prog_name)
         parser.add_argument("--resource-id", "-r",
-                            help="ID of the resource")
+                            help="ID of the resource.")
         return parser
 
 
 class CliMetricList(lister.Lister):
-    """List metrics"""
+    """List metrics."""
 
     COLS = ('id', 'archive_policy/name', 'name', 'resource_id')
 
@@ -40,12 +40,12 @@ class CliMetricList(lister.Lister):
 
 
 class CliMetricShow(CliMetricWithResourceID, show.ShowOne):
-    """Show a metric"""
+    """Show a metric."""
 
     def get_parser(self, prog_name):
         parser = super(CliMetricShow, self).get_parser(prog_name)
         parser.add_argument("metric",
-                            help="ID or name of the metric")
+                            help="ID or name of the metric.")
         return parser
 
     def take_action(self, parsed_args):
@@ -62,7 +62,7 @@ class CliMetricCreateBase(show.ShowOne, CliMetricWithResourceID):
         parser = super(CliMetricCreateBase, self).get_parser(prog_name)
         parser.add_argument("--archive-policy-name", "-a",
                             dest="archive_policy_name",
-                            help=("name of the archive policy"))
+                            help=("Name of the archive policy."))
         return parser
 
     def take_action(self, parsed_args):
@@ -73,13 +73,13 @@ class CliMetricCreateBase(show.ShowOne, CliMetricWithResourceID):
 
 
 class CliMetricCreate(CliMetricCreateBase):
-    """Create a metric"""
+    """Create a metric."""
 
     def get_parser(self, prog_name):
         parser = super(CliMetricCreate, self).get_parser(prog_name)
         parser.add_argument("name", nargs='?',
                             metavar="METRIC_NAME",
-                            help="Name of the metric")
+                            help="Name of the metric.")
         return parser
 
     def _take_action(self, metric, parsed_args):
@@ -92,12 +92,12 @@ class CliMetricCreate(CliMetricCreateBase):
 
 
 class CliMetricDelete(CliMetricWithResourceID):
-    """Delete a metric"""
+    """Delete a metric."""
 
     def get_parser(self, prog_name):
         parser = super(CliMetricDelete, self).get_parser(prog_name)
         parser.add_argument("metric", nargs='+',
-                            help="IDs or names of the metric")
+                            help="IDs or names of the metric.")
         return parser
 
     def take_action(self, parsed_args):
@@ -107,20 +107,20 @@ class CliMetricDelete(CliMetricWithResourceID):
 
 
 class CliMeasuresShow(CliMetricWithResourceID, lister.Lister):
-    """Get measurements of a metric"""
+    """Get measurements of a metric."""
 
     COLS = ('timestamp', 'granularity', 'value')
 
     def get_parser(self, prog_name):
         parser = super(CliMeasuresShow, self).get_parser(prog_name)
         parser.add_argument("metric",
-                            help="ID or name of the metric")
+                            help="ID or name of the metric.")
         parser.add_argument("--aggregation",
-                            help="aggregation to retrieve")
+                            help="Aggregation to retrieve.")
         parser.add_argument("--start",
-                            help="beginning of the period")
+                            help="Beginning of the period.")
         parser.add_argument("--stop",
-                            help="end of the period")
+                            help="End of the period.")
         return parser
 
     def take_action(self, parsed_args):
@@ -137,12 +137,12 @@ class CliMeasuresShow(CliMetricWithResourceID, lister.Lister):
 class CliMeasuresAddBase(CliMetricWithResourceID):
     def get_parser(self, prog_name):
         parser = super(CliMeasuresAddBase, self).get_parser(prog_name)
-        parser.add_argument("metric", help="ID or name of the metric")
+        parser.add_argument("metric", help="ID or name of the metric.")
         return parser
 
 
 class CliMeasuresAdd(CliMeasuresAddBase):
-    """Add measurements to a metric"""
+    """Add measurements to a metric."""
 
     def measure(self, measure):
         timestamp, __, value = measure.rpartition("@")
@@ -152,8 +152,8 @@ class CliMeasuresAdd(CliMeasuresAddBase):
         parser = super(CliMeasuresAdd, self).get_parser(prog_name)
         parser.add_argument("-m", "--measure", action='append',
                             required=True, type=self.measure,
-                            help=("timestamp and value of a measure "
-                                  "separated with a '@'"))
+                            help=("Timestamp and value of a measure "
+                                  "separated with a '@'."))
         return parser
 
     def take_action(self, parsed_args):
@@ -165,26 +165,26 @@ class CliMeasuresAdd(CliMeasuresAddBase):
 
 
 class CliMeasuresAggregation(lister.Lister):
-    """Get measurements of aggregated metrics"""
+    """Get measurements of aggregated metrics."""
 
     COLS = ('timestamp', 'granularity', 'value')
 
     def get_parser(self, prog_name):
         parser = super(CliMeasuresAggregation, self).get_parser(prog_name)
         parser.add_argument("-m", "--metric", nargs='+', required=True,
-                            help="metrics IDs or metric name")
+                            help="Metrics IDs or metric name.")
         parser.add_argument("--aggregation",
-                            help="aggregation to retrieve")
+                            help="Aggregation to retrieve.")
         parser.add_argument("--start",
-                            help="beginning of the period")
+                            help="Beginning of the period.")
         parser.add_argument("--stop",
-                            help="end of the period")
+                            help="End of the period.")
         parser.add_argument("--needed-overlap", type=float,
-                            help=("percent of datapoints in each "
-                                  "metrics required"))
-        parser.add_argument("--query", help="Query"),
+                            help=("Percent of datapoints in each "
+                                  "metrics required."))
+        parser.add_argument("--query", help="Query."),
         parser.add_argument("--resource-type", default="generic",
-                            help="Resource type to query"),
+                            help="Resource type to query."),
         return parser
 
     def take_action(self, parsed_args):

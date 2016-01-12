@@ -19,7 +19,7 @@ from gnocchiclient import utils
 
 
 class CliArchivePolicyList(lister.Lister):
-    """List archive policies"""
+    """List archive policies."""
 
     COLS = ('name',
             'back_window', 'definition', 'aggregation_methods')
@@ -32,12 +32,12 @@ class CliArchivePolicyList(lister.Lister):
 
 
 class CliArchivePolicyShow(show.ShowOne):
-    """Show an archive policy"""
+    """Show an archive policy."""
 
     def get_parser(self, prog_name):
         parser = super(CliArchivePolicyShow, self).get_parser(prog_name)
         parser.add_argument("name",
-                            help="Name of the archive policy")
+                            help="Name of the archive policy.")
         return parser
 
     def take_action(self, parsed_args):
@@ -62,22 +62,22 @@ def archive_policy_definition(string):
 
 
 class CliArchivePolicyCreate(show.ShowOne):
-    """Create an archive policy"""
+    """Create an archive policy."""
 
     def get_parser(self, prog_name):
         parser = super(CliArchivePolicyCreate, self).get_parser(prog_name)
-        parser.add_argument("name", help=("name of the archive policy"))
+        parser.add_argument("name", help=("Name of the archive policy."))
         parser.add_argument("-b", "--back-window", dest="back_window",
                             type=int,
-                            help=("back window of the archive policy"))
+                            help=("Back window of the archive policy."))
         parser.add_argument("-m", "--aggregation-method",
                             action="append",
                             dest="aggregation_methods",
-                            help=("aggregation method of the archive policy"))
+                            help=("Aggregation method of the archive policy."))
         parser.add_argument("-d", "--definition", action='append',
                             required=True, type=archive_policy_definition,
                             metavar="<DEFINITION>",
-                            help=("two attributes (separated by ',') of an "
+                            help=("Two attributes (separated by ',') of an "
                                   "archive policy definition with its name "
                                   "and value separated with a ':'"))
         return parser
@@ -93,12 +93,12 @@ class CliArchivePolicyCreate(show.ShowOne):
 
 
 class CliArchivePolicyDelete(command.Command):
-    """Delete an archive policy"""
+    """Delete an archive policy."""
 
     def get_parser(self, prog_name):
         parser = super(CliArchivePolicyDelete, self).get_parser(prog_name)
         parser.add_argument("name",
-                            help="Name of the archive policy")
+                            help="Name of the archive policy.")
         return parser
 
     def take_action(self, parsed_args):
