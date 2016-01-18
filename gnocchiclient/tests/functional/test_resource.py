@@ -173,3 +173,14 @@ class ResourceClientTest(base.ClientTestBase):
         resource_ids = [r['id'] for r in self.parser.listing(result)]
         self.assertNotIn(self.RESOURCE_ID, resource_ids)
         self.assertNotIn(self.RESOURCE_ID2, resource_ids)
+
+        # LIST THE RESOUCES TYPES
+        resource_type = ('instance', 'generic', 'volume',
+                         'instance_disk', 'stack', 'identity')
+
+        result = self.gnocchi(
+            'resource', params="list-types")
+        result_list = self.parser.listing(result)
+        type_from_list = [t['resource_type'] for t in result_list]
+        for one_type in resource_type:
+            self.assertIn(one_type, type_from_list)
