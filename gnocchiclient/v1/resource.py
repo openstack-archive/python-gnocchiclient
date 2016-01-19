@@ -14,6 +14,7 @@
 from oslo_serialization import jsonutils
 from six.moves.urllib import parse as urllib_parse
 
+from gnocchiclient import utils
 from gnocchiclient.v1 import base
 
 
@@ -73,6 +74,7 @@ class ResourceManager(base.Manager):
         :type history: bool
         """
         history = "/history" if history else ""
+        resource_id = utils.encode_resource_id(resource_id)
         url = self.url + "%s/%s%s" % (resource_type, resource_id, history)
         return self._get(url).json()
 
@@ -96,6 +98,7 @@ class ResourceManager(base.Manager):
         :type sorts: list of str
         """
         qs = _get_pagination_options(details, False, limit, marker, sorts)
+        resource_id = utils.encode_resource_id(resource_id)
         url = "%s%s/%s/history?%s" % (self.url, resource_type, resource_id, qs)
         return self._get(url).json()
 
@@ -123,6 +126,7 @@ class ResourceManager(base.Manager):
         :type resource: dict
         """
 
+        resource_id = utils.encode_resource_id(resource_id)
         return self._patch(
             self.url + resource_type + "/" + resource_id,
             headers={'Content-Type': "application/json"},
@@ -134,6 +138,7 @@ class ResourceManager(base.Manager):
         :param resource_id: ID of the resource
         :type resource_id: str
         """
+        resource_id = utils.encode_resource_id(resource_id)
         self._delete(self.url + "generic/" + resource_id)
 
     def search(self, resource_type="generic", query=None, details=False,
