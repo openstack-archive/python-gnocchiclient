@@ -13,11 +13,13 @@
 import uuid
 
 from gnocchiclient.tests.functional import base
+from gnocchiclient import utils
 
 
 class ResourceClientTest(base.ClientTestBase):
     RESOURCE_ID = str(uuid.uuid4())
-    RESOURCE_ID2 = str(uuid.uuid4())
+    RAW_RESOURCE_ID2 = str(uuid.uuid4()) + "/foo"
+    RESOURCE_ID2 = utils.encode_resource_id(RAW_RESOURCE_ID2)
     PROJECT_ID = str(uuid.uuid4())
 
     def test_help(self):
@@ -123,7 +125,7 @@ class ResourceClientTest(base.ClientTestBase):
         result = self.gnocchi(
             'resource', params=("create %s -t generic "
                                 "-a project_id:%s"
-                                ) % (self.RESOURCE_ID2, self.PROJECT_ID))
+                                ) % (self.RAW_RESOURCE_ID2, self.PROJECT_ID))
         resource2 = self.details_multiple(result)[0]
         self.assertEqual(self.RESOURCE_ID2, resource2["id"])
         self.assertEqual(self.PROJECT_ID, resource2["project_id"])
