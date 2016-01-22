@@ -96,6 +96,7 @@ class MetricClientTest(base.ClientTestBase):
         result = self.retry_gnocchi(
             5, 'measures', params=("show %s "
                                    "--aggregation mean "
+                                   "--granularity 1 "
                                    "--start 2015-03-06T14:32:00 "
                                    "--stop 2015-03-06T14:36:00"
                                    ) % metric["id"])

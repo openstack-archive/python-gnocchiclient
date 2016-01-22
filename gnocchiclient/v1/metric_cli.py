@@ -121,6 +121,8 @@ class CliMeasuresShow(CliMetricWithResourceID, lister.Lister):
                             help="beginning of the period")
         parser.add_argument("--stop",
                             help="end of the period")
+        parser.add_argument("--granularity",
+                            help="granularity to retrieve (in seconds)")
         return parser
 
     def take_action(self, parsed_args):
@@ -130,6 +132,7 @@ class CliMeasuresShow(CliMetricWithResourceID, lister.Lister):
             aggregation=parsed_args.aggregation,
             start=parsed_args.start,
             stop=parsed_args.stop,
+            granularity=parsed_args.granularity,
         )
         return self.COLS, measures
 
