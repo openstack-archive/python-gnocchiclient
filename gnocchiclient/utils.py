@@ -112,6 +112,18 @@ def format_archive_policy(ap):
     format_string_list(ap, "aggregation_methods")
 
 
+def format_resource_for_metric(metric):
+    # NOTE(sileht): Gnocchi < 2.0
+    if 'resource' not in metric:
+        return
+
+    if not metric['resource']:
+        metric['resource/id'] = None
+        del metric['resource']
+    else:
+        format_move_dict_to_root(metric, "resource")
+
+
 def dict_from_parsed_args(parsed_args, attrs):
     d = {}
     for attr in attrs:
