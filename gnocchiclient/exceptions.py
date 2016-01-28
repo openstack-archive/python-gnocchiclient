@@ -209,12 +209,21 @@ def from_response(response, method=None):
         except ValueError:
             pass
         else:
-            desc = body.get('description')
-            for enhanced_cls in enhanced_classes:
-                if enhanced_cls.match.match(desc):
-                    cls = enhanced_cls
-                    break
-            kwargs['message'] = desc
+            if 'description' in body:
+                # Gnocchi json
+                desc = body.get('description')
+                if desc:
+                    for enhanced_cls in enhanced_classes:
+                        if enhanced_cls.match.match(desc):
+                            cls = enhanced_cls
+                            break
+                kwargs['message'] = desc
+            elif isinstance(body, dict) and isinstance(body.get("error"),
+                                                       dict):
+                # Keystone json
+                kwargs['message'] = body["error"]["message"]
+            else:
+                kwargs['message'] = response.text
     elif content_type.startswith("text/"):
         kwargs['message'] = response.text
 

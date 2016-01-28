@@ -20,7 +20,7 @@ from gnocchiclient import exceptions
 
 
 class ExceptionsTest(base.BaseTestCase):
-    def test_from_response(self):
+    def test_from_response_404(self):
         r = models.Response()
         r.status_code = 404
         r.headers['Content-Type'] = "application/json"
@@ -29,3 +29,27 @@ class ExceptionsTest(base.BaseTestCase):
         ).encode('utf-8')
         exc = exceptions.from_response(r)
         self.assertIsInstance(exc, exceptions.ArchivePolicyRuleNotFound)
+
+    def test_from_response_keystone_401(self):
+        r = models.Response()
+        r.status_code = 401
+        r.headers['Content-Type'] = "application/json"
+        r._content = json.dumps({"error": {
+            "message": "The request you have made requires authentication.",
+            "code": 401, "title": "Unauthorized"}}
+        ).encode('utf-8')
+        exc = exceptions.from_response(r)
+        self.assertIsInstance(exc, exceptions.Unauthorized)
+        self.assertEqual("The request you have made requires authentication.",
+                         exc.message)
+
+    def test_from_response_unknown_middleware(self):
+        r = models.Response()
+        r.status_code = 400
+        r.headers['Content-Type'] = "application/json"
+        r._content = json.dumps(
+            {"unknown": "random message"}
+        ).encode('utf-8')
+        exc = exceptions.from_response(r)
+        self.assertIsInstance(exc, exceptions.ClientException)
+        self.assertEqual('{"unknown": "random message"}', exc.message)
