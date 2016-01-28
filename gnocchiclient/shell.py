@@ -60,6 +60,7 @@ class GnocchiCommandManager(commandmanager.CommandManager):
         "metric delete": metric_cli.CliMetricDelete,
         "measures show": metric_cli.CliMeasuresShow,
         "measures add": metric_cli.CliMeasuresAdd,
+        "measures batch": metric_cli.CliMeasuresBatch,
         "measures aggregation": metric_cli.CliMeasuresAggregation,
         "capabilities list": capabilities_cli.CliCapabilitiesList,
         "benchmark metric create": benchmark.CliBenchmarkMetricCreate,
