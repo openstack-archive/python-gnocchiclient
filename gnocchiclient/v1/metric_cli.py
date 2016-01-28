@@ -54,6 +54,7 @@ class CliMetricShow(CliMetricWithResourceID, show.ShowOne):
             resource_id=parsed_args.resource_id)
         utils.format_archive_policy(metric["archive_policy"])
         utils.format_move_dict_to_root(metric, "archive_policy")
+        utils.format_resource_for_metric(metric)
         return self.dict2columns(metric)
 
 
@@ -88,6 +89,7 @@ class CliMetricCreate(CliMetricCreateBase):
         metric = self.app.client.metric.create(metric)
         utils.format_archive_policy(metric["archive_policy"])
         utils.format_move_dict_to_root(metric, "archive_policy")
+        utils.format_resource_for_metric(metric)
         return self.dict2columns(metric)
 
 
