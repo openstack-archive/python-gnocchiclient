@@ -9,6 +9,9 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import json
+import os
+import tempfile
 import uuid
 
 from gnocchiclient.tests.functional import base
@@ -124,6 +127,16 @@ class MetricClientTest(base.ClientTestBase):
                            'timestamp': '2015-03-06T14:34:12+00:00',
                            'value': '12.0'}], measures)
 
+        # BATCHING
+        measures = {metric['id']: {'timestamp': '2015-03-06T14:34:12',
+                                   'value': 12}}
+        tmpfile = tempfile.NamedTemporaryFile(delete=False)
+        with tmpfile as f:
+            f.write(json.dumps(measures))
+        self.addCleanup(os.remove(tmpfile.name))
+        self.gnocchi('measures', params=("batch-metrics %s" % tmpfile.name))
+        self.gnocchi('measures', params=("batch-metrics -"), input=measures)
+
         # LIST
         result = self.gnocchi('metric', params="list")
         metrics = self.parser.listing(result)
@@ -225,6 +238,19 @@ class MetricClientTest(base.ClientTestBase):
                           {'granularity': '1.0',
                            'timestamp': '2015-03-06T14:34:12+00:00',
                            'value': '12.0'}], measures)
+
+        # BATCHING
+        measures = {'metric-res': {'metric-name': {
+            'timestamp': '2015-03-06T14:34:12', 'value': 12
+        }}}
+        tmpfile = tempfile.NamedTemporaryFile(delete=False)
+        with tmpfile as f:
+            f.write(json.dumps(measures))
+        self.addCleanup(os.remove(tmpfile.name))
+        self.gnocchi('measures', params=("batch-resources-metrics %s" %
+                                         tmpfile.name))
+        self.gnocchi('measures', params=("batch-resources-metrics -"),
+                     input=measures)
 
         # LIST
         result = self.gnocchi('metric', params="list")
