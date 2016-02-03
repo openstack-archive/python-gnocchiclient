@@ -23,7 +23,7 @@ class BenchmarkMetricTest(base.ClientTestBase):
 
     def test_benchmark_metric_create(self):
         apname = str(uuid.uuid4())
-        # PREPARE AN ACHIVE POLICY
+        # PREPARE AN ARCHIVE POLICY
         self.gnocchi("archive-policy", params="create %s "
                      "--back-window 0 -d granularity:1s,points:86400" % apname)
 
@@ -44,7 +44,7 @@ class BenchmarkMetricTest(base.ClientTestBase):
 
     def test_benchmark_metric_get(self):
         apname = str(uuid.uuid4())
-        # PREPARE AN ACHIVE POLICY
+        # PREPARE AN ARCHIVE POLICY
         self.gnocchi("archive-policy", params="create %s "
                      "--back-window 0 -d granularity:1s,points:86400" % apname)
 
@@ -60,7 +60,7 @@ class BenchmarkMetricTest(base.ClientTestBase):
 
     def test_benchmark_measures_add(self):
         apname = str(uuid.uuid4())
-        # PREPARE AN ACHIVE POLICY
+        # PREPARE AN ARCHIVE POLICY
         self.gnocchi("archive-policy", params="create %s "
                      "--back-window 0 -d granularity:1s,points:86400" % apname)
 
@@ -84,7 +84,7 @@ class BenchmarkMetricTest(base.ClientTestBase):
 
     def test_benchmark_measures_show(self):
         apname = str(uuid.uuid4())
-        # PREPARE AN ACHIVE POLICY
+        # PREPARE AN ARCHIVE POLICY
         self.gnocchi("archive-policy", params="create %s "
                      "--back-window 0 -d granularity:1s,points:86400" % apname)
 
