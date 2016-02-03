@@ -114,7 +114,7 @@ class Conflict(ClientException):
     message = "Conflict"
 
 
-class NamedMetricAreadyExists(Conflict, MutipleMeaningException):
+class NamedMetricAlreadyExists(Conflict, MutipleMeaningException):
     message = "Named metric already exists"
     match = re.compile("Named metric .* does not exist")
 
@@ -167,7 +167,7 @@ _error_classes = [BadRequest, Unauthorized, Forbidden, NotFound,
 _error_classes_enhanced = {
     NotFound: [MetricNotFound, ResourceNotFound, ArchivePolicyRuleNotFound,
                ArchivePolicyNotFound],
-    Conflict: [NamedMetricAreadyExists, ResourceAlreadyExists,
+    Conflict: [NamedMetricAlreadyExists, ResourceAlreadyExists,
                ArchivePolicyAlreadyExists,
                ArchivePolicyRuleAlreadyExists]
 }
