@@ -14,6 +14,7 @@
 
 
 import pyparsing as pp
+import six
 
 uninary_operators = ("not", )
 binary_operator = (u">=", u"<=", u"!=", u">", u"<", u"=", u"==", u"eq", u"ne",
@@ -80,8 +81,17 @@ def _parsed_query2dict(parsed_query):
     return result
 
 
+class MalformedQuery(Exception):
+    def __init__(self, reason):
+        super(MalformedQuery, self).__init__(
+            "Malformed Query: %s" % reason)
+
+
 def search_query_builder(query):
-    parsed_query = expr.parseString(query)[0]
+    try:
+        parsed_query = expr.parseString(query, parseAll=True)[0]
+    except pp.ParseException as e:
+        raise MalformedQuery(six.text_type(e))
     return _parsed_query2dict(parsed_query)
 
 
