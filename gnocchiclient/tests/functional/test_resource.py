@@ -94,7 +94,7 @@ class ResourceClientTest(base.ClientTestBase):
         # Search
         result = self.gnocchi('resource',
                               params=("search --type generic "
-                                      "--query 'project_id=%s'"
+                                      "'project_id=%s'"
                                       ) % self.PROJECT_ID)
         resource_list = self.parser.listing(result)[0]
         self.assertEqual(self.RESOURCE_ID, resource_list["id"])
@@ -123,7 +123,7 @@ class ResourceClientTest(base.ClientTestBase):
         result = self.gnocchi('resource',
                               params=("search "
                                       "-t generic "
-                                      "--query 'project_id=%s' "
+                                      "'project_id=%s' "
                                       "--sort started_at:asc "
                                       "--marker %s "
                                       "--limit 1"
