@@ -101,16 +101,6 @@ class ResourceClientTest(base.ClientTestBase):
         self.assertEqual(self.PROJECT_ID, resource_list["project_id"])
         self.assertEqual(resource["started_at"], resource_list["started_at"])
 
-        # Search with uuid without dashes
-        result = self.gnocchi('resource',
-                              params=("search --type generic "
-                                      "--query 'project_id=%s'"
-                                      ) % self.PROJECT_ID.replace("-", ""))
-        resource_list = self.parser.listing(result)[0]
-        self.assertEqual(self.RESOURCE_ID, resource_list["id"])
-        self.assertEqual(self.PROJECT_ID, resource_list["project_id"])
-        self.assertEqual(resource["started_at"], resource_list["started_at"])
-
         # UPDATE with Delete metric
         result = self.gnocchi(
             'resource', params=("update -t generic %s -a project_id:%s "

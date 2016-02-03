@@ -21,7 +21,7 @@ GNOCCHI_DATA=`mktemp -d /tmp/gnocchi-data-XXXXX`
 MYSQL_DATA=`mktemp -d /tmp/gnocchi-mysql-XXXXX`
 trap "clean_exit \"$GNOCCHI_DATA\" \"$MYSQL_DATA\"" EXIT
 
-pip install http://tarballs.openstack.org/gnocchi/gnocchi-master.tar.gz#egg=gnocchi[mysql,file]
+pip install -U http://tarballs.openstack.org/gnocchi/gnocchi-master.tar.gz#egg=gnocchi[mysql,file]
 
 mysqld --initialize-insecure --datadir=${MYSQL_DATA} || true
 mkfifo ${MYSQL_DATA}/out
@@ -33,10 +33,11 @@ export GNOCCHI_TEST_INDEXER_URL="mysql+pymysql://root@localhost/test?unix_socket
 mysql --no-defaults -S ${MYSQL_DATA}/mysql.socket -e 'CREATE DATABASE test;'
 
 mkfifo ${GNOCCHI_DATA}/out
-echo '{"default": ""}' > ${GNOCCHI_DATA}/policy.json
 cat > ${GNOCCHI_DATA}/gnocchi.conf <<EOF
 [oslo_policy]
-policy_file = ${GNOCCHI_DATA}/policy.json
+policy_file = ${VIRTUAL_ENV}/etc/gnocchi/policy.json
+[api]
+paste_config = ${VIRTUAL_ENV}/etc/gnocchi/api-paste.ini
 [storage]
 metric_processing_delay = 1
 file_basepath = ${GNOCCHI_DATA}
@@ -44,12 +45,6 @@ driver = file
 coordination_url = file://${GNOCCHI_DATA}
 [indexer]
 url = mysql+pymysql://root@localhost/test?unix_socket=${MYSQL_DATA}/mysql.socket&charset=utf8
-EOF
-cat <<EOF > ${GNOCCHI_DATA}/api-paste.ini
-[pipeline:main]
-pipeline = gnocchi
-[app:gnocchi]
-paste.app_factory = gnocchi.rest.app:app_factory
 EOF
 gnocchi-upgrade --config-file ${GNOCCHI_DATA}/gnocchi.conf
 gnocchi-metricd --config-file ${GNOCCHI_DATA}/gnocchi.conf &>/dev/null &
