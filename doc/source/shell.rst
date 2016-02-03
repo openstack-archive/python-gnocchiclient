@@ -75,4 +75,4 @@ List resources::
 
 Search of resources::
 
-    gnocchi resource search --query "project_id=5a301761-f78b-46e2-8900-8b4f6fe6675a and type=instance"
+    gnocchi resource search "project_id='5a301761-f78b-46e2-8900-8b4f6fe6675a' and type=instance"
