@@ -51,6 +51,7 @@ class MetricManager(base.Manager):
             self._ensure_metric_is_uuid(metric)
             url = self.metric_url + metric
         else:
+            resource_id = utils.encode_resource_id(resource_id)
             url = (self.resource_url % resource_id) + metric
         return self._get(url).json()
 
@@ -79,6 +80,7 @@ class MetricManager(base.Manager):
             raise TypeError("metric_name is required if resource_id is set")
 
         del metric['resource_id']
+        resource_id = utils.encode_resource_id(resource_id)
         metric = {metric_name: metric}
         metric = self._post(
             self.resource_url % resource_id,
@@ -99,6 +101,7 @@ class MetricManager(base.Manager):
             self._ensure_metric_is_uuid(metric)
             url = self.metric_url + metric
         else:
+            resource_id = utils.encode_resource_id(resource_id)
             url = self.resource_url % resource_id + metric
         self._delete(url)
 
@@ -117,6 +120,7 @@ class MetricManager(base.Manager):
             self._ensure_metric_is_uuid(metric)
             url = self.metric_url + metric + "/measures"
         else:
+            resource_id = utils.encode_resource_id(resource_id)
             url = self.resource_url % resource_id + metric + "/measures"
         return self._post(
             url, headers={'Content-Type': "application/json"},
@@ -156,6 +160,7 @@ class MetricManager(base.Manager):
             self._ensure_metric_is_uuid(metric)
             url = self.metric_url + metric + "/measures"
         else:
+            resource_id = utils.encode_resource_id(resource_id)
             url = self.resource_url % resource_id + metric + "/measures"
         return self._get(url, params=params).json()
 
