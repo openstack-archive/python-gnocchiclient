@@ -16,6 +16,7 @@ import uuid
 
 import pyparsing as pp
 import six
+from six.moves.urllib import parse as urllib_parse
 
 uninary_operators = ("not", )
 binary_operator = (u">=", u"<=", u"!=", u">", u"<", u"=", u"==", u"eq", u"ne",
@@ -146,7 +147,7 @@ def dict_from_parsed_args(parsed_args, attrs):
 
 
 def dict_to_querystring(objs):
-    return "&".join(["%s=%s" % (k, v)
+    return "&".join(["%s=%s" % (k, urllib_parse.quote(v))
                      for k, v in objs.items()
                      if v is not None])
 
