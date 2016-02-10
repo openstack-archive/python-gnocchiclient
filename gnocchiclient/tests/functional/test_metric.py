@@ -210,7 +210,7 @@ class MetricClientTest(base.ClientTestBase):
 
         # MEASURES AGGREGATION
         result = self.gnocchi(
-            'measures', params=("--debug aggregation "
+            'measures', params=("aggregation "
                                 "--query \"id='metric-res'\" "
                                 "--resource-type \"generic\" "
                                 "-m metric-name "
