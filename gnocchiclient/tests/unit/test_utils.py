@@ -85,3 +85,10 @@ class SearchQueryBuilderTest(base.BaseTestCase):
                           ]},
                           {"=": {"foo": "quote"}},
                       ]})
+
+    def test_dict_to_querystring(self):
+        self.assertEqual("start=2016-02-10T13%3A54%3A53%2B00%3A00"
+                         "&stop=2016-02-10T13%3A56%3A42%2B02%3A00",
+                         utils.dict_to_querystring(
+                             {"start": "2016-02-10T13:54:53+00:00",
+                              "stop": "2016-02-10T13:56:42+02:00"}))
