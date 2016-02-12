@@ -25,7 +25,7 @@ class ArchivePolicyRuleClientTest(base.ClientTestBase):
         # CREATE
         result = self.gnocchi(
             u'archive-policy-rule', params=u"create test"
-            u" --archive-policy %s"
+            u" --archive-policy-name %s"
             u" --metric-pattern 'disk.io.*'" % apname)
         policy_rule = self.details_multiple(result)[0]
         self.assertEqual('test', policy_rule["name"])
@@ -33,7 +33,7 @@ class ArchivePolicyRuleClientTest(base.ClientTestBase):
         # CREATE FAIL
         result = self.gnocchi(
             u'archive-policy-rule', params=u"create test"
-            u" --archive-policy high"
+            u" --archive-policy-name high"
             u" --metric-pattern 'disk.io.*'",
             fail_ok=True, merge_stderr=True)
         self.assertFirstLineStartsWith(
