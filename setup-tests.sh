@@ -21,8 +21,6 @@ GNOCCHI_DATA=`mktemp -d /tmp/gnocchi-data-XXXXX`
 MYSQL_DATA=`mktemp -d /tmp/gnocchi-mysql-XXXXX`
 trap "clean_exit \"$GNOCCHI_DATA\" \"$MYSQL_DATA\"" EXIT
 
-pip install -U http://tarballs.openstack.org/gnocchi/gnocchi-master.tar.gz#egg=gnocchi[mysql,file]
-
 mysqld --initialize-insecure --datadir=${MYSQL_DATA} || true
 mkfifo ${MYSQL_DATA}/out
 PATH=$PATH:/usr/libexec
