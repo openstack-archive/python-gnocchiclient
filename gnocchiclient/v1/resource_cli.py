@@ -22,6 +22,7 @@ class CliResourceList(lister.Lister):
 
     COLS = ('id', 'type',
             'project_id', 'user_id',
+            'original_resource_id',
             'started_at', 'ended_at',
             'revision_start', 'revision_end')
 

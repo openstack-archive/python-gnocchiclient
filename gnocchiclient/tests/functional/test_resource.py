@@ -118,6 +118,8 @@ class ResourceClientTest(base.ClientTestBase):
                                 ) % (self.RAW_RESOURCE_ID2, self.PROJECT_ID))
         resource2 = self.details_multiple(result)[0]
         self.assertEqual(self.RESOURCE_ID2, resource2["id"])
+        self.assertEqual(self.RAW_RESOURCE_ID2,
+                         resource2["original_resource_id"])
         self.assertEqual(self.PROJECT_ID, resource2["project_id"])
         self.assertNotEqual('None', resource2["started_at"])
 
