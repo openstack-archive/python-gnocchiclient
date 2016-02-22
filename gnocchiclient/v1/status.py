@@ -16,6 +16,6 @@ from gnocchiclient.v1 import base
 class StatusManager(base.Manager):
     url = "v1/status"
 
-    def get(self):
+    def get(self, details=False):
         """Get Gnocchi status."""
-        return self._get(self.url).json()
+        return self._get(self.url + '?details=%s' % details).json()
