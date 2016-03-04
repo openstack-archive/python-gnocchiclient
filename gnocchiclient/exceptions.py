@@ -18,7 +18,7 @@ class ClientException(Exception):
     """The base exception class for all exceptions this library raises."""
     message = 'Unknown Error'
 
-    def __init__(self, code, message=None, request_id=None,
+    def __init__(self, code=None, message=None, request_id=None,
                  url=None, method=None):
         self.code = code
         self.message = message or self.__class__.message
@@ -27,10 +27,11 @@ class ClientException(Exception):
         self.method = method
 
     def __str__(self):
-        formatted_string = "%s (HTTP %s)" % (self.message, self.code)
+        formatted_string = "%s" % self.message
+        if self.code:
+            formatted_string += " (HTTP %s)" % self.code
         if self.request_id:
             formatted_string += " (Request-ID: %s)" % self.request_id
-
         return formatted_string
 
 
