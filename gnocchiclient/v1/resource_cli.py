@@ -161,7 +161,11 @@ class CliResourceCreate(show.ShowOne):
                                                  parsed_args.resource_id)
                 default = r['metrics']
                 for metric_name in parsed_args.delete_metric:
-                    default.pop(metric_name, None)
+                    try:
+                        del default[metric_name]
+                    except KeyError:
+                        raise Exception(
+                            "Metric name %s doesn't exists" % metric_name)
             else:
                 default = {}
             resource['metrics'] = default

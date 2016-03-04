@@ -71,7 +71,7 @@ class ResourceClientTest(base.ClientTestBase):
         self.assertEqual(self.RESOURCE_ID, resource_got["id"])
         self.assertEqual(self.PROJECT_ID, resource_got["project_id"])
         self.assertEqual(resource["started_at"], resource_got["started_at"])
-        self.assertIn("temperature", resource_updated["metrics"])
+        self.assertIn("temperature", resource_got["metrics"])
 
         # HISTORY
         result = self.gnocchi(
@@ -110,6 +110,13 @@ class ResourceClientTest(base.ClientTestBase):
                                 (self.RESOURCE_ID, self.PROJECT_ID)))
         resource_updated = self.details_multiple(result)[0]
         self.assertNotIn("temperature", resource_updated["metrics"])
+
+        result = self.gnocchi(
+            'resource', params=("update %s -d temperature" % self.RESOURCE_ID),
+            fail_ok=True, merge_stderr=True)
+        self.assertFirstLineStartsWith(
+            result.split('\n'),
+            "Metric name temperature doesn't exists")
 
         # CREATE 2
         result = self.gnocchi(
