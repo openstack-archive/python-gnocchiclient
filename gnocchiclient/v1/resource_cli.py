@@ -14,6 +14,7 @@ from cliff import command
 from cliff import lister
 from cliff import show
 
+from gnocchiclient import exceptions
 from gnocchiclient import utils
 
 
@@ -161,7 +162,11 @@ class CliResourceCreate(show.ShowOne):
                                                  parsed_args.resource_id)
                 default = r['metrics']
                 for metric_name in parsed_args.delete_metric:
-                    default.pop(metric_name, None)
+                    try:
+                        del default[metric_name]
+                    except KeyError:
+                        raise exceptions.MetricNotFound(
+                            message="Metric name %s not found" % metric_name)
             else:
                 default = {}
             resource['metrics'] = default
