@@ -62,7 +62,7 @@ class MetricManager(base.Manager):
         """Create an metric
 
         :param metric: The metric
-        :type metric: str
+        :type metric: dict
         """
         resource_id = metric.get('resource_id')
 
