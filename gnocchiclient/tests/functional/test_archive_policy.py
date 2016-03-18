@@ -9,6 +9,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import uuid
 
 from gnocchiclient.tests.functional import base
 
@@ -16,55 +17,56 @@ from gnocchiclient.tests.functional import base
 class ArchivePolicyClientTest(base.ClientTestBase):
     def test_archive_policy_scenario(self):
         # CREATE
+        apname = str(uuid.uuid4())
         result = self.gnocchi(
-            u'archive-policy', params=u"create low"
+            u'archive-policy', params=u"create %s"
             u" --back-window 0"
-            u" -d granularity:1s,points:86400")
+            u" -d granularity:1s,points:86400" % apname)
         policy = self.details_multiple(result)[0]
-        self.assertEqual('low', policy["name"])
+        self.assertEqual(apname, policy["name"])
 
         # CREATE FAIL
         result = self.gnocchi(
-            u'archive-policy', params=u"create low"
+            u'archive-policy', params=u"create %s"
             u" --back-window 0"
-            u" -d granularity:1s,points:86400",
+            u" -d granularity:1s,points:86400" % apname,
             fail_ok=True, merge_stderr=True)
         self.assertFirstLineStartsWith(
             result.split('\n'),
-            "Archive policy low already exists (HTTP 409)")
+            "Archive policy %s already exists (HTTP 409)" % apname)
 
         # GET
         result = self.gnocchi(
-            'archive-policy', params="show low")
+            'archive-policy', params="show %s" % apname)
         policy = self.details_multiple(result)[0]
-        self.assertEqual("low", policy["name"])
+        self.assertEqual(apname, policy["name"])
 
         # LIST
         result = self.gnocchi(
             'archive-policy', params="list")
         policies = self.parser.listing(result)
         policy_from_list = [p for p in policies
-                            if p['name'] == 'low'][0]
+                            if p['name'] == apname][0]
         for field in ["back_window", "definition", "aggregation_methods"]:
             self.assertEqual(policy[field], policy_from_list[field])
 
         # DELETE
         result = self.gnocchi('archive-policy',
-                              params="delete low")
+                              params="delete %s" % apname)
         self.assertEqual("", result)
 
         # GET FAIL
         result = self.gnocchi('archive-policy',
-                              params="show low",
+                              params="show %s" % apname,
                               fail_ok=True, merge_stderr=True)
         self.assertFirstLineStartsWith(
             result.split('\n'),
-            "Archive policy low does not exist (HTTP 404)")
+            "Archive policy %s does not exist (HTTP 404)" % apname)
 
         # DELETE FAIL
         result = self.gnocchi('archive-policy',
-                              params="delete low",
+                              params="delete %s" % apname,
                               fail_ok=True, merge_stderr=True)
         self.assertFirstLineStartsWith(
             result.split('\n'),
-            "Archive policy low does not exist (HTTP 404)")
+            "Archive policy %s does not exist (HTTP 404)" % apname)
