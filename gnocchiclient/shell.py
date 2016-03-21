@@ -99,8 +99,10 @@ class GnocchiShell(app.App):
         :param version: version number for the application
         :paramtype version: str
         """
-        parser = super(GnocchiShell, self).build_option_parser(description,
-                                                               version)
+        parser = super(GnocchiShell, self).build_option_parser(
+            description,
+            version,
+            argparse_kwargs={'allow_abbrev': False})
         # Global arguments, one day this should go to keystoneauth1
         parser.add_argument(
             '--os-region-name',
