@@ -245,6 +245,10 @@ class CliBenchmarkMeasuresAdd(CliBenchmarkBase,
                             default=timeutils.utcnow(True),
                             type=timeutils.parse_isotime,
                             help="Last timestamp to use")
+        parser.add_argument("--wait",
+                            default=False,
+                            action='store_true',
+                            help="Wait for all measures to be processed")
         return parser
 
     def take_action(self, parsed_args):
@@ -291,6 +295,22 @@ class CliBenchmarkMeasuresAdd(CliBenchmarkBase,
                 parsed_args.batch * pool.statistics.executed / runtime
             )
         )
+
+        if parsed_args.wait:
+            with timeutils.StopWatch() as sw:
+                while True:
+                    status = self.app.client.status.get()
+                    remaining = int(status['storage']['summary']['measures'])
+                    if remaining == 0:
+                        stats['extra wait to process measures'] = (
+                            "%s seconds" % sw.elapsed()
+                        )
+                        break
+                    else:
+                        LOG.info(
+                            "Remaining measures to be processed: %d"
+                            % remaining)
+                    time.sleep(1)
 
         return self.dict2columns(stats)
 
