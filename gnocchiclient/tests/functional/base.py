@@ -29,7 +29,7 @@ class GnocchiClient(object):
 
     def __init__(self):
         self.cli_dir = os.environ.get('GNOCCHI_CLIENT_EXEC_DIR')
-        self.endpoint = os.environ.get('OVERTEST_GNOCCHI_HTTP_URL')
+        self.endpoint = os.environ.get('PIFPAF_GNOCCHI_HTTP_URL')
         self.user_id = str(uuid.uuid4())
         self.project_id = str(uuid.uuid4())
 

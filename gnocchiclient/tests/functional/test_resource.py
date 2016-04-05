@@ -176,12 +176,13 @@ class ResourceClientTest(base.ClientTestBase):
         self.assertNotIn(self.RESOURCE_ID2, resource_ids)
 
         # LIST THE RESOUCES TYPES
-        resource_type = ('instance', 'generic', 'volume',
-                         'instance_disk', 'stack', 'identity')
-
         result = self.gnocchi(
             'resource', params="list-types")
-        result_list = self.parser.listing(result)
-        type_from_list = [t['resource_type'] for t in result_list]
-        for one_type in resource_type:
-            self.assertIn(one_type, type_from_list)
+        r = self.parser.listing(result)
+        self.assertEqual([
+            {
+                'resource_controller_url':
+                'http://localhost:8041/v1/resource/generic',
+                'resource_type': 'generic'
+            },
+        ], r)
