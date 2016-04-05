@@ -66,7 +66,7 @@ class CliMetricCreateBase(show.ShowOne, CliMetricWithResourceID):
         parser = super(CliMetricCreateBase, self).get_parser(prog_name)
         parser.add_argument("--archive-policy-name", "-a",
                             dest="archive_policy_name",
-                            help=("name of the archive policy"))
+                            help="name of the archive policy")
         return parser
 
     def take_action(self, parsed_args):
@@ -230,7 +230,7 @@ class CliMeasuresAggregation(lister.Lister):
         if parsed_args.query:
             query = utils.search_query_builder(parsed_args.query)
             if len(parsed_args.metric) != 1:
-                raise ValueError("One metric is required if query is provied")
+                raise ValueError("One metric is required if query is provided")
             metrics = parsed_args.metric[0]
         measures = self.app.client.metric.aggregation(
             metrics=metrics,

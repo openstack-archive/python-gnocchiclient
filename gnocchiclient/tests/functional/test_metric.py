@@ -136,7 +136,7 @@ class MetricClientTest(base.ClientTestBase):
         with tmpfile as f:
             f.write(measures.encode('utf8'))
         self.gnocchi('measures', params=("batch-metrics %s" % tmpfile.name))
-        self.gnocchi('measures', params=("batch-metrics -"),
+        self.gnocchi('measures', params="batch-metrics -",
                      input=measures.encode('utf8'))
 
         # LIST
@@ -252,7 +252,7 @@ class MetricClientTest(base.ClientTestBase):
 
         self.gnocchi('measures', params=("batch-resources-metrics %s" %
                                          tmpfile.name))
-        self.gnocchi('measures', params=("batch-resources-metrics -"),
+        self.gnocchi('measures', params="batch-resources-metrics -",
                      input=measures.encode('utf8'))
 
         # LIST
