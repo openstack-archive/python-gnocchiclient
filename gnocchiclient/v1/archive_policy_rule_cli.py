@@ -49,14 +49,14 @@ class CliArchivePolicyRuleCreate(show.ShowOne):
     def get_parser(self, prog_name):
         parser = super(CliArchivePolicyRuleCreate, self).get_parser(prog_name)
         parser.add_argument("name",
-                            help=("Rule name"))
+                            help="Rule name")
         parser.add_argument("-a", "--archive-policy-name",
                             dest="archive_policy_name",
                             required=True,
-                            help=("Archive policy name"))
+                            help="Archive policy name")
         parser.add_argument("-m", "--metric-pattern",
                             dest="metric_pattern", required=True,
-                            help=("Wildcard of metric name to match"))
+                            help="Wildcard of metric name to match")
         return parser
 
     def take_action(self, parsed_args):
