@@ -89,13 +89,14 @@ class CliResourceSearch(CliResourceList):
 
     def get_parser(self, prog_name):
         parser = super(CliResourceSearch, self).get_parser(prog_name)
-        parser.add_argument("query", help="Query")
+        parser.add_argument("query", help="Query",
+                            type=utils.search_query_builder)
         return parser
 
     def take_action(self, parsed_args):
         resources = self.app.client.resource.search(
             resource_type=parsed_args.resource_type,
-            query=utils.search_query_builder(parsed_args.query),
+            query=parsed_args.query,
             **self._get_pagination_options(parsed_args))
         return utils.list2cols(self.COLS, resources)
 

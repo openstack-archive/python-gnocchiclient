@@ -219,22 +219,21 @@ class CliMeasuresAggregation(lister.Lister):
         parser.add_argument("--needed-overlap", type=float,
                             help=("percent of datapoints in each "
                                   "metrics required"))
-        parser.add_argument("--query", help="Query"),
+        parser.add_argument("--query", help="Query",
+                            type=utils.search_query_builder),
         parser.add_argument("--resource-type", default="generic",
                             help="Resource type to query"),
         return parser
 
     def take_action(self, parsed_args):
         metrics = parsed_args.metric
-        query = None
         if parsed_args.query:
-            query = utils.search_query_builder(parsed_args.query)
             if len(parsed_args.metric) != 1:
                 raise ValueError("One metric is required if query is provied")
             metrics = parsed_args.metric[0]
         measures = self.app.client.metric.aggregation(
             metrics=metrics,
-            query=query,
+            query=parsed_args.query,
             aggregation=parsed_args.aggregation,
             start=parsed_args.start,
             stop=parsed_args.stop,
