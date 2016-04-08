@@ -3,22 +3,22 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Python bindings to the Gnocchi API
+Python bindings and command line tool to the Gnocchi API
 ========================================================
 
-This is a client for gnocchi API. There's :doc:`a Python API
-<api>` (the :mod:`gnocchiclient` module), and a :doc:`command-line script
-<shell>` (installed as :program:`gnocchi`). Each implements the entire
-Gnocchi API.
+This is a client for `Gnocchi`_. There's :doc:`a Python API <api>` (the
+:mod:`gnocchiclient` module), and a :doc:`command-line script <shell>`
+(installed as :program:`gnocchi`). Each implements the entire Gnocchi API.
 
 .. seealso::
 
-    You may want to read the `Gnocchi Developer Guide`__  -- the overview, at
-    least -- to get an idea of the concepts. By understanding the concepts
-    this library should make more sense.
+    You may want to read the `Gnocchi documentation`__ to get an idea of the
+    concepts. By understanding the concepts this library and client should make
+    more sense.
 
     __ http://docs.openstack.org/developer/gnocchi/
 
+.. _Gnocchi: http://gnocchi.xyz
 
 Contents:
 
