@@ -219,8 +219,7 @@ class CliMeasuresAggregation(lister.Lister):
         parser.add_argument("--needed-overlap", type=float,
                             help=("percent of datapoints in each "
                                   "metrics required"))
-        parser.add_argument("--query", help="Query",
-                            type=utils.search_query_builder),
+        utils.add_query_argument("--query", parser)
         parser.add_argument("--resource-type", default="generic",
                             help="Resource type to query"),
         return parser
