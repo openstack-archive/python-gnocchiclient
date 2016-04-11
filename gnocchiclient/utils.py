@@ -147,9 +147,16 @@ def dict_from_parsed_args(parsed_args, attrs):
 
 
 def dict_to_querystring(objs):
-    return "&".join(["%s=%s" % (k, urllib_parse.quote(six.text_type(v)))
-                     for k, v in objs.items()
-                     if v is not None])
+    strings = []
+    for k, values in objs.items():
+        if values:
+            if not isinstance(values, (list, tuple)):
+                values = [values]
+            strings.append("&".join(
+                ("%s=%s" % (k, v)
+                 for v in map(urllib_parse.quote,
+                              map(six.text_type, values)))))
+    return "&".join(strings)
 
 
 # uuid5 namespace for id transformation.
