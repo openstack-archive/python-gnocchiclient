@@ -222,6 +222,9 @@ class CliMeasuresAggregation(lister.Lister):
         parser.add_argument("--query", help="Query"),
         parser.add_argument("--resource-type", default="generic",
                             help="Resource type to query"),
+        parser.add_argument("--groupby",
+                            action='append',
+                            help="Attribute to use to group resources"),
         return parser
 
     def take_action(self, parsed_args):
@@ -240,5 +243,16 @@ class CliMeasuresAggregation(lister.Lister):
             stop=parsed_args.stop,
             needed_overlap=parsed_args.needed_overlap,
             resource_type=parsed_args.resource_type,
+            groupby=parsed_args.groupby,
         )
+        if parsed_args.groupby:
+            ms = []
+            for g in measures:
+                group_name = ", ".join("%s: %s" % (k, g['group'][k])
+                                       for k in sorted(g['group']))
+                for m in g['measures']:
+                    i = [group_name]
+                    i.extend(m)
+                    ms.append(i)
+            return ('group',) + self.COLS, ms
         return self.COLS, measures

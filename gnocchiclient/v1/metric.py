@@ -193,7 +193,8 @@ class MetricManager(base.Manager):
 
     def aggregation(self, metrics, query=None,
                     start=None, stop=None, aggregation=None,
-                    needed_overlap=None, resource_type="generic"):
+                    needed_overlap=None, resource_type="generic",
+                    groupby=None):
         """Get measurements of a aggregated metrics
 
         :param metrics: IDs of metric or metric name
@@ -208,6 +209,8 @@ class MetricManager(base.Manager):
         :type aggregation: str
         :param resource_type: type of resource for the query
         :type resource_type: str
+        :param groupby: list of attribute to group by
+        :type groupby: list
 
         See Gnocchi REST API documentation for the format
         of *query dictionary*
@@ -220,7 +223,8 @@ class MetricManager(base.Manager):
             stop = stop.isoformat()
 
         params = dict(start=start, stop=stop, aggregation=aggregation,
-                      needed_overlap=needed_overlap)
+                      needed_overlap=needed_overlap,
+                      groupby=groupby)
         if query is None:
             for metric in metrics:
                 self._ensure_metric_is_uuid(metric)
