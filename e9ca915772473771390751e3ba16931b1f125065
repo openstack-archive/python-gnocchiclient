@@ -1,0 +1,9 @@
+Code-Review+2: Mehdi Abaakouk (sileht) <sileht@redhat.com>
+Code-Review+2: gordon chung <gord@live.ca>
+Workflow+1: gordon chung <gord@live.ca>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Tue, 12 Apr 2016 07:49:14 +0000
+Reviewed-on: https://review.openstack.org/303442
+Project: openstack/python-gnocchiclient
+Branch: refs/heads/master
