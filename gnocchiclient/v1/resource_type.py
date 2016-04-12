@@ -11,6 +11,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from oslo_serialization import jsonutils
+
 from gnocchiclient.v1 import base
 
 
@@ -20,3 +22,14 @@ class ResourceTypeManager(base.Manager):
     def list(self):
         """List resource types."""
         return self._get(self.url).json()
+
+    def create(self, resource_type):
+        """Create a resource type
+
+        :param resource_type: Resource type
+        :type resource_type: dict
+        """
+        return self._post(
+            self.url,
+            headers={'Content-Type': "application/json"},
+            data=jsonutils.dumps(resource_type)).json()
