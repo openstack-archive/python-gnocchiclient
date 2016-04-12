@@ -19,6 +19,7 @@ from gnocchiclient.v1 import archive_policy_rule
 from gnocchiclient.v1 import capabilities
 from gnocchiclient.v1 import metric
 from gnocchiclient.v1 import resource
+from gnocchiclient.v1 import resource_type
 from gnocchiclient.v1 import status
 
 
@@ -34,6 +35,7 @@ class Client(object):
         self.api = client.SessionClient(session, service_type=service_type,
                                         **kwargs)
         self.resource = resource.ResourceManager(self)
+        self.resource_type = resource_type.ResourceTypeManager(self)
         self.archive_policy = archive_policy.ArchivePolicyManager(self)
         self.archive_policy_rule = (
             archive_policy_rule.ArchivePolicyRuleManager(self))
