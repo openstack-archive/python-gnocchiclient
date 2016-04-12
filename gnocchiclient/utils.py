@@ -128,6 +128,13 @@ def format_dict_list(objs, field):
         for elem in objs[field])
 
 
+def format_dict_dict(value):
+    return "\n".join(
+        "- %s: " % name + " , ".join("%s: %s" % (k, v)
+                                     for k, v in elem.items())
+        for name, elem in value.items())
+
+
 def format_move_dict_to_root(obj, field):
     for attr in obj[field]:
         obj["%s/%s" % (field, attr)] = obj[field][attr]
