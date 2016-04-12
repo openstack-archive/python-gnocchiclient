@@ -179,10 +179,8 @@ class ResourceClientTest(base.ClientTestBase):
         result = self.gnocchi(
             'resource', params="list-types")
         r = self.parser.listing(result)
-        self.assertEqual([
-            {
-                'resource_controller_url':
-                'http://localhost:8041/v1/resource/generic',
-                'resource_type': 'generic'
-            },
-        ], r)
+        self.assertIn({
+            'resource_controller_url':
+            'http://localhost:8041/v1/resource/generic',
+            'resource_type': 'generic'
+        }, r)

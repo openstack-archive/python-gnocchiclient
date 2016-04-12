@@ -10,10 +10,13 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import uuid
+
 from gnocchiclient.tests.functional import base
 
 
 class ResourceTypeClientTest(base.ClientTestBase):
+    RESOURCE_TYPE = str(uuid.uuid4())
 
     def test_help(self):
         self.gnocchi("help", params="resource list")
@@ -23,3 +26,14 @@ class ResourceTypeClientTest(base.ClientTestBase):
         result = self.gnocchi('resource-type', params="list")
         r = self.parser.listing(result)
         self.assertEqual([{'attributes': '', 'name': 'generic'}], r)
+
+        # CREATE
+        result = self.gnocchi(
+            u'resource-type',
+            params=u"create -a foo:string:1:max_length=16 "
+                   "-a bar:number:no:max=32 %s" % self.RESOURCE_TYPE)
+        resource = self.details_multiple(result)[0]
+        self.assertEqual(self.RESOURCE_TYPE, resource["name"])
+        self.assertEqual(
+            "max_length=16, min_length=0, required=True, type=string",
+            resource["attributes/foo"])
