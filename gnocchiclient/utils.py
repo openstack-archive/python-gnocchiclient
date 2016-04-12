@@ -141,6 +141,14 @@ def format_move_dict_to_root(obj, field):
     del obj[field]
 
 
+def format_resource_type(rt):
+    format_move_dict_to_root(rt, "attributes")
+    for key in rt:
+        if key.startswith("attributes"):
+            rt[key] = ", ".join(
+                "%s=%s" % (k, v) for k, v in sorted(rt[key].items()))
+
+
 def format_archive_policy(ap):
     format_dict_list(ap, "definition")
     format_string_list(ap, "aggregation_methods")
@@ -192,3 +200,6 @@ def encode_resource_id(value):
                 'transformable resource id >255 max allowed characters')
     except Exception as e:
         raise ValueError(e)
+
+
+
