@@ -77,9 +77,9 @@ class BenchmarkPool(futurist.ProcessPoolExecutor):
 
     def map_job(self, fn, iterable, **kwargs):
         self.sw = timeutils.StopWatch()
-        self.sw.start()
         r = []
         self.times = 0
+        self.sw.start()
         for item in iterable:
             r.append(self.submit(measure_job, fn, item, **kwargs))
             self.times += 1
@@ -98,10 +98,10 @@ class BenchmarkPool(futurist.ProcessPoolExecutor):
     def wait_job(self, verb, futures):
         while self.statistics.executed != self.times:
             self._log_progress(verb)
-            time.sleep(1)
+            time.sleep(0.2)
+        runtime = self.sw.elapsed()
         self._log_progress(verb)
         self.shutdown(wait=True)
-        runtime = self.sw.elapsed()
         results = []
         latencies = []
         for f in futures:
