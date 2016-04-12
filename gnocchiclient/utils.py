@@ -103,15 +103,15 @@ def list2cols(cols, objs):
                   for o in objs]
 
 
-def format_string_list(objs, field):
-    objs[field] = ", ".join(objs[field])
+def format_string_list(l):
+    return ", ".join(l)
 
 
-def format_dict_list(objs, field):
-    objs[field] = "\n".join(
+def format_dict_list(l):
+    return "\n".join(
         "- " + ", ".join("%s: %s" % (k, v)
                          for k, v in elem.items())
-        for elem in objs[field])
+        for elem in l)
 
 
 def format_move_dict_to_root(obj, field):
@@ -121,8 +121,8 @@ def format_move_dict_to_root(obj, field):
 
 
 def format_archive_policy(ap):
-    format_dict_list(ap, "definition")
-    format_string_list(ap, "aggregation_methods")
+    ap['definition'] = format_dict_list(ap['definition'])
+    ap['aggregation_methods'] = format_string_list(ap['aggregation_methods'])
 
 
 def format_resource_for_metric(metric):
