@@ -11,6 +11,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 from cliff import lister
+from cliff import show
+from oslo_utils import strutils
 
 from gnocchiclient import utils
 
@@ -26,3 +28,52 @@ class CliResourceTypeList(lister.Lister):
             resource_type['attributes'] = utils.format_dict_dict(
                 resource_type['attributes'])
         return utils.list2cols(self.COLS, resource_types)
+
+
+class CliResourceTypeCreate(show.ShowOne):
+    """Create a resource type"""
+
+    def get_parser(self, prog_name):
+        parser = super(CliResourceTypeCreate, self).get_parser(prog_name)
+        parser.add_argument("name", help="name of the resource type")
+        parser.add_argument("-a", "--attribute", action='append',
+                            type=self._resource_attribute,
+                            default=[],
+                            help=(u"attribute definition, "
+                                  u"attribute_name:"
+                                  u"attribute_type:"
+                                  u"attribute_is_required:"
+                                  u"attribute_type_option_name="
+                                  u"attribute_type_option_value:\u2026 "
+                                  u"For example: "
+                                  u"display_name:string:true:max_length=255"))
+        return parser
+
+    @classmethod
+    def _resource_attribute(cls, value):
+        config = value.split(":")
+        name = config.pop(0)
+        attrs = {}
+        if config:
+            attrs["type"] = config.pop(0)
+        if config:
+            attrs["required"] = strutils.bool_from_string(config.pop(0),
+                                                          strict=True)
+        while config:
+            param, _, value = config.pop(0).partition("=")
+            try:
+                attrs[param] = int(value)
+            except ValueError:
+                try:
+                    attrs[param] = float(value)
+                except ValueError:
+                    attrs[param] = value
+        return (name, attrs)
+
+    def take_action(self, parsed_args):
+        resource_type = {'name': parsed_args.name}
+        if parsed_args.attribute:
+            resource_type['attributes'] = dict(parsed_args.attribute)
+        res = self.app.client.resource_type.create(resource_type=resource_type)
+        utils.format_resource_type(res)
+        return self.dict2columns(res)
