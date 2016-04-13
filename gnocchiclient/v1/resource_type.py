@@ -42,3 +42,11 @@ class ResourceTypeManager(base.Manager):
         """
         return self._get(self.url + name,
                          headers={'Content-Type': "application/json"}).json()
+
+    def delete(self, name):
+        """Delete a resource type
+
+        :param resource_type: Resource type
+        :type resource_type: dict
+        """
+        self._delete(self.url + name)
