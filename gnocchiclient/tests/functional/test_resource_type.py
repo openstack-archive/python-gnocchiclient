@@ -46,3 +46,24 @@ class ResourceTypeClientTest(base.ClientTestBase):
         self.assertEqual(
             "max_length=16, min_length=0, required=True, type=string",
             resource["attributes/foo"])
+
+        # DELETE
+        result = self.gnocchi('resource-type',
+                              params="delete %s" % self.RESOURCE_TYPE)
+        self.assertEqual("", result)
+
+        # DELETE AGAIN
+        result = self.gnocchi('resource-type',
+                              params="delete %s" % self.RESOURCE_TYPE,
+                              fail_ok=True, merge_stderr=True)
+        self.assertFirstLineStartsWith(
+            result.split('\n'),
+            "Resource type %s does not exist (HTTP 404)" % self.RESOURCE_TYPE)
+
+        # SHOW AGAIN
+        result = self.gnocchi(u'resource-type',
+                              params=u"show %s" % self.RESOURCE_TYPE,
+                              fail_ok=True, merge_stderr=True)
+        self.assertFirstLineStartsWith(
+            result.split('\n'),
+            "Resource type %s does not exist (HTTP 404)" % self.RESOURCE_TYPE)

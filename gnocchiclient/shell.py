@@ -50,6 +50,7 @@ class GnocchiCommandManager(commandmanager.CommandManager):
         "resource-type list": resource_type_cli.CliResourceTypeList,
         "resource-type create": resource_type_cli.CliResourceTypeCreate,
         "resource-type show": resource_type_cli.CliResourceTypeShow,
+        "resource-type delete": resource_type_cli.CliResourceTypeDelete,
         "archive-policy list": archive_policy_cli.CliArchivePolicyList,
         "archive-policy show": archive_policy_cli.CliArchivePolicyShow,
         "archive-policy create": archive_policy_cli.CliArchivePolicyCreate,

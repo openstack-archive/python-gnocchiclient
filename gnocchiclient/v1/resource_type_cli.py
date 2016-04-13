@@ -10,6 +10,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+from cliff import command
 from cliff import lister
 from cliff import show
 from oslo_utils import strutils
@@ -91,3 +92,15 @@ class CliResourceTypeShow(show.ShowOne):
         res = self.app.client.resource_type.get(name=parsed_args.name)
         utils.format_resource_type(res)
         return self.dict2columns(res)
+
+
+class CliResourceTypeDelete(command.Command):
+    """Delete a resource type"""
+
+    def get_parser(self, prog_name):
+        parser = super(CliResourceTypeDelete, self).get_parser(prog_name)
+        parser.add_argument("name", help="name of the resource type")
+        return parser
+
+    def take_action(self, parsed_args):
+        self.app.client.resource_type.delete(parsed_args.name)
