@@ -69,3 +69,17 @@ class CliResourceTypeCreate(show.ShowOne):
         res = self.app.client.resource_type.create(resource_type=resource_type)
         utils.format_resource_type(res)
         return self.dict2columns(res)
+
+
+class CliResourceTypeShow(show.ShowOne):
+    """Show a resource type"""
+
+    def get_parser(self, prog_name):
+        parser = super(CliResourceTypeShow, self).get_parser(prog_name)
+        parser.add_argument("name", help="name of the resource type")
+        return parser
+
+    def take_action(self, parsed_args):
+        res = self.app.client.resource_type.get(name=parsed_args.name)
+        utils.format_resource_type(res)
+        return self.dict2columns(res)
