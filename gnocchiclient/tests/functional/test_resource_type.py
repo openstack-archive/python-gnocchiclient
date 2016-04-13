@@ -2,8 +2,7 @@
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
 #
-#         http://www.apache.org/licenses/LICENSE-2.0
-#
+#         http://www.apache.org/licenses/LICENSE-2.0#
 #    Unless required by applicable law or agreed to in writing, software
 #    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -46,3 +45,24 @@ class ResourceTypeClientTest(base.ClientTestBase):
         self.assertEqual(
             "max_length=16, min_length=0, required=True, type=string",
             resource["attributes/foo"])
+
+        # DELETE
+        result = self.gnocchi('resource-type',
+                              params="delete %s" % self.RESOURCE_TYPE)
+        self.assertEqual("", result)
+
+        # DELETE AGAIN
+        result = self.gnocchi('resource-type',
+                              params="delete %s" % self.RESOURCE_TYPE,
+                              fail_ok=True, merge_stderr=True)
+        self.assertFirstLineStartsWith(
+            result.split('\n'),
+            "Resource type %s does not exist (HTTP 404)" % self.RESOURCE_TYPE)
+
+        # SHOW AGAIN
+        result = self.gnocchi(u'resource-type',
+                              params=u"show %s" % self.RESOURCE_TYPE,
+                              fail_ok=True, merge_stderr=True)
+        self.assertFirstLineStartsWith(
+            result.split('\n'),
+            "Resource type %s does not exist (HTTP 404)" % self.RESOURCE_TYPE)
