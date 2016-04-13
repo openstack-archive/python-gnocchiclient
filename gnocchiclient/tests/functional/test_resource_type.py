@@ -37,3 +37,12 @@ class ResourceTypeClientTest(base.ClientTestBase):
         self.assertEqual(
             "max_length=16, min_length=0, required=True, type=string",
             resource["attributes/foo"])
+
+        # SHOW
+        result = self.gnocchi(
+            u'resource-type', params=u"show %s" % self.RESOURCE_TYPE)
+        resource = self.details_multiple(result)[0]
+        self.assertEqual(self.RESOURCE_TYPE, resource["name"])
+        self.assertEqual(
+            "max_length=16, min_length=0, required=True, type=string",
+            resource["attributes/foo"])
