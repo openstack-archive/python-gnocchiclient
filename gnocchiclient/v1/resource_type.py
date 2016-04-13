@@ -26,10 +26,19 @@ class ResourceTypeManager(base.Manager):
     def create(self, resource_type):
         """Create a resource type
 
-        :param resource_type: Resource type
+        :param resource_type: resource type
         :type resource_type: dict
         """
         return self._post(
             self.url,
             headers={'Content-Type': "application/json"},
             data=jsonutils.dumps(resource_type)).json()
+
+    def get(self, name):
+        """Get a resource type
+
+        :param name: name of the resource type
+        :type name: str
+        """
+        return self._get(self.url + name,
+                         headers={'Content-Type': "application/json"}).json()
