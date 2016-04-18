@@ -45,6 +45,20 @@ class ArchivePolicyManager(base.Manager):
             self.url, headers={'Content-Type': "application/json"},
             data=jsonutils.dumps(archive_policy)).json()
 
+    def update(self, name, archive_policy):
+        """Update an archive policy
+
+        :param name: the name of archive policy
+        :type name: str
+        :param archive_policy: the archive policy
+        :type archive_policy: dict
+
+        """
+        return self._patch(
+            self.url + '/' + name,
+            headers={'Content-Type': "application/json"},
+            data=jsonutils.dumps(archive_policy)).json()
+
     def delete(self, name):
         """Delete an archive policy
 
