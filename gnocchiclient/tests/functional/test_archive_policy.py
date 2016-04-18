@@ -50,6 +50,23 @@ class ArchivePolicyClientTest(base.ClientTestBase):
         for field in ["back_window", "definition", "aggregation_methods"]:
             self.assertEqual(policy[field], policy_from_list[field])
 
+        # UPDATE
+        result = self.gnocchi(
+            'archive-policy', params='update %s'
+            ' -d granularity:1s,points:60' % apname)
+        policy = self.details_multiple(result)[0]
+        self.assertEqual(apname, policy["name"])
+
+        # UPDATE FAIL
+        result = self.gnocchi(
+            'archive-policy', params='update %s'
+            ' -d granularity:5s,points:86400' % apname,
+            fail_ok=True, merge_stderr=True)
+        self.assertFirstLineStartsWith(
+            result.split('\n'),
+            "Archive policy %s does not support change: 1.0 granularity "
+            "interval was changed (HTTP 400)" % apname)
+
         # DELETE
         result = self.gnocchi('archive-policy',
                               params="delete %s" % apname)
