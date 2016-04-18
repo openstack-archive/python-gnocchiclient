@@ -92,6 +92,29 @@ class CliArchivePolicyCreate(show.ShowOne):
         return self.dict2columns(ap)
 
 
+class CliArchivePolicyUpdate(show.ShowOne):
+    """Update an archive policy"""
+
+    def get_parser(self, prog_name):
+        parser = super(CliArchivePolicyCreate, self).get_parser(prog_name)
+        parser.add_argument("name", help="name of the archive policy")
+        parser.add_argument("-d", "--definition", action='append',
+                            required=True, type=archive_policy_definition,
+                            metavar="<DEFINITION>",
+                            help=("two attributes (separated by ',') of an "
+                                  "archive policy definition with its name "
+                                  "and value separated with a ':'"))
+        return parser
+
+    def take_action(self, parsed_args):
+        archive_policy = utils.dict_from_parsed_args(
+            parsed_args, ['definition'])
+        ap = self.app.client.archive_policy.update(
+            name=parsed_args.name, archive_policy=archive_policy)
+        utils.format_archive_policy(ap)
+        return self.dict2columns(ap)
+
+
 class CliArchivePolicyDelete(command.Command):
     """Delete an archive policy"""
 
