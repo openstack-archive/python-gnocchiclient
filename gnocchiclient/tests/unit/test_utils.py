@@ -96,3 +96,10 @@ class SearchQueryBuilderTest(base.BaseTestCase):
             {"start": "2016-02-10T13:54:53+00:00",
              "stop": "2016-02-10T13:56:42+02:00"}),
             expected)
+
+        self.assertEqual(
+            "groupby=foo&groupby=bar",
+            utils.dict_to_querystring({
+                "groupby": ["foo", "bar"]
+            }),
+        )
