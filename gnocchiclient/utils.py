@@ -210,6 +210,10 @@ def encode_resource_id(value):
 
 
 def get_client(obj):
-    # TODO(sileht): return the location of Gnocchi client when the app is the
-    # OSC one instead of the Gnocchi one
-    return obj.app.client
+    if hasattr(obj.app, 'client_manager'):
+        # NOTE(sileht): cliff objects loaded by OSC
+        return obj.app.client_manager.metric
+    else:
+        # TODO(sileht): Remove this when OSC is able
+        # to install the gnocchi client binary itself
+        return obj.app.client
