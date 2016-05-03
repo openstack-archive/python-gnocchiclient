@@ -13,12 +13,14 @@
 
 from cliff import show
 
+from gnocchiclient import utils
+
 
 class CliStatusShow(show.ShowOne):
     """Show the status of measurements processing"""
 
     def take_action(self, parsed_args):
-        status = self.app.client.status.get()
+        status = utils.get_client(self).status.get()
 
         return self.dict2columns({
             "storage/total number of measures to process":

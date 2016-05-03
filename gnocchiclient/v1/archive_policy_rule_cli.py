@@ -24,7 +24,7 @@ class CliArchivePolicyRuleList(lister.Lister):
     COLS = ('name', 'archive_policy_name', 'metric_pattern')
 
     def take_action(self, parsed_args):
-        ap_rules = self.app.client.archive_policy_rule.list()
+        ap_rules = utils.get_client(self).archive_policy_rule.list()
         return utils.list2cols(self.COLS, ap_rules)
 
 
@@ -38,7 +38,7 @@ class CliArchivePolicyRuleShow(show.ShowOne):
         return parser
 
     def take_action(self, parsed_args):
-        ap_rule = self.app.client.archive_policy_rule.get(
+        ap_rule = utils.get_client(self).archive_policy_rule.get(
             name=parsed_args.name)
         return self.dict2columns(ap_rule)
 
@@ -62,7 +62,7 @@ class CliArchivePolicyRuleCreate(show.ShowOne):
     def take_action(self, parsed_args):
         rule = utils.dict_from_parsed_args(
             parsed_args, ["name", "metric_pattern", "archive_policy_name"])
-        policy = self.app.client.archive_policy_rule.create(rule)
+        policy = utils.get_client(self).archive_policy_rule.create(rule)
         return self.dict2columns(policy)
 
 
@@ -76,4 +76,4 @@ class CliArchivePolicyRuleDelete(command.Command):
         return parser
 
     def take_action(self, parsed_args):
-        self.app.client.archive_policy_rule.delete(parsed_args.name)
+        utils.get_client(self).archive_policy_rule.delete(parsed_args.name)

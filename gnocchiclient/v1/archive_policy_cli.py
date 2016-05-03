@@ -25,7 +25,7 @@ class CliArchivePolicyList(lister.Lister):
             'back_window', 'definition', 'aggregation_methods')
 
     def take_action(self, parsed_args):
-        policies = self.app.client.archive_policy.list()
+        policies = utils.get_client(self).archive_policy.list()
         for ap in policies:
             utils.format_archive_policy(ap)
         return utils.list2cols(self.COLS, policies)
@@ -41,7 +41,7 @@ class CliArchivePolicyShow(show.ShowOne):
         return parser
 
     def take_action(self, parsed_args):
-        ap = self.app.client.archive_policy.get(
+        ap = utils.get_client(self).archive_policy.get(
             name=parsed_args.name)
         utils.format_archive_policy(ap)
         return self.dict2columns(ap)
@@ -86,7 +86,7 @@ class CliArchivePolicyCreate(show.ShowOne):
         archive_policy = utils.dict_from_parsed_args(
             parsed_args, ['name', 'back_window', 'aggregation_methods',
                           'definition'])
-        ap = self.app.client.archive_policy.create(
+        ap = utils.get_client(self).archive_policy.create(
             archive_policy=archive_policy)
         utils.format_archive_policy(ap)
         return self.dict2columns(ap)
@@ -102,4 +102,4 @@ class CliArchivePolicyDelete(command.Command):
         return parser
 
     def take_action(self, parsed_args):
-        self.app.client.archive_policy.delete(name=parsed_args.name)
+        utils.get_client(self).archive_policy.delete(name=parsed_args.name)

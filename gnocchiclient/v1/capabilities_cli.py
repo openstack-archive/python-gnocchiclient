@@ -13,10 +13,12 @@
 
 from cliff import show
 
+from gnocchiclient import utils
+
 
 class CliCapabilitiesList(show.ShowOne):
     """List capabilities"""
 
     def take_action(self, parsed_args):
-        caps = self.app.client.capabilities.list()
+        caps = utils.get_client(self).capabilities.list()
         return self.dict2columns(caps)

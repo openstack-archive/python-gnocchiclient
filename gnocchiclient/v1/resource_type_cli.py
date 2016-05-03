@@ -24,7 +24,7 @@ class CliResourceTypeList(lister.Lister):
     COLS = ('name', 'attributes')
 
     def take_action(self, parsed_args):
-        resource_types = self.app.client.resource_type.list()
+        resource_types = utils.get_client(self).resource_type.list()
         for resource_type in resource_types:
             resource_type['attributes'] = utils.format_dict_dict(
                 resource_type['attributes'])
@@ -75,7 +75,8 @@ class CliResourceTypeCreate(show.ShowOne):
         resource_type = {'name': parsed_args.name}
         if parsed_args.attribute:
             resource_type['attributes'] = dict(parsed_args.attribute)
-        res = self.app.client.resource_type.create(resource_type=resource_type)
+        res = utils.get_client(self).resource_type.create(
+            resource_type=resource_type)
         utils.format_resource_type(res)
         return self.dict2columns(res)
 
@@ -89,7 +90,7 @@ class CliResourceTypeShow(show.ShowOne):
         return parser
 
     def take_action(self, parsed_args):
-        res = self.app.client.resource_type.get(name=parsed_args.name)
+        res = utils.get_client(self).resource_type.get(name=parsed_args.name)
         utils.format_resource_type(res)
         return self.dict2columns(res)
 
@@ -103,4 +104,4 @@ class CliResourceTypeDelete(command.Command):
         return parser
 
     def take_action(self, parsed_args):
-        self.app.client.resource_type.delete(parsed_args.name)
+        utils.get_client(self).resource_type.delete(parsed_args.name)
