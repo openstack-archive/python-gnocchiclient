@@ -32,7 +32,7 @@ class CliMetricWithResourceID(command.Command):
 class CliMetricList(lister.Lister):
     """List metrics"""
 
-    COLS = ('id', 'archive_policy/name', 'name', 'resource_id')
+    COLS = ('id', 'archive_policy/name', 'name', 'unit', 'resource_id')
 
     def take_action(self, parsed_args):
         metrics = self.app.client.metric.list()
@@ -84,11 +84,15 @@ class CliMetricCreate(CliMetricCreateBase):
         parser.add_argument("name", nargs='?',
                             metavar="METRIC_NAME",
                             help="Name of the metric")
+        parser.add_argument("--unit", "-u",
+                            default='None',
+                            help="unit of the metric")
         return parser
 
     def _take_action(self, metric, parsed_args):
         if parsed_args.name:
             metric['name'] = parsed_args.name
+            metric['unit'] = parsed_args.unit
         metric = self.app.client.metric.create(metric)
         utils.format_archive_policy(metric["archive_policy"])
         utils.format_move_dict_to_root(metric, "archive_policy")
