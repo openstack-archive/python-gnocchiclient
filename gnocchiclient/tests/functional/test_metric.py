@@ -56,7 +56,7 @@ class MetricClientTest(base.ClientTestBase):
         self.gnocchi("archive-policy", params="create metric-test "
                      "--back-window 0 -d granularity:1s,points:86400")
 
-        # CREATE WITH NAME
+        # CREATE WITH NAME AND WITHOUT UNIT
         result = self.gnocchi(
             u'metric', params=u"create"
             u" --archive-policy-name metric-test some-name")
@@ -66,19 +66,22 @@ class MetricClientTest(base.ClientTestBase):
                          metric["created_by_project_id"])
         self.assertEqual(self.clients.user_id, metric["created_by_user_id"])
         self.assertEqual('some-name', metric["name"])
+        self.assertEqual('None', metric["unit"])
         self.assertEqual('None', metric["resource/id"])
         self.assertIn("metric-test", metric["archive_policy/name"])
 
-        # CREATE WITHOUT NAME
+        # CREATE WITHOUT NAME AND WITH UNIT
         result = self.gnocchi(
             u'metric', params=u"create"
-            u" --archive-policy-name metric-test")
+            u" --archive-policy-name metric-test"
+            u" --unit some-unit")
         metric = self.details_multiple(result)[0]
         self.assertIsNotNone(metric["id"])
         self.assertEqual(self.clients.project_id,
                          metric["created_by_project_id"])
         self.assertEqual(self.clients.user_id, metric["created_by_user_id"])
         self.assertEqual('None', metric["name"])
+        self.assertEqual('some-unit', metric["unit"])
         self.assertEqual('None', metric["resource/id"])
         self.assertIn("metric-test", metric["archive_policy/name"])
 
@@ -176,13 +179,15 @@ class MetricClientTest(base.ClientTestBase):
         # CREATE
         result = self.gnocchi(
             u'metric', params=u"create"
-            u" --archive-policy-name metric-test2 -r metric-res metric-name")
+            u" --archive-policy-name metric-test2 -r metric-res metric-name"
+            u" --unit some-unit")
         metric = self.details_multiple(result)[0]
         self.assertIsNotNone(metric["id"])
         self.assertEqual(self.clients.project_id,
                          metric["created_by_project_id"])
         self.assertEqual(self.clients.user_id, metric["created_by_user_id"])
         self.assertEqual('metric-name', metric["name"])
+        self.assertEqual('some-unit', metric["unit"])
         self.assertNotEqual('None', metric["resource/id"])
         self.assertIn("metric-test", metric["archive_policy/name"])
 
