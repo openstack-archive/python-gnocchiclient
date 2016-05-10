@@ -82,6 +82,15 @@ class BenchmarkMetricTest(base.ClientTestBase):
         self.assertEqual(2, int(result['push executed']))
         self.assertLessEqual(int(result['push failures']), 2)
 
+        result = self.gnocchi(
+            u'benchmark',
+            params=u"measures add --wait -s 2010-01-01 -n 10 -b 4 %s"
+            % metric['id'])
+        result = self.details_multiple(result)[0]
+        self.assertEqual(2, int(result['push executed']))
+        self.assertLessEqual(int(result['push failures']), 2)
+        self.assertIn("extra wait to process measures", result)
+
     def test_benchmark_measures_show(self):
         apname = str(uuid.uuid4())
         # PREPARE AN ARCHIVE POLICY
