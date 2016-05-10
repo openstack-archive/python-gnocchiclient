@@ -17,8 +17,8 @@ import subprocess
 import time
 import uuid
 
-from tempest_lib.cli import base
-from tempest_lib import exceptions
+from tempest.lib.cli import base
+from tempest.lib import exceptions
 
 
 class GnocchiClient(object):
