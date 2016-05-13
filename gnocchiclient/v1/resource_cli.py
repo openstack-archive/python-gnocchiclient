@@ -48,7 +48,7 @@ class CliResourceList(lister.Lister):
         return parser
 
     def take_action(self, parsed_args):
-        resources = self.app.client.resource.list(
+        resources = utils.get_client(self).resource.list(
             resource_type=parsed_args.resource_type,
             **self._get_pagination_options(parsed_args))
         return utils.list2cols(self.COLS, resources)
@@ -77,7 +77,7 @@ class CliResourceHistory(CliResourceList):
         return parser
 
     def take_action(self, parsed_args):
-        resources = self.app.client.resource.history(
+        resources = utils.get_client(self).resource.history(
             resource_type=parsed_args.resource_type,
             resource_id=parsed_args.resource_id,
             **self._get_pagination_options(parsed_args))
@@ -93,7 +93,7 @@ class CliResourceSearch(CliResourceList):
         return parser
 
     def take_action(self, parsed_args):
-        resources = self.app.client.resource.search(
+        resources = utils.get_client(self).resource.search(
             resource_type=parsed_args.resource_type,
             query=parsed_args.query,
             **self._get_pagination_options(parsed_args))
@@ -118,7 +118,7 @@ class CliResourceShow(show.ShowOne):
         return parser
 
     def take_action(self, parsed_args):
-        res = self.app.client.resource.get(
+        res = utils.get_client(self).resource.get(
             resource_type=parsed_args.resource_type,
             resource_id=parsed_args.resource_id)
         normalize_metrics(res)
@@ -158,8 +158,9 @@ class CliResourceCreate(show.ShowOne):
            or parsed_args.create_metric
            or (update and parsed_args.delete_metric)):
             if update:
-                r = self.app.client.resource.get(parsed_args.resource_type,
-                                                 parsed_args.resource_id)
+                r = utils.get_client(self).resource.get(
+                    parsed_args.resource_type,
+                    parsed_args.resource_id)
                 default = r['metrics']
                 for metric_name in parsed_args.delete_metric:
                     try:
@@ -184,7 +185,7 @@ class CliResourceCreate(show.ShowOne):
 
     def take_action(self, parsed_args):
         resource = self._resource_from_args(parsed_args)
-        res = self.app.client.resource.create(
+        res = utils.get_client(self).resource.create(
             resource_type=parsed_args.resource_type, resource=resource)
         normalize_metrics(res)
         return self.dict2columns(res)
@@ -202,7 +203,7 @@ class CliResourceUpdate(CliResourceCreate):
 
     def take_action(self, parsed_args):
         resource = self._resource_from_args(parsed_args, update=True)
-        res = self.app.client.resource.update(
+        res = utils.get_client(self).resource.update(
             resource_type=parsed_args.resource_type,
             resource_id=parsed_args.resource_id,
             resource=resource)
@@ -220,7 +221,7 @@ class CliResourceDelete(command.Command):
         return parser
 
     def take_action(self, parsed_args):
-        self.app.client.resource.delete(parsed_args.resource_id)
+        utils.get_client(self).resource.delete(parsed_args.resource_id)
 
 
 class CliResourceTypeList(lister.Lister):
@@ -230,5 +231,5 @@ class CliResourceTypeList(lister.Lister):
             'resource_controller_url')
 
     def take_action(self, parsed_args):
-        resources = self.app.client.resource.list_types()
+        resources = utils.get_client(self).resource.list_types()
         return self.COLS, list(resources.items())

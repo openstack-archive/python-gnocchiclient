@@ -35,7 +35,7 @@ class CliMetricList(lister.Lister):
     COLS = ('id', 'archive_policy/name', 'name', 'resource_id')
 
     def take_action(self, parsed_args):
-        metrics = self.app.client.metric.list()
+        metrics = utils.get_client(self).metric.list()
         for metric in metrics:
             utils.format_archive_policy(metric["archive_policy"])
             utils.format_move_dict_to_root(metric, "archive_policy")
@@ -52,7 +52,7 @@ class CliMetricShow(CliMetricWithResourceID, show.ShowOne):
         return parser
 
     def take_action(self, parsed_args):
-        metric = self.app.client.metric.get(
+        metric = utils.get_client(self).metric.get(
             metric=parsed_args.metric,
             resource_id=parsed_args.resource_id)
         utils.format_archive_policy(metric["archive_policy"])
@@ -89,7 +89,7 @@ class CliMetricCreate(CliMetricCreateBase):
     def _take_action(self, metric, parsed_args):
         if parsed_args.name:
             metric['name'] = parsed_args.name
-        metric = self.app.client.metric.create(metric)
+        metric = utils.get_client(self).metric.create(metric)
         utils.format_archive_policy(metric["archive_policy"])
         utils.format_move_dict_to_root(metric, "archive_policy")
         utils.format_resource_for_metric(metric)
@@ -107,8 +107,8 @@ class CliMetricDelete(CliMetricWithResourceID):
 
     def take_action(self, parsed_args):
         for metric in parsed_args.metric:
-            self.app.client.metric.delete(metric=metric,
-                                          resource_id=parsed_args.resource_id)
+            utils.get_client(self).metric.delete(
+                metric=metric, resource_id=parsed_args.resource_id)
 
 
 class CliMeasuresShow(CliMetricWithResourceID, lister.Lister):
@@ -131,7 +131,7 @@ class CliMeasuresShow(CliMetricWithResourceID, lister.Lister):
         return parser
 
     def take_action(self, parsed_args):
-        measures = self.app.client.metric.get_measures(
+        measures = utils.get_client(self).metric.get_measures(
             metric=parsed_args.metric,
             resource_id=parsed_args.resource_id,
             aggregation=parsed_args.aggregation,
@@ -165,7 +165,7 @@ class CliMeasuresAdd(CliMeasuresAddBase):
         return parser
 
     def take_action(self, parsed_args):
-        self.app.client.metric.add_measures(
+        utils.get_client(self).metric.add_measures(
             metric=parsed_args.metric,
             resource_id=parsed_args.resource_id,
             measures=parsed_args.measure,
@@ -191,13 +191,13 @@ class CliMeasuresBatch(command.Command):
 class CliMetricsMeasuresBatch(CliMeasuresBatch):
     def take_action(self, parsed_args):
         with parsed_args.file as f:
-            self.app.client.metric.batch_metrics_measures(json.load(f))
+            utils.get_client(self).metric.batch_metrics_measures(json.load(f))
 
 
 class CliResourcesMetricsMeasuresBatch(CliMeasuresBatch):
     def take_action(self, parsed_args):
         with parsed_args.file as f:
-            self.app.client.metric.batch_resources_metrics_measures(
+            utils.get_client(self).metric.batch_resources_metrics_measures(
                 json.load(f))
 
 
@@ -233,7 +233,7 @@ class CliMeasuresAggregation(lister.Lister):
             if len(parsed_args.metric) != 1:
                 raise ValueError("One metric is required if query is provided")
             metrics = parsed_args.metric[0]
-        measures = self.app.client.metric.aggregation(
+        measures = utils.get_client(self).metric.aggregation(
             metrics=metrics,
             query=parsed_args.query,
             aggregation=parsed_args.aggregation,

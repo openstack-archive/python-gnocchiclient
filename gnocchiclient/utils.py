@@ -207,3 +207,9 @@ def encode_resource_id(value):
                 'transformable resource id >255 max allowed characters')
     except Exception as e:
         raise ValueError(e)
+
+
+def get_client(obj):
+    # TODO(sileht): return the location of Gnocchi client when the app is the
+    # OSC one instead of the Gnocchi one
+    return obj.app.client
