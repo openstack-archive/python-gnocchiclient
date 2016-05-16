@@ -104,10 +104,11 @@ class SearchQueryBuilderTest(base.BaseTestCase):
             }),
         )
 
-        self.assertEqual(
-            "groupby=foo&groupby=bar&overlap=0",
+        self.assertIn(
             utils.dict_to_querystring({
                 "groupby": ["foo", "bar"],
                 "overlap": 0,
             }),
+            ("groupby=foo&groupby=bar&overlap=0",
+             "overlap=0&groupby=foo&groupby=bar"),
         )
