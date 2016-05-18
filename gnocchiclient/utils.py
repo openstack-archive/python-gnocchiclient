@@ -177,7 +177,7 @@ def dict_from_parsed_args(parsed_args, attrs):
 
 def dict_to_querystring(objs):
     strings = []
-    for k, values in objs.items():
+    for k, values in sorted(objs.items()):
         if values is not None:
             if not isinstance(values, (list, tuple)):
                 values = [values]
