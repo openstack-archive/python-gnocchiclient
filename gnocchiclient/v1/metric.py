@@ -195,7 +195,7 @@ class MetricManager(base.Manager):
                     start=None, stop=None, aggregation=None,
                     needed_overlap=None, resource_type="generic",
                     groupby=None):
-        """Get measurements of a aggregated metrics
+        """Get measurements of an aggregated metrics
 
         :param metrics: IDs of metric or metric name
         :type metric: list or str

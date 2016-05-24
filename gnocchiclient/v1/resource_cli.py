@@ -136,7 +136,7 @@ class CliResourceCreate(show.ShowOne):
                             help="ID of the resource")
         parser.add_argument("-a", "--attribute", action='append',
                             default=[],
-                            help=("name and value of a attribute "
+                            help=("name and value of an attribute "
                                   "separated with a ':'"))
         parser.add_argument("-m", "--add-metric", action='append',
                             default=[],
