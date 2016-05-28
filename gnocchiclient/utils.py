@@ -209,6 +209,37 @@ def encode_resource_id(value):
         raise ValueError(e)
 
 
+def get_pagination_options(details=False, history=False,
+                            limit=None, marker=None, sorts=None):
+    options = []
+    if details:
+        options.append("details=true")
+    if history:
+        options.append("history=true")
+    if limit:
+        options.append("limit=%d" % limit)
+    if marker:
+        options.append("marker=%s" % urllib_parse.quote(marker))
+    for sort in sorts or []: 
+        options.append("sort=%s" % urllib_parse.quote(sort))
+    if options:
+        return "%s" % "&".join(options)
+    else:
+        return ""
+
+
+def get_pagination_options_from_parsed_args(parsed_args):
+    options = dict(
+        details=parsed_args.details,
+        sorts=parsed_args.sort,
+        limit=parsed_args.limit,
+        marker=parsed_args.marker)
+
+    if hasattr(parsed_args, 'history'):
+        options['history'] = parsed_args.history
+    return options
+
+
 def get_client(obj):
     if hasattr(obj.app, 'client_manager'):
         # NOTE(sileht): cliff objects loaded by OSC
