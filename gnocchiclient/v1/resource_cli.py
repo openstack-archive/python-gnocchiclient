@@ -222,14 +222,3 @@ class CliResourceDelete(command.Command):
 
     def take_action(self, parsed_args):
         utils.get_client(self).resource.delete(parsed_args.resource_id)
-
-
-class CliResourceTypeList(lister.Lister):
-    """List the resource types that gnocchi supports"""
-
-    COLS = ('resource_type',
-            'resource_controller_url')
-
-    def take_action(self, parsed_args):
-        resources = utils.get_client(self).resource.list_types()
-        return self.COLS, list(resources.items())
