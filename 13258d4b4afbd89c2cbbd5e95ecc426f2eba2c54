@@ -1,0 +1,8 @@
+Code-Review+2: Julien Danjou <julien@danjou.info>
+Workflow+1: Julien Danjou <julien@danjou.info>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Thu, 02 Jun 2016 16:10:24 +0000
+Reviewed-on: https://review.openstack.org/307366
+Project: openstack/python-gnocchiclient
+Branch: refs/heads/master
