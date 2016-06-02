@@ -61,19 +61,10 @@ def archive_policy_definition(string):
     return defs
 
 
-class CliArchivePolicyCreate(show.ShowOne):
-    """Create an archive policy"""
-
+class CliArchivePolicyWriteBase(show.ShowOne):
     def get_parser(self, prog_name):
-        parser = super(CliArchivePolicyCreate, self).get_parser(prog_name)
+        parser = super(CliArchivePolicyWriteBase, self).get_parser(prog_name)
         parser.add_argument("name", help="name of the archive policy")
-        parser.add_argument("-b", "--back-window", dest="back_window",
-                            type=int,
-                            help="back window of the archive policy")
-        parser.add_argument("-m", "--aggregation-method",
-                            action="append",
-                            dest="aggregation_methods",
-                            help="aggregation method of the archive policy")
         parser.add_argument("-d", "--definition", action='append',
                             required=True, type=archive_policy_definition,
                             metavar="<DEFINITION>",
@@ -82,12 +73,39 @@ class CliArchivePolicyCreate(show.ShowOne):
                                   "and value separated with a ':'"))
         return parser
 
+
+class CliArchivePolicyCreate(CliArchivePolicyWriteBase):
+    """Create an archive policy"""
+
+    def get_parser(self, prog_name):
+        parser = super(CliArchivePolicyCreate, self).get_parser(prog_name)
+        parser.add_argument("-b", "--back-window", dest="back_window",
+                            type=int,
+                            help="back window of the archive policy")
+        parser.add_argument("-m", "--aggregation-method",
+                            action="append",
+                            dest="aggregation_methods",
+                            help="aggregation method of the archive policy")
+        return parser
+
     def take_action(self, parsed_args):
         archive_policy = utils.dict_from_parsed_args(
             parsed_args, ['name', 'back_window', 'aggregation_methods',
                           'definition'])
         ap = utils.get_client(self).archive_policy.create(
             archive_policy=archive_policy)
+        utils.format_archive_policy(ap)
+        return self.dict2columns(ap)
+
+
+class CliArchivePolicyUpdate(CliArchivePolicyWriteBase):
+    """Update an archive policy"""
+
+    def take_action(self, parsed_args):
+        archive_policy = utils.dict_from_parsed_args(
+            parsed_args, ['definition'])
+        ap = self.app.client.archive_policy.update(
+            name=parsed_args.name, archive_policy=archive_policy)
         utils.format_archive_policy(ap)
         return self.dict2columns(ap)
 
