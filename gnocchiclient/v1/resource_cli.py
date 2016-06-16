@@ -81,7 +81,8 @@ class CliResourceHistory(CliResourceList):
             resource_type=parsed_args.resource_type,
             resource_id=parsed_args.resource_id,
             **self._get_pagination_options(parsed_args))
-        return utils.list2cols(self.COLS, resources)
+        cols = resources[0].keys() if resources else self.COLS
+        return utils.list2cols(cols, map(normalize_metrics, resources))
 
 
 class CliResourceSearch(CliResourceList):
@@ -104,6 +105,7 @@ def normalize_metrics(res):
     res['metrics'] = "\n".join(sorted(
         ["%s: %s" % (name, _id)
             for name, _id in res['metrics'].items()]))
+    return res
 
 
 class CliResourceShow(show.ShowOne):
