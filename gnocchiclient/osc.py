@@ -27,7 +27,7 @@ API_VERSIONS = {
 
 
 def make_client(instance):
-    """Returns an queues service client."""
+    """Returns a metrics service client."""
     version = instance._api_version[API_NAME]
     try:
         version = int(version)
@@ -51,7 +51,7 @@ def build_option_parser(parser):
         default=utils.env(
             'OS_METRICS_API_VERSION',
             default=DEFAULT_METRICS_API_VERSION),
-        help=('Queues API version, default=' +
+        help=('Metrics API version, default=' +
               DEFAULT_METRICS_API_VERSION +
               ' (Env: OS_METRICS_API_VERSION)'))
     return parser
