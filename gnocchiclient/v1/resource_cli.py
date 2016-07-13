@@ -82,7 +82,7 @@ class CliResourceHistory(CliResourceList):
             resource_id=parsed_args.resource_id,
             **self._get_pagination_options(parsed_args))
         cols = resources[0].keys() if resources else self.COLS
-        return utils.list2cols(cols, map(normalize_metrics, resources))
+        return utils.list2cols(cols, resources)
 
 
 class CliResourceSearch(CliResourceList):
@@ -101,13 +101,6 @@ class CliResourceSearch(CliResourceList):
         return utils.list2cols(self.COLS, resources)
 
 
-def normalize_metrics(res):
-    res['metrics'] = "\n".join(sorted(
-        ["%s: %s" % (name, _id)
-            for name, _id in res['metrics'].items()]))
-    return res
-
-
 class CliResourceShow(show.ShowOne):
     """Show a resource"""
 
@@ -123,7 +116,6 @@ class CliResourceShow(show.ShowOne):
         res = utils.get_client(self).resource.get(
             resource_type=parsed_args.resource_type,
             resource_id=parsed_args.resource_id)
-        normalize_metrics(res)
         return self.dict2columns(res)
 
 
@@ -189,7 +181,6 @@ class CliResourceCreate(show.ShowOne):
         resource = self._resource_from_args(parsed_args)
         res = utils.get_client(self).resource.create(
             resource_type=parsed_args.resource_type, resource=resource)
-        normalize_metrics(res)
         return self.dict2columns(res)
 
 
@@ -209,7 +200,6 @@ class CliResourceUpdate(CliResourceCreate):
             resource_type=parsed_args.resource_type,
             resource_id=parsed_args.resource_id,
             resource=resource)
-        normalize_metrics(res)
         return self.dict2columns(res)
 
 
