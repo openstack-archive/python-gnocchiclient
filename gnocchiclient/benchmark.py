@@ -67,7 +67,7 @@ def measure_job(fn, *args, **kwargs):
     return fn(*args, **kwargs), sw.elapsed()
 
 
-class BenchmarkPool(futurist.ProcessPoolExecutor):
+class BenchmarkPool(futurist.ThreadPoolExecutor):
     def submit_job(self, times, fn, *args, **kwargs):
         self.sw = timeutils.StopWatch()
         self.sw.start()
