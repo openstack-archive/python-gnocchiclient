@@ -26,8 +26,9 @@ class CliArchivePolicyList(lister.Lister):
 
     def take_action(self, parsed_args):
         policies = utils.get_client(self).archive_policy.list()
-        for ap in policies:
-            utils.format_archive_policy(ap)
+        if parsed_args.formatter == 'table':
+            for ap in policies:
+                utils.format_archive_policy(ap)
         return utils.list2cols(self.COLS, policies)
 
 
@@ -43,7 +44,8 @@ class CliArchivePolicyShow(show.ShowOne):
     def take_action(self, parsed_args):
         ap = utils.get_client(self).archive_policy.get(
             name=parsed_args.name)
-        utils.format_archive_policy(ap)
+        if parsed_args.formatter == 'table':
+            utils.format_archive_policy(ap)
         return self.dict2columns(ap)
 
 
@@ -94,7 +96,8 @@ class CliArchivePolicyCreate(CliArchivePolicyWriteBase):
                           'definition'])
         ap = utils.get_client(self).archive_policy.create(
             archive_policy=archive_policy)
-        utils.format_archive_policy(ap)
+        if parsed_args.formatter == 'table':
+            utils.format_archive_policy(ap)
         return self.dict2columns(ap)
 
 
@@ -106,7 +109,8 @@ class CliArchivePolicyUpdate(CliArchivePolicyWriteBase):
             parsed_args, ['definition'])
         ap = self.app.client.archive_policy.update(
             name=parsed_args.name, archive_policy=archive_policy)
-        utils.format_archive_policy(ap)
+        if parsed_args.formatter == 'table':
+            utils.format_archive_policy(ap)
         return self.dict2columns(ap)
 
 
