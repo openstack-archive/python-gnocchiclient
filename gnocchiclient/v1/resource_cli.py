@@ -82,7 +82,9 @@ class CliResourceHistory(CliResourceList):
             resource_id=parsed_args.resource_id,
             **self._get_pagination_options(parsed_args))
         cols = resources[0].keys() if resources else self.COLS
-        return utils.list2cols(cols, map(normalize_metrics, resources))
+        if parsed_args.formatter == 'table':
+            return utils.list2cols(cols, map(normalize_metrics, resources))
+        return utils.list2cols(cols, resources)
 
 
 class CliResourceSearch(CliResourceList):
@@ -123,7 +125,8 @@ class CliResourceShow(show.ShowOne):
         res = utils.get_client(self).resource.get(
             resource_type=parsed_args.resource_type,
             resource_id=parsed_args.resource_id)
-        normalize_metrics(res)
+        if parsed_args.formatter == 'table':
+            normalize_metrics(res)
         return self.dict2columns(res)
 
 
@@ -189,7 +192,8 @@ class CliResourceCreate(show.ShowOne):
         resource = self._resource_from_args(parsed_args)
         res = utils.get_client(self).resource.create(
             resource_type=parsed_args.resource_type, resource=resource)
-        normalize_metrics(res)
+        if parsed_args.formatter == 'table':
+            normalize_metrics(res)
         return self.dict2columns(res)
 
 
@@ -209,7 +213,8 @@ class CliResourceUpdate(CliResourceCreate):
             resource_type=parsed_args.resource_type,
             resource_id=parsed_args.resource_id,
             resource=resource)
-        normalize_metrics(res)
+        if parsed_args.formatter == 'table':
+            normalize_metrics(res)
         return self.dict2columns(res)
 
 
