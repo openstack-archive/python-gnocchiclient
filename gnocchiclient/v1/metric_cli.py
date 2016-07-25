@@ -220,6 +220,8 @@ class CliMeasuresAggregation(lister.Lister):
                             help="beginning of the period")
         parser.add_argument("--stop",
                             help="end of the period")
+        parser.add_argument("--granularity",
+                            help="granularity to retrieve (in seconds)")
         parser.add_argument("--needed-overlap", type=float,
                             help=("percent of datapoints in each "
                                   "metrics required"))
@@ -243,6 +245,7 @@ class CliMeasuresAggregation(lister.Lister):
             aggregation=parsed_args.aggregation,
             start=parsed_args.start,
             stop=parsed_args.stop,
+            granularity=parsed_args.granularity,
             needed_overlap=parsed_args.needed_overlap,
             resource_type=parsed_args.resource_type,
             groupby=parsed_args.groupby,

@@ -119,6 +119,7 @@ class MetricClientTest(base.ClientTestBase):
             'measures', params=("aggregation "
                                 "--metric %s "
                                 "--aggregation mean "
+                                "--granularity 1 "
                                 "--start 2015-03-06T14:32:00 "
                                 "--stop 2015-03-06T14:36:00"
                                 ) % metric["id"])
