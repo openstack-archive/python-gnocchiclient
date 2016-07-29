@@ -70,9 +70,9 @@ class MetricClientTest(base.ClientTestBase):
         self.assertEqual('None', metric["resource/id"])
         self.assertIn("metric-test", metric["archive_policy/name"])
 
-        # CREATE WITHOUT NAME AND WITH UNIT
+        # CREATE WITH UNIT
         result = self.gnocchi(
-            u'metric', params=u"create"
+            u'metric', params=u"create another-name"
             u" --archive-policy-name metric-test"
             u" --unit some-unit")
         metric = self.details_multiple(result)[0]
@@ -80,7 +80,7 @@ class MetricClientTest(base.ClientTestBase):
         self.assertEqual(self.clients.project_id,
                          metric["created_by_project_id"])
         self.assertEqual(self.clients.user_id, metric["created_by_user_id"])
-        self.assertEqual('None', metric["name"])
+        self.assertEqual('another-name', metric["name"])
         self.assertEqual('some-unit', metric["unit"])
         self.assertEqual('None', metric["resource/id"])
         self.assertIn("metric-test", metric["archive_policy/name"])
@@ -152,6 +152,17 @@ class MetricClientTest(base.ClientTestBase):
             # FIXME(sileht): add "resource_id" or "resource"
             # when LP#1497171 is fixed
             self.assertEqual(metric[field], metric_from_list[field], field)
+
+        # LIST + limit
+        result = self.gnocchi('metric',
+                              params=("list "
+                                      "--sort name:asc "
+                                      "--marker %s "
+                                      "--limit 1") % metric['id'])
+        metrics = self.parser.listing(result)
+        metric_from_list = metrics[0]
+        self.assertEqual(1, len(metrics))
+        self.assertTrue(metric['name'] < metric_from_list['name'])
 
         # DELETE
         result = self.gnocchi('metric', params="delete %s" % metric["id"])

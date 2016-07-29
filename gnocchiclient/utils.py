@@ -188,6 +188,38 @@ def dict_to_querystring(objs):
     return "&".join(strings)
 
 
+def get_pagination_options(parsed_args):
+    options = dict(
+        sorts=parsed_args.sort,
+        limit=parsed_args.limit,
+        marker=parsed_args.marker)
+
+    if hasattr(parsed_args, 'details'):
+        options['details'] = parsed_args.details
+    if hasattr(parsed_args, 'history'):
+        options['history'] = parsed_args.history
+    return options
+
+
+def build_pagination_options(details=False, history=False,
+                             limit=None, marker=None, sorts=None):
+    options = []
+    if details:
+        options.append("details=true")
+    if history:
+        options.append("history=true")
+    if limit:
+        options.append("limit=%d" % limit)
+    if marker:
+        options.append("marker=%s" % urllib_parse.quote(marker))
+    for sort in sorts or []:
+        options.append("sort=%s" % urllib_parse.quote(sort))
+    if options:
+        return "%s" % "&".join(options)
+    else:
+        return ""
+
+
 # uuid5 namespace for id transformation.
 # NOTE(chdent): This UUID must stay the same, forever, across all
 # of gnocchi to preserve its value as a URN namespace.

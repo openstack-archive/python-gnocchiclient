@@ -12,29 +12,9 @@
 #    under the License.
 
 from oslo_serialization import jsonutils
-from six.moves.urllib import parse as urllib_parse
 
 from gnocchiclient import utils
 from gnocchiclient.v1 import base
-
-
-def _get_pagination_options(details=False, history=False,
-                            limit=None, marker=None, sorts=None):
-    options = []
-    if details:
-        options.append("details=true")
-    if history:
-        options.append("history=true")
-    if limit:
-        options.append("limit=%d" % limit)
-    if marker:
-        options.append("marker=%s" % urllib_parse.quote(marker))
-    for sort in sorts or []:
-        options.append("sort=%s" % urllib_parse.quote(sort))
-    if options:
-        return "%s" % "&".join(options)
-    else:
-        return ""
 
 
 class ResourceManager(base.Manager):
@@ -59,7 +39,8 @@ class ResourceManager(base.Manager):
                       ["user_id:desc-nullslast", "project_id:asc"]
         :type sorts: list of str
         """
-        qs = _get_pagination_options(details, history, limit, marker, sorts)
+        qs = utils.build_pagination_options(details, history, limit, marker,
+                                            sorts)
         url = "%s%s?%s" % (self.url, resource_type, qs)
         return self._get(url).json()
 
@@ -97,7 +78,8 @@ class ResourceManager(base.Manager):
                       ["user_id:desc-nullslast", "project_id:asc"]
         :type sorts: list of str
         """
-        qs = _get_pagination_options(details, False, limit, marker, sorts)
+        qs = utils.build_pagination_options(details, False, limit, marker,
+                                            sorts)
         resource_id = utils.encode_resource_id(resource_id)
         url = "%s%s/%s/history?%s" % (self.url, resource_type, resource_id, qs)
         return self._get(url).json()
@@ -168,7 +150,8 @@ class ResourceManager(base.Manager):
         """
 
         query = query or {}
-        qs = _get_pagination_options(details, history, limit, marker, sorts)
+        qs = utils.build_pagination_options(details, history, limit, marker,
+                                            sorts)
         url = "v1/search/resource/%s?%s" % (resource_type, qs)
         return self._post(
             url, headers={'Content-Type': "application/json"},
