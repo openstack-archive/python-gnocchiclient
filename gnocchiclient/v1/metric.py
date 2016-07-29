@@ -26,11 +26,22 @@ class MetricManager(base.Manager):
     metric_batch_url = "v1/batch/metrics/measures"
     resources_batch_url = "v1/batch/resources/metrics/measures"
 
-    def list(self):
-        """List archive metrics
+    def list(self, limit=None, marker=None, sorts=None):
+        """List metrics
+
+        :param limit: maximum number of resources to return
+        :type limit: int
+        :param marker: the last item of the previous page; we return the next
+                       results after this value.
+        :type marker: str
+        :param sorts: list of resource attributes to order by. (example
+                      ["user_id:desc-nullslast", "project_id:asc"]
+        :type sorts: list of str
 
         """
-        return self._get(self.metric_url).json()
+        qs = utils.build_pagination_options(False, False, limit, marker,
+                                            sorts)
+        return self._get("%s?%s" % (self.metric_url, qs)).json()
 
     @staticmethod
     def _ensure_metric_is_uuid(metric, attribute="resource_id"):

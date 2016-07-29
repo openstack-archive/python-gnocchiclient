@@ -146,6 +146,19 @@ class MetricClientTest(base.ClientTestBase):
         # LIST
         result = self.gnocchi('metric', params="list")
         metrics = self.parser.listing(result)
+        metric_from_list = metrics[0]
+        for field in ["id", "archive_policy/name", "name"]:
+            # FIXME(sileht): add "resource_id" or "resource"
+            # when LP#1497171 is fixed
+            self.assertEqual(metric[field], metric_from_list[field], field)
+
+        # LIST + limit
+        result = self.gnocchi('metric',
+                              params=("list"
+                                      "--sort name:asc "
+                                      "--marker %s "
+                                      "--limit 1") % metric['id'])
+        metrics = self.parser.listing(result)
         metric_from_list = [p for p in metrics
                             if p['id'] == metric['id']][0]
         for field in ["id", "archive_policy/name", "name"]:
