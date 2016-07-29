@@ -34,8 +34,22 @@ class CliMetricList(lister.Lister):
 
     COLS = ('id', 'archive_policy/name', 'name', 'unit', 'resource_id')
 
+    def get_parser(self, prog_name):
+        parser = super(CliMetricList, self).get_parser(prog_name)
+        parser.add_argument("--limit", type=int, metavar="<LIMIT>",
+                            help="Number of metrics to return "
+                            "(Default is server default)")
+        parser.add_argument("--marker", metavar="<MARKER>",
+                            help="Last item of the previous listing. "
+                            "Return the next results after this value")
+        parser.add_argument("--sort", action="append", metavar="<SORT>",
+                            help="Sort of metric attribute "
+                            "(example: user_id:desc-nullslast")
+        return parser
+
     def take_action(self, parsed_args):
-        metrics = utils.get_client(self).metric.list()
+        metrics = utils.get_client(self).metric.list(
+            **utils.get_pagination_options(parsed_args))
         for metric in metrics:
             utils.format_archive_policy(metric["archive_policy"])
             utils.format_move_dict_to_root(metric, "archive_policy")

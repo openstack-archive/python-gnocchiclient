@@ -50,20 +50,8 @@ class CliResourceList(lister.Lister):
     def take_action(self, parsed_args):
         resources = utils.get_client(self).resource.list(
             resource_type=parsed_args.resource_type,
-            **self._get_pagination_options(parsed_args))
+            **utils.get_pagination_options(parsed_args))
         return utils.list2cols(self.COLS, resources)
-
-    @staticmethod
-    def _get_pagination_options(parsed_args):
-        options = dict(
-            details=parsed_args.details,
-            sorts=parsed_args.sort,
-            limit=parsed_args.limit,
-            marker=parsed_args.marker)
-
-        if hasattr(parsed_args, 'history'):
-            options['history'] = parsed_args.history
-        return options
 
 
 class CliResourceHistory(CliResourceList):
@@ -80,7 +68,7 @@ class CliResourceHistory(CliResourceList):
         resources = utils.get_client(self).resource.history(
             resource_type=parsed_args.resource_type,
             resource_id=parsed_args.resource_id,
-            **self._get_pagination_options(parsed_args))
+            **utils.get_pagination_options(parsed_args))
         cols = resources[0].keys() if resources else self.COLS
         if parsed_args.formatter == 'table':
             return utils.list2cols(cols, map(normalize_metrics, resources))
@@ -99,7 +87,7 @@ class CliResourceSearch(CliResourceList):
         resources = utils.get_client(self).resource.search(
             resource_type=parsed_args.resource_type,
             query=parsed_args.query,
-            **self._get_pagination_options(parsed_args))
+            **utils.get_pagination_options(parsed_args))
         return utils.list2cols(self.COLS, resources)
 
 
