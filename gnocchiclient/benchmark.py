@@ -14,7 +14,6 @@
 import argparse
 import datetime
 import functools
-import logging
 import math
 import random
 import time
@@ -26,8 +25,6 @@ from oslo_utils import timeutils
 import six.moves
 
 from gnocchiclient.v1 import metric_cli
-
-LOG = logging.getLogger(__name__)
 
 
 def _pickle_method(m):
