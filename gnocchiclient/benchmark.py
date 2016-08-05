@@ -27,8 +27,6 @@ import six.moves
 
 from gnocchiclient.v1 import metric_cli
 
-LOG = logging.getLogger(__name__)
-
 
 def _pickle_method(m):
     if m.im_self is None:
