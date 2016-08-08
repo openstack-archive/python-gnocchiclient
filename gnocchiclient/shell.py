@@ -107,7 +107,9 @@ class GnocchiShell(app.App):
         parser = super(GnocchiShell, self).build_option_parser(
             description,
             version,
-            argparse_kwargs={'allow_abbrev': False})
+            argparse_kwargs={
+                'allow_abbrev': False,
+                'conflict_handler': 'resolve'})
         # Global arguments, one day this should go to keystoneauth1
         parser.add_argument(
             '--os-region-name',
@@ -137,6 +139,15 @@ class GnocchiShell(app.App):
                 '--endpoint',
                 default=os.environ.get('GNOCCHI_ENDPOINT'),
                 help='Gnocchi endpoint (Env: GNOCCHI_ENDPOINT)')
+            if os.environ.get('OS_IDENTITY_API_VERSION') == '3':
+                parser.add_argument(
+                    '--os-project-domain-name',
+                    default='default',
+                    help="Project domain name, default='default'")
+                parser.add_argument(
+                    '--os-user-domain-name',
+                    default='default',
+                    help="User domain name, default='default'")
 
         return parser
 
