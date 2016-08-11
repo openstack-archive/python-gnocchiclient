@@ -154,7 +154,8 @@ class MetricManager(base.Manager):
             data=jsonutils.dumps(measures))
 
     def get_measures(self, metric, start=None, stop=None, aggregation=None,
-                     granularity=None, resource_id=None, **kwargs):
+                     granularity=None, resource_id=None, refresh=False,
+                     **kwargs):
         """Get measurements of a metric
 
         :param metric: ID or Name of the metric
@@ -170,6 +171,8 @@ class MetricManager(base.Manager):
         :param resource_id: ID of the resource (required
                             to get a metric by name)
         :type resource_id: str
+        :param refresh: force aggregation of all known measures
+        :type refres: bool
 
         All other arguments are arguments are dedicated to custom aggregation
         method passed as-is to the Gnocchi.
@@ -181,7 +184,7 @@ class MetricManager(base.Manager):
             stop = stop.isoformat()
 
         params = dict(start=start, stop=stop, aggregation=aggregation,
-                      granularity=granularity)
+                      granularity=granularity, refresh=refresh)
         params.update(kwargs)
         if resource_id is None:
             self._ensure_metric_is_uuid(metric)
@@ -194,7 +197,7 @@ class MetricManager(base.Manager):
     def aggregation(self, metrics, query=None,
                     start=None, stop=None, aggregation=None,
                     granularity=None, needed_overlap=None,
-                    resource_type="generic", groupby=None):
+                    resource_type="generic", groupby=None, refresh=False):
         """Get measurements of an aggregated metrics
 
         :param metrics: IDs of metric or metric name
@@ -228,7 +231,7 @@ class MetricManager(base.Manager):
 
         params = dict(start=start, stop=stop, aggregation=aggregation,
                       granularity=granularity, needed_overlap=needed_overlap,
-                      groupby=groupby)
+                      groupby=groupby, refresh=refresh)
         if query is None:
             for metric in metrics:
                 self._ensure_metric_is_uuid(metric)

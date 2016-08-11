@@ -98,6 +98,22 @@ class MetricClientTest(base.ClientTestBase):
                                       ) % metric["id"])
         self.assertEqual("", result)
 
+        # MEASURES GET with refresh
+        result = self.gnocchi('measures',
+                              params=("show %s "
+                                      "--aggregation mean "
+                                      "--granularity 1 "
+                                      "--start 2015-03-06T14:32:00 "
+                                      "--stop 2015-03-06T14:36:00 "
+                                      "--refresh") % metric["id"])
+        measures = self.parser.listing(result)
+        self.assertEqual([{'granularity': '1.0',
+                           'timestamp': '2015-03-06T14:33:57+00:00',
+                           'value': '43.11'},
+                          {'granularity': '1.0',
+                           'timestamp': '2015-03-06T14:34:12+00:00',
+                           'value': '12.0'}], measures)
+
         # MEASURES GET
         result = self.retry_gnocchi(
             5, 'measures', params=("show %s "
@@ -214,13 +230,17 @@ class MetricClientTest(base.ClientTestBase):
                                       "--measure '2015-03-06T14:34:12@12'"))
         self.assertEqual("", result)
 
-        # MEASURES GET
-        result = self.retry_gnocchi(
-            5, 'measures', params=("show metric-name -r metric-res "
-                                   "--aggregation mean "
-                                   "--start 2015-03-06T14:32:00 "
-                                   "--stop 2015-03-06T14:36:00"))
-
+        # MEASURES AGGREGATION with refresh
+        result = self.gnocchi(
+            'measures', params=("aggregation "
+                                "--query \"id='metric-res'\" "
+                                "--resource-type \"generic\" "
+                                "-m metric-name "
+                                "--aggregation mean "
+                                "--needed-overlap 0 "
+                                "--start 2015-03-06T14:32:00 "
+                                "--stop 2015-03-06T14:36:00 "
+                                "--refresh"))
         measures = self.parser.listing(result)
         self.assertEqual([{'granularity': '1.0',
                            'timestamp': '2015-03-06T14:33:57+00:00',
@@ -266,6 +286,21 @@ class MetricClientTest(base.ClientTestBase):
                            'value': '43.11'},
                           {'group': 'project_id: None, user_id: None',
                            'granularity': '1.0',
+                           'timestamp': '2015-03-06T14:34:12+00:00',
+                           'value': '12.0'}], measures)
+
+        # MEASURES GET
+        result = self.gnocchi('measures',
+                              params=("show metric-name -r metric-res "
+                                      "--aggregation mean "
+                                      "--start 2015-03-06T14:32:00 "
+                                      "--stop 2015-03-06T14:36:00"))
+
+        measures = self.parser.listing(result)
+        self.assertEqual([{'granularity': '1.0',
+                           'timestamp': '2015-03-06T14:33:57+00:00',
+                           'value': '43.11'},
+                          {'granularity': '1.0',
                            'timestamp': '2015-03-06T14:34:12+00:00',
                            'value': '12.0'}], measures)
 
