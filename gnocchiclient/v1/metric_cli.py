@@ -132,6 +132,8 @@ class CliMeasuresShow(CliMetricWithResourceID, lister.Lister):
                             help="end of the period")
         parser.add_argument("--granularity",
                             help="granularity to retrieve (in seconds)")
+        parser.add_argument("--refresh", action="store_true",
+                            help="force aggregation of all known measures")
         return parser
 
     def take_action(self, parsed_args):
@@ -142,6 +144,7 @@ class CliMeasuresShow(CliMetricWithResourceID, lister.Lister):
             start=parsed_args.start,
             stop=parsed_args.stop,
             granularity=parsed_args.granularity,
+            refresh=parsed_args.refresh,
         )
         return self.COLS, measures
 
@@ -231,6 +234,8 @@ class CliMeasuresAggregation(lister.Lister):
         parser.add_argument("--groupby",
                             action='append',
                             help="Attribute to use to group resources"),
+        parser.add_argument("--refresh", action="store_true",
+                            help="force aggregation of all known measures")
         return parser
 
     def take_action(self, parsed_args):
@@ -249,6 +254,7 @@ class CliMeasuresAggregation(lister.Lister):
             needed_overlap=parsed_args.needed_overlap,
             resource_type=parsed_args.resource_type,
             groupby=parsed_args.groupby,
+            refresh=parsed_args.refresh,
         )
         if parsed_args.groupby:
             ms = []
