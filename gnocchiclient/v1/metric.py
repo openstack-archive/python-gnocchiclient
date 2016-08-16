@@ -196,8 +196,9 @@ class MetricManager(base.Manager):
 
     def aggregation(self, metrics, query=None,
                     start=None, stop=None, aggregation=None,
-                    granularity=None, needed_overlap=None,
-                    resource_type="generic", groupby=None, refresh=False):
+                    reaggregation=None, granularity=None,
+                    needed_overlap=None, resource_type="generic",
+                    groupby=None, refresh=False):
         """Get measurements of an aggregated metrics
 
         :param metrics: IDs of metric or metric name
@@ -208,8 +209,10 @@ class MetricManager(base.Manager):
         :type start: timestamp
         :param stop: end of the period
         :type stop: timestamp
-        :param aggregation: aggregation to retrieve
+        :param aggregation: granularity aggregation function to retrieve
         :type aggregation: str
+        :param reaggregation: groupby aggregation function to retrieve
+        :type reaggregation: str
         :param granularity: granularity to retrieve (in seconds)
         :type granularity: int
         :param needed_overlap: percent of datapoints in each metrics required
@@ -230,8 +233,9 @@ class MetricManager(base.Manager):
             stop = stop.isoformat()
 
         params = dict(start=start, stop=stop, aggregation=aggregation,
-                      granularity=granularity, needed_overlap=needed_overlap,
-                      groupby=groupby, refresh=refresh)
+                      reaggregation=reaggregation, granularity=granularity,
+                      needed_overlap=needed_overlap, groupby=groupby,
+                      refresh=refresh)
         if query is None:
             for metric in metrics:
                 self._ensure_metric_is_uuid(metric)
