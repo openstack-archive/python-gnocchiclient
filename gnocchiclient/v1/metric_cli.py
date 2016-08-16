@@ -214,8 +214,10 @@ class CliMeasuresAggregation(lister.Lister):
         parser = super(CliMeasuresAggregation, self).get_parser(prog_name)
         parser.add_argument("-m", "--metric", nargs='+', required=True,
                             help="metrics IDs or metric name")
-        parser.add_argument("--aggregation",
-                            help="aggregation to retrieve")
+        parser.add_argument("--aggregation", help="granularity aggregation "
+                                                  "function to retrieve")
+        parser.add_argument("--reaggregation",
+                            help="groupby aggregation function to retrieve")
         parser.add_argument("--start",
                             help="beginning of the period")
         parser.add_argument("--stop",
@@ -243,6 +245,7 @@ class CliMeasuresAggregation(lister.Lister):
             metrics=metrics,
             query=parsed_args.query,
             aggregation=parsed_args.aggregation,
+            reaggregation=parsed_args.reaggregation,
             start=parsed_args.start,
             stop=parsed_args.stop,
             granularity=parsed_args.granularity,
