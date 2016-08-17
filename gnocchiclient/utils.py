@@ -93,14 +93,14 @@ class MalformedQuery(Exception):
 def add_query_argument(cmd, parser):
     return parser.add_argument(
         cmd,
-        help="A query to filter resource. "
-        "The syntax is a combination of attribute, operator and value. "
-        "For example: id=90d58eea-70d7-4294-a49a-170dcdf44c3c would filter "
-        "resource with a certain id. More complex queries can be built, "
-        "e.g.: not (flavor_id!=\"1\" and memory>=24). "
-        "Use \"\" to force data to be interpreted as string. "
-        "Supported operators are: not, and, ∧ or, ∨, >=, <=, !=, >, <, =, ==, "
-        "eq, ne, lt, gt, ge, le, in, like, ≠, ≥, ≤, like, in.",
+        help=u"A query to filter resource. "
+        u"The syntax is a combination of attribute, operator and value. "
+        u"For example: id=90d58eea-70d7-4294-a49a-170dcdf44c3c would filter "
+        u"resource with a certain id. More complex queries can be built, "
+        u"e.g.: not (flavor_id!=\"1\" and memory>=24). "
+        u"Use \"\" to force data to be interpreted as string. "
+        u"Supported operators are: not, and, ∧ or, ∨, >=, <=, !=, >, <, =, ==, "
+        u"eq, ne, lt, gt, ge, le, in, like, ≠, ≥, ≤, like, in.",
         type=search_query_builder)
 
 
