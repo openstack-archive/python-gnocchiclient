@@ -45,7 +45,7 @@ class CliResourceTypeCreate(show.ShowOne):
                                   u"attribute_type:"
                                   u"attribute_is_required:"
                                   u"attribute_type_option_name="
-                                  u"attribute_type_option_value:\u2026 "
+                                  u"attribute_type_option_value:… "
                                   u"For example: "
                                   u"display_name:string:true:max_length=255"))
         return parser
