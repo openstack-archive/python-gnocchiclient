@@ -47,7 +47,8 @@ class CliResourceTypeCreate(show.ShowOne):
                                   u"attribute_type_option_name="
                                   u"attribute_type_option_value:\u2026 "
                                   u"For example: "
-                                  u"display_name:string:true:max_length=255"))
+                                  u"display_name:string:true:max_length=255"
+                                  u"".encode("utf-8")))
         return parser
 
     @classmethod

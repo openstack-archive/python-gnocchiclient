@@ -100,7 +100,8 @@ def add_query_argument(cmd, parser):
         u"e.g.: not (flavor_id!=\"1\" and memory>=24). "
         u"Use \"\" to force data to be interpreted as string. "
         u"Supported operators are: not, and, ∧ or, ∨, >=, <=, !=, >, <, =, "
-        u"==, eq, ne, lt, gt, ge, le, in, like, ≠, ≥, ≤, like, in.",
+        u"==, eq, ne, lt, gt, ge, le, in, like, ≠, ≥, ≤, like, in."
+        u"".encode("utf-8"),
         type=search_query_builder)
 
 

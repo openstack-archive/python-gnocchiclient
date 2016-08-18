@@ -20,6 +20,7 @@ class ResourceTypeClientTest(base.ClientTestBase):
 
     def test_help(self):
         self.gnocchi("help", params="resource list")
+        self.gnocchi("help", params="resource-type create")
 
     def test_resource_type_scenario(self):
         # LIST
