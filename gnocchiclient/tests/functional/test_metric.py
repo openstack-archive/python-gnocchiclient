@@ -152,7 +152,7 @@ class MetricClientTest(base.ClientTestBase):
         measures = json.dumps({
             metric['id']: [{'timestamp': '2015-03-06T14:34:12',
                             'value': 12}]})
-        tmpfile = tempfile.NamedTemporaryFile(delete=False)
+        tmpfile = tempfile.NamedTemporaryFile("w",delete=False)
         self.addCleanup(os.remove, tmpfile.name)
         with tmpfile as f:
             f.write(measures.encode('utf8'))
@@ -309,7 +309,7 @@ class MetricClientTest(base.ClientTestBase):
         measures = json.dumps({'metric-res': {'metric-name': [{
             'timestamp': '2015-03-06T14:34:12', 'value': 12
         }]}})
-        tmpfile = tempfile.NamedTemporaryFile(delete=False)
+        tmpfile = tempfile.NamedTemporaryFile("w", delete=False)
         self.addCleanup(os.remove, tmpfile.name)
         with tmpfile as f:
             f.write(measures.encode('utf8'))
