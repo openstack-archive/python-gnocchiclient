@@ -168,7 +168,12 @@ class GnocchiShell(app.App):
             except Exception:
                 pass
             else:
-                print(error['description'])
+                if 'description' in error:
+                    # Gnocchi format
+                    print(error['description'])
+                elif 'error' in error and 'message' in error['error']:
+                    # Keystone format
+                    print(error['error']['message'])
 
     def configure_logging(self):
         if self.options.debug:
