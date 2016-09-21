@@ -1,0 +1,10 @@
+Code-Review+1: fengchaoyang <fengchaoyang@unitedstack.com>
+Code-Review+2: Julien Danjou <julien@danjou.info>
+Code-Review+2: Mehdi Abaakouk (sileht) <sileht@redhat.com>
+Workflow+1: Julien Danjou <julien@danjou.info>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Wed, 21 Sep 2016 13:18:03 +0000
+Reviewed-on: https://review.openstack.org/349042
+Project: openstack/python-gnocchiclient
+Branch: refs/heads/master
