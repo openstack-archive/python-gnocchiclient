@@ -49,6 +49,7 @@ class GnocchiCommandManager(commandmanager.CommandManager):
         "resource batch delete": resource_cli.CliResourceBatchDelete,
         "resource-type list": resource_type_cli.CliResourceTypeList,
         "resource-type create": resource_type_cli.CliResourceTypeCreate,
+        "resource-type update": resource_type_cli.CliResourceTypeUpdate,
         "resource-type show": resource_type_cli.CliResourceTypeShow,
         "resource-type delete": resource_type_cli.CliResourceTypeDelete,
         "archive-policy list": archive_policy_cli.CliArchivePolicyList,
