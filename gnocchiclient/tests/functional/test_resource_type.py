@@ -47,6 +47,28 @@ class ResourceTypeClientTest(base.ClientTestBase):
             "max_length=16, min_length=0, required=True, type=string",
             resource["attributes/foo"])
 
+        # PATCH
+        result = self.gnocchi(
+            u'resource-type',
+            params=u"update -r foo "
+            "-a new:string:no:max_length=16 %s" % self.RESOURCE_TYPE)
+        resource = self.details_multiple(result)[0]
+        self.assertEqual(self.RESOURCE_TYPE, resource["name"])
+        self.assertNotIn("attributes/foo", resource)
+        self.assertEqual(
+            "max_length=16, min_length=0, required=False, type=string",
+            resource["attributes/new"])
+
+        # SHOW
+        result = self.gnocchi(
+            u'resource-type', params=u"show %s" % self.RESOURCE_TYPE)
+        resource = self.details_multiple(result)[0]
+        self.assertEqual(self.RESOURCE_TYPE, resource["name"])
+        self.assertNotIn("attributes/foo", resource)
+        self.assertEqual(
+            "max_length=16, min_length=0, required=False, type=string",
+            resource["attributes/new"])
+
         # DELETE
         result = self.gnocchi('resource-type',
                               params="delete %s" % self.RESOURCE_TYPE)

@@ -81,6 +81,33 @@ class CliResourceTypeCreate(show.ShowOne):
         return self.dict2columns(res)
 
 
+class CliResourceTypeUpdate(CliResourceTypeCreate):
+    def get_parser(self, prog_name):
+        parser = super(CliResourceTypeUpdate, self).get_parser(prog_name)
+        parser.add_argument("-r", "--remove-attribute", action='append',
+                            default=[],
+                            help=u"attribute name")
+
+        return parser
+
+    def take_action(self, parsed_args):
+        operations = []
+        if parsed_args.attribute:
+            for name, attrs in parsed_args.attribute:
+                operations.append({'op': 'add',
+                                   'path': '/attributes/%s' % name,
+                                   'value': attrs})
+        if parsed_args.remove_attribute:
+            for name in parsed_args.remove_attribute:
+                operations.append({'op': 'remove',
+                                   'path': '/attributes/%s' % name})
+
+        res = utils.get_client(self).resource_type.update(
+            parsed_args.name, operations)
+        utils.format_resource_type(res)
+        return self.dict2columns(res)
+
+
 class CliResourceTypeShow(show.ShowOne):
     """Show a resource type"""
 

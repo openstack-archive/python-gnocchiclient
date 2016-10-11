@@ -50,3 +50,16 @@ class ResourceTypeManager(base.Manager):
         :type resource_type: dict
         """
         self._delete(self.url + name)
+
+    def update(self, name, operations):
+        """Update a resource type
+
+        :param name: name of the resource type
+        :type name: str
+        :param operations: operations in RFC6902 format
+        :type name: list
+        """
+        return self._patch(
+            self.url + name,
+            headers={'Content-Type': "application/json-patch+json"},
+            data=jsonutils.dumps(operations)).json()
