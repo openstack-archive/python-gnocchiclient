@@ -1,7 +1,6 @@
 [run]
 branch = True
 source = gnocchiclient
-omit = gnocchiclient/openstack/*
 
 [report]
 ignore_errors = True
