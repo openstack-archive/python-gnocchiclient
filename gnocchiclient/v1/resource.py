@@ -123,6 +123,17 @@ class ResourceManager(base.Manager):
         resource_id = utils.encode_resource_id(resource_id)
         self._delete(self.url + "generic/" + resource_id)
 
+    def batch_delete(self, query, resource_type="generic"):
+        """Delete a batch of resources based on attribute values
+
+        :param resource_type: Type of the resource
+        :type resource_type: str
+        """
+        return self._delete(
+            self.url+resource_type + "/",
+            headers={'Content-Type': "application/json"},
+            data=jsonutils.dumps(query)).json()
+
     def search(self, resource_type="generic", query=None, details=False,
                history=False, limit=None, marker=None, sorts=None):
         """List resources
