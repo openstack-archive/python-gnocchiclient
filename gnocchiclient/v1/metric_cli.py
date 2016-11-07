@@ -284,3 +284,31 @@ class CliMeasuresAggregation(lister.Lister):
                     ms.append(i)
             return ('group',) + self.COLS, ms
         return self.COLS, measures
+
+class CliMetricSearch(lister.Lister):
+    """Search metric value with specified query rules"""
+
+    COLS = ('timestamp', 'granularity', 'value')
+
+    def get_parser(self, prog_name):
+        parser = super(CliMetricSearch, self).get_parser(prog_name)
+        parser.add_argument("metric_id", help="ID of a resource")
+        parser.add_argument("--aggregation", help="granularity aggregation "
+                            "function to retrieve")
+        parser.add_argument("--granularity",
+                            help="granularity to retrieve (in seconds)")
+        parser.add_argument("--start", help="beginning of the period")
+        parser.add_argument("--stop", help="end of the period")
+        utils.add_metric_query_argument("query", parser)
+        return parser
+
+    def take_action(self, parsed_args):
+        measures = utils.get_client(self).metric.search_metrics_values(
+            metric_id=parsed_args.metric_id,
+            query=parsed_args.query,
+            aggregation=parsed_args.aggregation,
+            start=parsed_args.start,
+            stop=parsed_args.stop,
+            granularity=parsed_args.granularity
+        )
+        return self.COLS, measures.get(parsed_args.metric_id)
