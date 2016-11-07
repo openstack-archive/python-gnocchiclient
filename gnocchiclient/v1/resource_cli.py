@@ -80,7 +80,7 @@ class CliResourceSearch(CliResourceList):
 
     def get_parser(self, prog_name):
         parser = super(CliResourceSearch, self).get_parser(prog_name)
-        utils.add_query_argument("query", parser)
+        utils.add_resource_query_argument("query", parser)
         return parser
 
     def take_action(self, parsed_args):
@@ -226,7 +226,7 @@ class CliResourceBatchDelete(show.ShowOne):
         parser = super(CliResourceBatchDelete, self).get_parser(prog_name)
         parser.add_argument("--type", "-t", dest="resource_type",
                             default="generic", help="Type of resource")
-        utils.add_query_argument("query", parser)
+        utils.add_resource_query_argument("query", parser)
         return parser
 
     def take_action(self, parsed_args):
