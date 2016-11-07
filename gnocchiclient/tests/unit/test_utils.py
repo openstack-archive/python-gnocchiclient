@@ -19,10 +19,14 @@ from gnocchiclient import utils
 
 class SearchQueryBuilderTest(base.BaseTestCase):
     def _do_test(self, expr, expected):
-        req = utils.search_query_builder(expr)
+        req = utils.resource_query_builder(expr)
         self.assertEqual(expected, req)
 
-    def test_search_query_builder(self):
+    def _do_metric_test(self, expr, expected):
+        req = utils.metric_query_builder(expr)
+        self.assertEqual(expected, req)
+
+    def test_resource_query_builder(self):
         self._do_test('foo=7EED6CC3-EDC8-48C9-8EF6-8A36B9ACC91C',
                       {"=": {"foo": "7EED6CC3-EDC8-48C9-8EF6-8A36B9ACC91C"}})
         self._do_test('foo=7EED6CC3EDC848C98EF68A36B9ACC91C',
@@ -85,6 +89,19 @@ class SearchQueryBuilderTest(base.BaseTestCase):
                           ]},
                           {"=": {"foo": "quote"}},
                       ]})
+
+    def test_metric_query_builder(self):
+        self._do_metric_test('= 12.0', {'=': 12.0})
+        self._do_metric_test('>= 15.0 and < 20.0',
+                             {'and': [
+                                 {'>=': 20.0},
+                                 {'<': 15.0}
+                             ]})
+        self._do_metric_test('> 15.0 and != 20.0',
+                             {'and': [
+                                 {'>': 20.0},
+                                 {'!=': 15.0}
+                             ]})
 
     def test_dict_to_querystring(self):
         expected = ["start=2016-02-10T13%3A54%3A53%2B00%3A00"
