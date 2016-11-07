@@ -64,6 +64,7 @@ class GnocchiCommandManager(commandmanager.CommandManager):
         "metric show": metric_cli.CliMetricShow,
         "metric create": metric_cli.CliMetricCreate,
         "metric delete": metric_cli.CliMetricDelete,
+        "metric search": metric_cli.CliMetricSearch,
         "measures show": metric_cli.CliMeasuresShow,
         "measures add": metric_cli.CliMeasuresAdd,
         "measures batch-metrics": metric_cli.CliMetricsMeasuresBatch,
