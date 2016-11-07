@@ -224,7 +224,8 @@ class MetricManager(base.Manager):
         :type aggregation: str
         :param reaggregation: groupby aggregation function to retrieve
         :type reaggregation: str
-        :param granularity: granularity to retrieve (in seconds)
+        :param granularity: granularity to retrieve (in seconds),
+                            can specify one or more granularities
         :type granularity: int
         :param needed_overlap: percent of datapoints in each metrics required
         :type needed_overlap: float
@@ -260,3 +261,38 @@ class MetricManager(base.Manager):
                     utils.dict_to_querystring(params)),
                 headers={'Content-Type': "application/json"},
                 data=jsonutils.dumps(query)).json()
+
+    def search_metrics_values(self, metric_id, start=None, stop=None,
+                              aggregation='mean', query=None,
+                              granularity=None):
+        """Searching for values in metrics
+
+        :param metric_id: ID of metric
+        :type metric_id: UUID
+        :param start: beginning of the period
+        :type start: timestamp
+        :param stop: end of the period
+        :type stop: timestamp
+        :param aggregation: granularity aggregation function to retrieve
+        :type aggregation: str
+        :param query: The query dictionary
+        :type query: dict
+        :param granularity: granularity to retrieve (in seconds)
+        :type granularity: int
+
+        See Gnocchi REST API documentation for the format
+        of *query dictionary*
+        http://docs.openstack.org/developer/gnocchi/rest.html#searching-for-values-in-metrics
+        """
+
+        if isinstance(start, datetime.datetime):
+            start = start.isoformat()
+        if isinstance(stop, datetime.datetime):
+            stop = stop.isoformat()
+        query = query or []
+        params = dict(metric_id=metric_id, start=start, stop=stop,
+                      agggregation=aggregation, granularity=granularity)
+        return self._post(
+            "v1/search/metric?%s" % utils.dict_to_querystring(params),
+            headers={'Content-Type': "application/json"},
+            data=jsonutils.dumps(query)).json()
