@@ -130,6 +130,19 @@ class MetricClientTest(base.ClientTestBase):
                            'timestamp': '2015-03-06T14:34:12+00:00',
                            'value': '12.0'}], measures)
 
+        # MEASURES GET RESAMPLE
+        result = self.retry_gnocchi(
+            5, 'measures', params=("show %s "
+                                   "--aggregation mean "
+                                   "--granularity 1 --resample 3600 "
+                                   "--start 2015-03-06T14:32:00 "
+                                   "--stop 2015-03-06T14:36:00"
+                                   ) % metric["id"])
+        measures = self.parser.listing(result)
+        self.assertEqual([{'granularity': '3600.0',
+                           'timestamp': '2015-03-06T14:00:00+00:00',
+                           'value': '27.555'}], measures)
+
         # MEASURES AGGREGATION
         result = self.gnocchi(
             'measures', params=("aggregation "
@@ -278,6 +291,21 @@ class MetricClientTest(base.ClientTestBase):
                           {'granularity': '1.0',
                            'timestamp': '2015-03-06T14:34:12+00:00',
                            'value': '12.0'}], measures)
+
+        # MEASURES AGGREGATION RESAMPLE
+        result = self.gnocchi(
+            'measures', params=("aggregation "
+                                "--query \"id='metric-res'\" "
+                                "--resource-type \"generic\" "
+                                "-m metric-name --granularity 1 "
+                                "--aggregation mean --resample=3600 "
+                                "--needed-overlap 0 "
+                                "--start 2015-03-06T14:32:00 "
+                                "--stop 2015-03-06T14:36:00"))
+        measures = self.parser.listing(result)
+        self.assertEqual([{'granularity': '3600.0',
+                           'timestamp': '2015-03-06T14:00:00+00:00',
+                           'value': '27.555'}], measures)
 
         # MEASURES AGGREGATION GROUPBY
         result = self.gnocchi(
