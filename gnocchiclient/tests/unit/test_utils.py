@@ -19,7 +19,7 @@ from gnocchiclient import utils
 
 class SearchQueryBuilderTest(base.BaseTestCase):
     def _do_test(self, expr, expected):
-        req = utils.search_query_builder(expr)
+        req = utils.resource_query_builder(expr)
         self.assertEqual(expected, req)
 
     def test_search_query_builder(self):

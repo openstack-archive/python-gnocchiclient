@@ -19,12 +19,13 @@ import six
 from six.moves.urllib import parse as urllib_parse
 
 uninary_operators = ("not", )
-binary_operator = (u">=", u"<=", u"!=", u">", u"<", u"=", u"==", u"eq", u"ne",
-                   u"lt", u"gt", u"ge", u"le", u"in", u"like", u"≠", u"≥",
-                   u"≤", u"like" "in")
+resource_binary_operator = (u">=", u"<=", u"!=", u">", u"<", u"=", u"==",
+                            u"eq", u"ne", u"lt", u"gt", u"ge", u"le", u"in",
+                            u"like", u"≠", u"≥", u"≤")
+metric_binary_operator = (u">=", u"<=", u"!=", u">", u"<", u"=", u"==",
+                          u"eq", u"ne", u"lt", u"gt", u"ge", u"le", u"≠",
+                          u"≥", u"≤")
 multiple_operators = (u"and", u"or", u"∧", u"∨")
-
-operator = pp.Regex(u"|".join(binary_operator))
 null = pp.Regex("None|none|null").setParseAction(pp.replaceWith(None))
 boolean = "False|True|false|true"
 boolean = pp.Regex(boolean).setParseAction(lambda t: t[0].lower() == "true")
@@ -42,28 +43,22 @@ in_list = pp.Group(pp.Suppress('[') +
                    pp.Suppress(']'))("list")
 comparison_term << (null | boolean | uuid_string | identifier | number |
                     quoted_string | in_list)
-condition = pp.Group(comparison_term + operator + comparison_term)
-
-expr = pp.infixNotation(condition, [
-    ("not", 1, pp.opAssoc.RIGHT, ),
-    ("and", 2, pp.opAssoc.LEFT, ),
-    ("∧", 2, pp.opAssoc.LEFT, ),
-    ("or", 2, pp.opAssoc.LEFT, ),
-    ("∨", 2, pp.opAssoc.LEFT, ),
-])
 
 
-def _parsed_query2dict(parsed_query):
+def _parsed_query2dict(parsed_query, binary_operator):
     result = None
     while parsed_query:
         part = parsed_query.pop()
         if part in binary_operator:
-            result = {part: {parsed_query.pop(): result}}
+            try:
+                result = {part: {parsed_query.pop(): result}}
+            except IndexError:
+                result = {part: result}
 
         elif part in multiple_operators:
             if result.get(part):
                 result[part].append(
-                    _parsed_query2dict(parsed_query.pop()))
+                    _parsed_query2dict(parsed_query.pop(), binary_operator))
             else:
                 result = {part: [result]}
 
@@ -74,7 +69,7 @@ def _parsed_query2dict(parsed_query):
             if kind == "list":
                 res = part.asList()
             else:
-                res = _parsed_query2dict(part)
+                res = _parsed_query2dict(part, binary_operator)
             if result is None:
                 result = res
             elif isinstance(result, dict):
@@ -90,7 +85,7 @@ class MalformedQuery(Exception):
             "Malformed Query: %s" % reason)
 
 
-def add_query_argument(cmd, parser):
+def add_resource_query_argument(cmd, parser):
     return parser.add_argument(
         cmd,
         help=u"A query to filter resource. "
@@ -101,15 +96,52 @@ def add_query_argument(cmd, parser):
         u"Use \"\" to force data to be interpreted as string. "
         u"Supported operators are: not, and, ∧ or, ∨, >=, <=, !=, >, <, =, "
         u"==, eq, ne, lt, gt, ge, le, in, like, ≠, ≥, ≤, like, in.",
-        type=search_query_builder)
+        type=resource_query_builder)
 
 
-def search_query_builder(query):
+def add_metric_query_argument(cmd, parser):
+    return parser.add_argument(
+        cmd,
+        help=u"A query to filter metric value. "
+        u"For example,'>= 50 and != 55' will look for all values that are "
+        u"greater than or equal to 50 and that are not equal to 55"
+        u"Supported operators are: not, and, ∧ or, ∨, >=, <=, !=, >, <, =, "
+        u"==, eq, ne, lt, gt, ge, le, ≠, ≥, ≤.",
+        type=metric_query_builder)
+
+
+def build_expr(condition):
+    expr = pp.operatorPrecedence(condition, [
+                                ("not", 1, pp.opAssoc.RIGHT, ),
+                                ("and", 2, pp.opAssoc.LEFT, ),
+                                ("∧", 2, pp.opAssoc.LEFT, ),
+                                ("or", 2, pp.opAssoc.LEFT, ),
+                                ("∨", 2, pp.opAssoc.LEFT, ),
+    ])
+    return expr
+
+
+def resource_query_builder(query):
+    resource_operator = pp.Regex(u"|".join(resource_binary_operator))
+    resource_condition = pp.Group(comparison_term + resource_operator
+                                  + comparison_term)
+    expr = build_expr(resource_condition)
     try:
         parsed_query = expr.parseString(query, parseAll=True)[0]
     except pp.ParseException as e:
         raise MalformedQuery(six.text_type(e))
-    return _parsed_query2dict(parsed_query)
+    return _parsed_query2dict(parsed_query, resource_binary_operator)
+
+
+def metric_query_builder(query):
+    metric_operator = pp.Regex(u"|".join(metric_binary_operator))
+    metric_condition = pp.Group(metric_operator + comparison_term)
+    expr = build_expr(metric_condition)
+    try:
+        parsed_query = expr.parseString(query, parseAll=True)[0]
+    except pp.ParseException as e:
+        raise MalformedQuery(six.text_type(e))
+    return _parsed_query2dict(parsed_query, metric_binary_operator)
 
 
 def list2cols(cols, objs):
