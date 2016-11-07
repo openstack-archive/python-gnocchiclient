@@ -130,6 +130,19 @@ class MetricClientTest(base.ClientTestBase):
                            'timestamp': '2015-03-06T14:34:12+00:00',
                            'value': '12.0'}], measures)
 
+        # Metric search value POST
+        result = self.gnocchi('metric',
+                              params=("search %s > 10 and < 15"
+                                      "--aggregation mean "
+                                      "--granularity 1 "
+                                      "--start 2015-03-06T14:32:00 "
+                                      "--stop 2015-03-06T14:36:00"
+                                      ) % metric["id"])
+        measures = self.parser.listing(result)
+        self.assertEqual([{'granularity': '1.0',
+                           'timestamp': '2015-03-06T14:34:12+00:00',
+                           'value': '12.0'}], measures)
+
         # MEASURES AGGREGATION
         result = self.gnocchi(
             'measures', params=("aggregation "
