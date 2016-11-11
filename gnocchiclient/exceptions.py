@@ -87,6 +87,10 @@ class ResourceNotFound(NotFound, MutipleMeaningException):
     match = re.compile("Resource .* does not exist")
 
 
+class ResourceTypeNotFound(NotFound, MutipleMeaningException):
+    message = "Resource type not found"
+    match = re.compile("Resource type .* does not exist")
+
 class ArchivePolicyNotFound(NotFound, MutipleMeaningException):
     message = "Archive policy not found"
     match = re.compile("Archive policy .* does not exist")
