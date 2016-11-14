@@ -21,7 +21,7 @@ from six.moves.urllib import parse as urllib_parse
 uninary_operators = ("not", )
 binary_operator = (u">=", u"<=", u"!=", u">", u"<", u"=", u"==", u"eq", u"ne",
                    u"lt", u"gt", u"ge", u"le", u"in", u"like", u"≠", u"≥",
-                   u"≤", u"like" "in")
+                   u"≤")
 multiple_operators = (u"and", u"or", u"∧", u"∨")
 
 operator = pp.Regex(u"|".join(binary_operator))
