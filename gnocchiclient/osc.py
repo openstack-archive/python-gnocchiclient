@@ -37,7 +37,9 @@ def make_client(instance):
         API_VERSIONS)
     # NOTE(sileht): ensure setup of the session is done
     instance.setup_auth()
-    return gnocchi_client(session=instance.session)
+    return gnocchi_client(session=instance.session,
+                          interface=instance.interface,
+                          region_name=instance.region_name)
 
 
 def build_option_parser(parser):
