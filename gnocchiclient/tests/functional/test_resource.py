@@ -18,9 +18,10 @@ from gnocchiclient import utils
 
 class ResourceClientTest(base.ClientTestBase):
     RESOURCE_ID = str(uuid.uuid4())
-    RESOURCE_ID2 = str(uuid.uuid4())
     RAW_RESOURCE_ID2 = str(uuid.uuid4()) + "/foo"
-    RESOURCE_ID2 = utils.encode_resource_id(RAW_RESOURCE_ID2)
+    # NOTE(gordc): namespace used by gnocchi server
+    RESOURCE_ID_NAMESPACE = uuid.UUID('0a7a15ff-aa13-4ac2-897c-9bdf30ce175b')
+    RESOURCE_ID2 = str(uuid.uuid5(RESOURCE_ID_NAMESPACE, RAW_RESOURCE_ID2))
     PROJECT_ID = str(uuid.uuid4())
 
     def test_help(self):
@@ -150,7 +151,7 @@ class ResourceClientTest(base.ClientTestBase):
                               params="delete %s" % self.RESOURCE_ID)
         self.assertEqual("", result)
         result = self.gnocchi('resource',
-                              params="delete %s" % self.RESOURCE_ID2)
+                              params="delete %s" % self.RAW_RESOURCE_ID2)
         self.assertEqual("", result)
 
         # GET FAIL
@@ -176,7 +177,7 @@ class ResourceClientTest(base.ClientTestBase):
             self.RESOURCE_ID)
         result2 = self.gnocchi(
             u'resource', params=u"create %s --type generic" %
-            self.RESOURCE_ID2)
+            self.RAW_RESOURCE_ID2)
         resource1 = self.details_multiple(result1)[0]
         resource2 = self.details_multiple(result2)[0]
         self.assertEqual(self.RESOURCE_ID, resource1['id'])
