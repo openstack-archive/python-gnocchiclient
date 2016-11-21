@@ -216,10 +216,17 @@ class CliMetricsMeasuresBatch(CliMeasuresBatch):
 
 
 class CliResourcesMetricsMeasuresBatch(CliMeasuresBatch):
+    def get_parser(self, prog_name):
+        parser = super(CliResourcesMetricsMeasuresBatch, self).get_parser(
+            prog_name)
+        parser.add_argument("--create-metrics", action='store_true',
+                            help="Create unknown metrics"),
+        return parser
+
     def take_action(self, parsed_args):
         with parsed_args.file as f:
             utils.get_client(self).metric.batch_resources_metrics_measures(
-                json.load(f))
+                json.load(f), create_metrics=parsed_args.create_metrics)
 
 
 class CliMeasuresAggregation(lister.Lister):

@@ -330,6 +330,14 @@ class MetricClientTest(base.ClientTestBase):
         self.gnocchi('measures', params="batch-resources-metrics -",
                      input=measures.encode('utf8'))
 
+        # BATCHING --create-metrics
+        measures = json.dumps({'metric-res': {'unknown-metric-name': [{
+            'timestamp': '2015-03-06T14:34:12', 'value': 12
+        }]}})
+        self.gnocchi('measures',
+                     params="batch-resources-metrics --create-metrics -",
+                     input=measures.encode('utf8'),)
+
         # LIST
         result = self.gnocchi('metric', params="list")
         metrics = self.parser.listing(result)

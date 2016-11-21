@@ -151,7 +151,7 @@ class MetricManager(base.Manager):
             headers={'Content-Type': "application/json"},
             data=jsonutils.dumps(measures))
 
-    def batch_resources_metrics_measures(self, measures):
+    def batch_resources_metrics_measures(self, measures, create_metrics=False):
         """Add measurements to named metrics if resources
 
         :param measures: measurements
@@ -162,7 +162,8 @@ class MetricManager(base.Manager):
         return self._post(
             self.resources_batch_url,
             headers={'Content-Type': "application/json"},
-            data=jsonutils.dumps(measures))
+            data=jsonutils.dumps(measures),
+            params=dict(create_metrics=create_metrics))
 
     def get_measures(self, metric, start=None, stop=None, aggregation=None,
                      granularity=None, resource_id=None, refresh=False,
