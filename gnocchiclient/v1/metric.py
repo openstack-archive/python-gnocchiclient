@@ -213,7 +213,7 @@ class MetricManager(base.Manager):
                     start=None, stop=None, aggregation=None,
                     reaggregation=None, granularity=None,
                     needed_overlap=None, resource_type="generic",
-                    groupby=None, refresh=False, resample=None):
+                    groupby=None, refresh=False, resample=None, fill=None):
         """Get measurements of an aggregated metrics
 
         :param metrics: IDs of metric or metric name
@@ -240,6 +240,8 @@ class MetricManager(base.Manager):
         :type refresh: bool
         :param resample: resample measures to new granularity
         :type resample: float
+        :param fill: value to use when backfilling missing datapoints
+        :type fill: float or 'null'
 
         See Gnocchi REST API documentation for the format
         of *query dictionary*
@@ -254,7 +256,7 @@ class MetricManager(base.Manager):
         params = dict(start=start, stop=stop, aggregation=aggregation,
                       reaggregation=reaggregation, granularity=granularity,
                       needed_overlap=needed_overlap, groupby=groupby,
-                      refresh=refresh, resample=resample)
+                      refresh=refresh, resample=resample, fill=fill)
         if query is None:
             for metric in metrics:
                 self._ensure_metric_is_uuid(metric)
