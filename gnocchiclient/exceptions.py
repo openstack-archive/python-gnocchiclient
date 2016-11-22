@@ -122,7 +122,7 @@ class Conflict(ClientException):
 
 class NamedMetricAlreadyExists(Conflict, MutipleMeaningException):
     message = "Named metric already exists"
-    match = re.compile("Named metric .* does not exist")
+    match = re.compile("Named metric .* already exist")
 
 
 class ResourceAlreadyExists(Conflict, MutipleMeaningException):
