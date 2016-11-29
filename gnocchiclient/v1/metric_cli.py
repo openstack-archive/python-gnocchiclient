@@ -148,6 +148,9 @@ class CliMeasuresShow(CliMetricWithResourceID, lister.Lister):
                             help="granularity to retrieve (in seconds)")
         parser.add_argument("--refresh", action="store_true",
                             help="force aggregation of all known measures")
+        parser.add_argument("--resample",
+                            help=("granularity to resample time-series to "
+                                  "(in seconds)"))
         return parser
 
     def take_action(self, parsed_args):
@@ -159,6 +162,7 @@ class CliMeasuresShow(CliMetricWithResourceID, lister.Lister):
             stop=parsed_args.stop,
             granularity=parsed_args.granularity,
             refresh=parsed_args.refresh,
+            resample=parsed_args.resample
         )
         return self.COLS, measures
 
@@ -259,6 +263,9 @@ class CliMeasuresAggregation(lister.Lister):
                             help="Attribute to use to group resources"),
         parser.add_argument("--refresh", action="store_true",
                             help="force aggregation of all known measures")
+        parser.add_argument("--resample",
+                            help=("granularity to resample time-series to "
+                                  "(in seconds)"))
         return parser
 
     def take_action(self, parsed_args):
@@ -279,6 +286,7 @@ class CliMeasuresAggregation(lister.Lister):
             resource_type=parsed_args.resource_type,
             groupby=parsed_args.groupby,
             refresh=parsed_args.refresh,
+            resample=parsed_args.resample
         )
         if parsed_args.groupby:
             ms = []

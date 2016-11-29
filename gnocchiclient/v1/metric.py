@@ -167,7 +167,7 @@ class MetricManager(base.Manager):
 
     def get_measures(self, metric, start=None, stop=None, aggregation=None,
                      granularity=None, resource_id=None, refresh=False,
-                     **kwargs):
+                     resample=None, **kwargs):
         """Get measurements of a metric
 
         :param metric: ID or Name of the metric
@@ -184,7 +184,9 @@ class MetricManager(base.Manager):
                             to get a metric by name)
         :type resource_id: str
         :param refresh: force aggregation of all known measures
-        :type refres: bool
+        :type refresh: bool
+        :param resample: resample measures to new granularity
+        :type resample: float
 
         All other arguments are arguments are dedicated to custom aggregation
         method passed as-is to the Gnocchi.
@@ -196,7 +198,8 @@ class MetricManager(base.Manager):
             stop = stop.isoformat()
 
         params = dict(start=start, stop=stop, aggregation=aggregation,
-                      granularity=granularity, refresh=refresh)
+                      granularity=granularity, refresh=refresh,
+                      resample=resample)
         params.update(kwargs)
         if resource_id is None:
             self._ensure_metric_is_uuid(metric)
@@ -210,7 +213,7 @@ class MetricManager(base.Manager):
                     start=None, stop=None, aggregation=None,
                     reaggregation=None, granularity=None,
                     needed_overlap=None, resource_type="generic",
-                    groupby=None, refresh=False):
+                    groupby=None, refresh=False, resample=None):
         """Get measurements of an aggregated metrics
 
         :param metrics: IDs of metric or metric name
@@ -233,6 +236,10 @@ class MetricManager(base.Manager):
         :type resource_type: str
         :param groupby: list of attribute to group by
         :type groupby: list
+        :param refresh: force aggregation of all known measures
+        :type refresh: bool
+        :param resample: resample measures to new granularity
+        :type resample: float
 
         See Gnocchi REST API documentation for the format
         of *query dictionary*
@@ -247,7 +254,7 @@ class MetricManager(base.Manager):
         params = dict(start=start, stop=stop, aggregation=aggregation,
                       reaggregation=reaggregation, granularity=granularity,
                       needed_overlap=needed_overlap, groupby=groupby,
-                      refresh=refresh)
+                      refresh=refresh, resample=resample)
         if query is None:
             for metric in metrics:
                 self._ensure_metric_is_uuid(metric)
