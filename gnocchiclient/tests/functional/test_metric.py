@@ -12,14 +12,15 @@
 import json
 import os
 import tempfile
-import uuid
+
+from oslo_utils import uuidutils
 
 from gnocchiclient.tests.functional import base
 
 
 class MetricClientTest(base.ClientTestBase):
     def test_delete_several_metrics(self):
-        apname = str(uuid.uuid4())
+        apname = uuidutils.generate_uuid()
         # PREPARE AN ARCHIVE POLICY
         self.gnocchi("archive-policy", params="create %s "
                      "--back-window 0 -d granularity:1s,points:86400" % apname)

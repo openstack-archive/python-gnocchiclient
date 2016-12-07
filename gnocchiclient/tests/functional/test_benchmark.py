@@ -9,7 +9,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import uuid
+from oslo_utils import uuidutils
 
 from gnocchiclient.tests.functional import base
 
@@ -22,7 +22,7 @@ class BenchmarkMetricTest(base.ClientTestBase):
         self.assertIn("0 must be greater than 0", result)
 
     def test_benchmark_metric_create(self):
-        apname = str(uuid.uuid4())
+        apname = uuidutils.generate_uuid()
         # PREPARE AN ARCHIVE POLICY
         self.gnocchi("archive-policy", params="create %s "
                      "--back-window 0 -d granularity:1s,points:86400" % apname)
@@ -43,7 +43,7 @@ class BenchmarkMetricTest(base.ClientTestBase):
         self.assertNotIn('delete executed', result)
 
     def test_benchmark_metric_get(self):
-        apname = str(uuid.uuid4())
+        apname = uuidutils.generate_uuid()
         # PREPARE AN ARCHIVE POLICY
         self.gnocchi("archive-policy", params="create %s "
                      "--back-window 0 -d granularity:1s,points:86400" % apname)
@@ -59,7 +59,7 @@ class BenchmarkMetricTest(base.ClientTestBase):
         self.assertLessEqual(int(result['show failures']), 10)
 
     def test_benchmark_measures_add(self):
-        apname = str(uuid.uuid4())
+        apname = uuidutils.generate_uuid()
         # PREPARE AN ARCHIVE POLICY
         self.gnocchi("archive-policy", params="create %s "
                      "--back-window 0 -d granularity:1s,points:86400" % apname)
@@ -92,7 +92,7 @@ class BenchmarkMetricTest(base.ClientTestBase):
         self.assertIn("extra wait to process measures", result)
 
     def test_benchmark_measures_show(self):
-        apname = str(uuid.uuid4())
+        apname = uuidutils.generate_uuid()
         # PREPARE AN ARCHIVE POLICY
         self.gnocchi("archive-policy", params="create %s "
                      "--back-window 0 -d granularity:1s,points:86400" % apname)
