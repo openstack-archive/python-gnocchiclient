@@ -13,8 +13,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import six
-
 
 class Manager(object):
     DEFAULT_HEADERS = {
@@ -26,7 +24,7 @@ class Manager(object):
 
     def _set_default_headers(self, kwargs):
         headers = kwargs.get('headers', {})
-        for k, v in six.iteritems(self.DEFAULT_HEADERS):
+        for k, v in self.DEFAULT_HEADERS.items():
             if k not in headers:
                 headers[k] = v
         kwargs['headers'] = headers
