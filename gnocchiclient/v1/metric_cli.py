@@ -145,7 +145,7 @@ class CliMeasuresShow(CliMetricWithResourceID, lister.Lister):
         parser.add_argument("--stop",
                             help="end of the period")
         parser.add_argument("--granularity",
-                            help="granularity to retrieve (in seconds)")
+                            help="granularity to retrieve")
         parser.add_argument("--refresh", action="store_true",
                             help="force aggregation of all known measures")
         return parser
@@ -247,7 +247,7 @@ class CliMeasuresAggregation(lister.Lister):
         parser.add_argument("--stop",
                             help="end of the period")
         parser.add_argument("--granularity",
-                            help="granularity to retrieve (in seconds)")
+                            help="granularity to retrieve")
         parser.add_argument("--needed-overlap", type=float,
                             help=("percent of datapoints in each "
                                   "metrics required"))
