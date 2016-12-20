@@ -55,7 +55,6 @@ class ResourceManager(base.Manager):
         :type history: bool
         """
         history = "/history" if history else ""
-        resource_id = utils.encode_resource_id(resource_id)
         url = self.url + "%s/%s%s" % (resource_type, resource_id, history)
         return self._get(url).json()
 
@@ -80,7 +79,6 @@ class ResourceManager(base.Manager):
         """
         qs = utils.build_pagination_options(details, False, limit, marker,
                                             sorts)
-        resource_id = utils.encode_resource_id(resource_id)
         url = "%s%s/%s/history?%s" % (self.url, resource_type, resource_id, qs)
         return self._get(url).json()
 
@@ -107,8 +105,6 @@ class ResourceManager(base.Manager):
         :param resource: Attribute of the resource
         :type resource: dict
         """
-
-        resource_id = utils.encode_resource_id(resource_id)
         return self._patch(
             self.url + resource_type + "/" + resource_id,
             headers={'Content-Type': "application/json"},
@@ -120,7 +116,6 @@ class ResourceManager(base.Manager):
         :param resource_id: ID of the resource
         :type resource_id: str
         """
-        resource_id = utils.encode_resource_id(resource_id)
         self._delete(self.url + "generic/" + resource_id)
 
     def batch_delete(self, query, resource_type="generic"):
