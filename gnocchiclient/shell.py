@@ -25,7 +25,7 @@ from keystoneauth1 import loading
 
 from gnocchiclient import benchmark
 from gnocchiclient import client
-from gnocchiclient import noauth
+from gnocchiclient import auth
 from gnocchiclient.v1 import archive_policy_cli
 from gnocchiclient.v1 import archive_policy_rule_cli as ap_rule_cli
 from gnocchiclient.v1 import capabilities_cli
@@ -134,7 +134,8 @@ class GnocchiShell(app.App):
         plugin = loading.register_auth_argparse_arguments(
             parser=parser, argv=sys.argv, default="password")
 
-        if not isinstance(plugin, noauth.GnocchiNoAuthLoader):
+        if not isinstance(plugin, (auth.GnocchiNoAuthLoader,
+                                   auth.GnocchiBasicLoader)):
             parser.add_argument(
                 '--endpoint',
                 default=os.environ.get('GNOCCHI_ENDPOINT'),
