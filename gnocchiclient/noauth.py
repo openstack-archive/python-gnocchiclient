@@ -30,9 +30,6 @@ class GnocchiNoAuthPlugin(plugin.BaseAuthPlugin):
         self._endpoint = endpoint
         self._roles = roles
 
-    def get_token(self, session, **kwargs):
-        return '<no-token-needed>'
-
     def get_headers(self, session, **kwargs):
         return {'x-user-id': self._user_id,
                 'x-project-id': self._project_id,
