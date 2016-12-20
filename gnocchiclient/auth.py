@@ -11,6 +11,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import base64
 import os
 
 from keystoneauth1 import loading
@@ -79,6 +80,35 @@ class GnocchiNoAuthLoader(loading.BaseLoader):
                        deprecated=[
                            GnocchiOpt('gnocchi-endpoint'),
                        ],
+                       dest="endpoint", required=True,
+                       metavar="<gnocchi endpoint>"),
+        ])
+        return options
+
+
+class GnocchiBasicPlugin(plugin.BaseAuthPlugin):
+    """Basic authentication plugin for Gnocchi."""
+    def __init__(self, user, endpoint):
+        self._user = user.encode('utf-8')
+        self._endpoint = endpoint
+
+    def get_headers(self, session, **kwargs):
+        return {'Authorization':
+                b"basic " + base64.b64encode(self._user + b":")}
+
+    def get_endpoint(self, session, **kwargs):
+        return self._endpoint
+
+
+class GnocchiBasicLoader(loading.BaseLoader):
+    plugin_class = GnocchiBasicPlugin
+
+    def get_options(self):
+        options = super(GnocchiBasicLoader, self).get_options()
+        options.extend([
+            GnocchiOpt('user', help='User', required=True,
+                       metavar="<gnocchi user>"),
+            GnocchiOpt('endpoint', help='Gnocchi endpoint',
                        dest="endpoint", required=True,
                        metavar="<gnocchi endpoint>"),
         ])

@@ -41,6 +41,16 @@ in your environment::
   export GNOCCHI_PROJECT_ID=<yourprojectid>
   export GNOCCHI_ENDPOINT=http://urlofgnocchi
 
+Basic authentication
+~~~~~~~~~~~~~~~~~~~~
+
+If you're using Gnocchi with basic authentication, export the following variables
+in your environment::
+
+  export OS_AUTH_TYPE=gnocchi-basic
+  export GNOCCHI_USER=<youruserid>
+  export GNOCCHI_ENDPOINT=http://urlofgnocchi
+
 OpenStack Keystone authentication
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
