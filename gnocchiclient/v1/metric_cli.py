@@ -266,6 +266,10 @@ class CliMeasuresAggregation(lister.Lister):
         parser.add_argument("--resample",
                             help=("granularity to resample time-series to "
                                   "(in seconds)"))
+        parser.add_argument("--fill",
+                            help=("Value to use when backfilling timestamps "
+                                  "with missing values in a subset of series. "
+                                  "Value should be a float or 'null'."))
         return parser
 
     def take_action(self, parsed_args):
@@ -286,7 +290,7 @@ class CliMeasuresAggregation(lister.Lister):
             resource_type=parsed_args.resource_type,
             groupby=parsed_args.groupby,
             refresh=parsed_args.refresh,
-            resample=parsed_args.resample
+            resample=parsed_args.resample, fill=parsed_args.fill
         )
         if parsed_args.groupby:
             ms = []

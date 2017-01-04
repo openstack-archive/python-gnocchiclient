@@ -293,6 +293,23 @@ class MetricClientTest(base.ClientTestBase):
                            'timestamp': '2015-03-06T14:34:12+00:00',
                            'value': '12.0'}], measures)
 
+        # MEASURES AGGREGATION WITH FILL
+        result = self.gnocchi(
+            'measures', params=("aggregation "
+                                "--query \"id='metric-res'\" "
+                                "--resource-type \"generic\" "
+                                "-m metric-name --fill 0 "
+                                "--granularity 1 "
+                                "--start 2015-03-06T14:32:00 "
+                                "--stop 2015-03-06T14:36:00"))
+        measures = self.parser.listing(result)
+        self.assertEqual([{'granularity': '1.0',
+                           'timestamp': '2015-03-06T14:33:57+00:00',
+                           'value': '43.11'},
+                          {'granularity': '1.0',
+                           'timestamp': '2015-03-06T14:34:12+00:00',
+                           'value': '12.0'}], measures)
+
         # MEASURES AGGREGATION RESAMPLE
         result = self.gnocchi(
             'measures', params=("aggregation "
