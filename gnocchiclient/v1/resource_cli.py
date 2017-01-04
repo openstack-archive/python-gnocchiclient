@@ -14,6 +14,8 @@ from cliff import command
 from cliff import lister
 from cliff import show
 
+from oslo_utils import strutils
+
 from gnocchiclient import exceptions
 from gnocchiclient import utils
 
@@ -140,12 +142,20 @@ class CliResourceCreate(show.ShowOne):
         return parser
 
     def _resource_from_args(self, parsed_args, update=False):
+        # Get the resource type to set the correct type
+        rt_attrs = utils.get_client(self).resource_type.get(
+            name=parsed_args.resource_type)['attributes']
         resource = {}
         if not update:
             resource['id'] = parsed_args.resource_id
         if parsed_args.attribute:
             for attr in parsed_args.attribute:
                 attr, __, value = attr.partition(":")
+                attr_type = rt_attrs.get(attr, {}).get('type')
+                if attr_type == "number":
+                    value = float(value)
+                elif attr_type == "bool":
+                    value = strutils.bool_from_string(value)
                 resource[attr] = value
         if (parsed_args.add_metric
            or parsed_args.create_metric
