@@ -17,6 +17,7 @@ from gnocchiclient.tests.functional import base
 
 class ResourceTypeClientTest(base.ClientTestBase):
     RESOURCE_TYPE = uuidutils.generate_uuid()
+    RESOURCE_ID = uuidutils.generate_uuid()
 
     def test_help(self):
         self.gnocchi("help", params="resource list")
@@ -51,12 +52,12 @@ class ResourceTypeClientTest(base.ClientTestBase):
         result = self.gnocchi(
             u'resource-type',
             params=u"update -r foo "
-            "-a new:string:no:max_length=16 %s" % self.RESOURCE_TYPE)
+            "-a new:number:no:max=16 %s" % self.RESOURCE_TYPE)
         resource = self.details_multiple(result)[0]
         self.assertEqual(self.RESOURCE_TYPE, resource["name"])
         self.assertNotIn("attributes/foo", resource)
         self.assertEqual(
-            "max_length=16, min_length=0, required=False, type=string",
+            "max=16, min=None, required=False, type=number",
             resource["attributes/new"])
 
         # SHOW
@@ -66,8 +67,16 @@ class ResourceTypeClientTest(base.ClientTestBase):
         self.assertEqual(self.RESOURCE_TYPE, resource["name"])
         self.assertNotIn("attributes/foo", resource)
         self.assertEqual(
-            "max_length=16, min_length=0, required=False, type=string",
+            "max=16, min=None, required=False, type=number",
             resource["attributes/new"])
+
+        # Create a resource for this type
+        result = self.gnocchi(
+            u'resource', params=(u"create %s -t %s -a new:5") %
+            (self.RESOURCE_ID, self.RESOURCE_TYPE))
+        resource = self.details_multiple(result)[0]
+        self.assertEqual(self.RESOURCE_ID, resource["id"])
+        self.assertEqual('5.0', resource["new"])
 
         # DELETE
         result = self.gnocchi('resource-type',
