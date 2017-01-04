@@ -9,7 +9,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import uuid
+from oslo_utils import uuidutils
 
 from gnocchiclient.tests.functional import base
 
@@ -17,7 +17,7 @@ from gnocchiclient.tests.functional import base
 class ArchivePolicyClientTest(base.ClientTestBase):
     def test_archive_policy_scenario(self):
         # CREATE
-        apname = str(uuid.uuid4())
+        apname = uuidutils.generate_uuid()
         result = self.gnocchi(
             u'archive-policy', params=u"create %s"
             u" --back-window 0"

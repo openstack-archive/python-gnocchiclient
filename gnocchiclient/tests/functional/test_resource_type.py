@@ -10,13 +10,13 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import uuid
+from oslo_utils import uuidutils
 
 from gnocchiclient.tests.functional import base
 
 
 class ResourceTypeClientTest(base.ClientTestBase):
-    RESOURCE_TYPE = str(uuid.uuid4())
+    RESOURCE_TYPE = uuidutils.generate_uuid()
 
     def test_help(self):
         self.gnocchi("help", params="resource list")

@@ -10,18 +10,18 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import uuid
+from oslo_utils import uuidutils
 
 from gnocchiclient.tests.functional import base
 from gnocchiclient import utils
 
 
 class ResourceClientTest(base.ClientTestBase):
-    RESOURCE_ID = str(uuid.uuid4())
-    RESOURCE_ID2 = str(uuid.uuid4())
-    RAW_RESOURCE_ID2 = str(uuid.uuid4()) + "/foo"
+    RESOURCE_ID = uuidutils.generate_uuid()
+    RESOURCE_ID2 = uuidutils.generate_uuid()
+    RAW_RESOURCE_ID2 = uuidutils.generate_uuid() + "/foo"
     RESOURCE_ID2 = utils.encode_resource_id(RAW_RESOURCE_ID2)
-    PROJECT_ID = str(uuid.uuid4())
+    PROJECT_ID = uuidutils.generate_uuid()
 
     def test_help(self):
         self.gnocchi("help", params="resource list")
@@ -29,7 +29,7 @@ class ResourceClientTest(base.ClientTestBase):
         self.gnocchi("help", params="resource search")
 
     def test_resource_scenario(self):
-        apname = str(uuid.uuid4())
+        apname = uuidutils.generate_uuid()
         # Create an archive policy
         self.gnocchi(
             u'archive-policy', params=u"create %s"
