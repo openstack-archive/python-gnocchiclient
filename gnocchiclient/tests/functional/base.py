@@ -32,14 +32,12 @@ class GnocchiClient(object):
         self.cli_dir = os.environ.get('GNOCCHI_CLIENT_EXEC_DIR')
         self.endpoint = os.environ.get('PIFPAF_GNOCCHI_HTTP_URL')
         self.user_id = uuidutils.generate_uuid()
-        self.project_id = uuidutils.generate_uuid()
 
     def gnocchi(self, action, flags='', params='',
                 fail_ok=False, merge_stderr=False, input=None):
-        creds = ("--os-auth-plugin gnocchi-noauth "
-                 "--user-id %s --project-id %s "
+        creds = ("--os-auth-plugin gnocchi-basic "
+                 "--user %s "
                  "--endpoint %s") % (self.user_id,
-                                     self.project_id,
                                      self.endpoint)
 
         flags = creds + ' ' + flags
