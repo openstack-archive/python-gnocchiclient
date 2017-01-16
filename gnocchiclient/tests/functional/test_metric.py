@@ -63,9 +63,9 @@ class MetricClientTest(base.ClientTestBase):
             u" --archive-policy-name metric-test some-name")
         metric = self.details_multiple(result)[0]
         self.assertIsNotNone(metric["id"])
-        self.assertEqual(self.clients.project_id,
-                         metric["created_by_project_id"])
-        self.assertEqual(self.clients.user_id, metric["created_by_user_id"])
+        self.assertEqual("admin", metric["creator"])
+        self.assertEqual("", metric["created_by_project_id"])
+        self.assertEqual("admin", metric["created_by_user_id"])
         self.assertEqual('some-name', metric["name"])
         self.assertEqual('None', metric["unit"])
         self.assertEqual('None', metric["resource/id"])
@@ -78,9 +78,9 @@ class MetricClientTest(base.ClientTestBase):
             u" --unit some-unit")
         metric = self.details_multiple(result)[0]
         self.assertIsNotNone(metric["id"])
-        self.assertEqual(self.clients.project_id,
-                         metric["created_by_project_id"])
-        self.assertEqual(self.clients.user_id, metric["created_by_user_id"])
+        self.assertEqual("admin", metric["creator"])
+        self.assertEqual("", metric["created_by_project_id"])
+        self.assertEqual("admin", metric["created_by_user_id"])
         self.assertEqual('another-name', metric["name"])
         self.assertEqual('some-unit', metric["unit"])
         self.assertEqual('None', metric["resource/id"])
@@ -226,9 +226,9 @@ class MetricClientTest(base.ClientTestBase):
             u" --unit some-unit")
         metric = self.details_multiple(result)[0]
         self.assertIsNotNone(metric["id"])
-        self.assertEqual(self.clients.project_id,
-                         metric["created_by_project_id"])
-        self.assertEqual(self.clients.user_id, metric["created_by_user_id"])
+        self.assertEqual("", metric['created_by_project_id'])
+        self.assertEqual("admin", metric['created_by_user_id'])
+        self.assertEqual("admin", metric['creator'])
         self.assertEqual('metric-name', metric["name"])
         self.assertEqual('some-unit', metric["unit"])
         self.assertNotEqual('None', metric["resource/id"])

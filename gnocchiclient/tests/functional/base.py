@@ -16,8 +16,6 @@ import six
 import subprocess
 import time
 
-from oslo_utils import uuidutils
-
 from tempest.lib.cli import base
 from tempest.lib import exceptions
 
@@ -31,16 +29,12 @@ class GnocchiClient(object):
     def __init__(self):
         self.cli_dir = os.environ.get('GNOCCHI_CLIENT_EXEC_DIR')
         self.endpoint = os.environ.get('PIFPAF_GNOCCHI_HTTP_URL')
-        self.user_id = uuidutils.generate_uuid()
-        self.project_id = uuidutils.generate_uuid()
 
     def gnocchi(self, action, flags='', params='',
                 fail_ok=False, merge_stderr=False, input=None):
-        creds = ("--os-auth-plugin gnocchi-noauth "
-                 "--user-id %s --project-id %s "
-                 "--endpoint %s") % (self.user_id,
-                                     self.project_id,
-                                     self.endpoint)
+        creds = ("--os-auth-plugin gnocchi-basic "
+                 "--user admin "
+                 "--endpoint %s") % self.endpoint
 
         flags = creds + ' ' + flags
 

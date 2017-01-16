@@ -92,7 +92,8 @@ class GnocchiBasicPlugin(plugin.BaseAuthPlugin):
     def get_headers(self, session, **kwargs):
         return {
             'Authorization':
-            b"basic " + base64.b64encode(self._user + b":").decode('ascii')
+            (b"basic " + base64.b64encode(
+                self._user + b":")).decode('ascii')
         }
 
     def get_endpoint(self, session, **kwargs):
