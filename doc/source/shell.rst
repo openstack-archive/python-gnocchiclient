@@ -7,6 +7,9 @@ The :program:`gnocchi` shell utility
 The :program:`gnocchi` shell utility interacts with Gnocchi from the command
 line. It supports the entirety of the Gnocchi API.
 
+Authentication method
++++++++++++++++++++++
+
 You'll need to provide the authentication method and your credentials to
 :program:`gnocchi`.
 
@@ -44,8 +47,8 @@ in your environment::
 Basic authentication
 ~~~~~~~~~~~~~~~~~~~~
 
-If you're using Gnocchi with basic authentication, export the following variables
-in your environment::
+If you're using Gnocchi with basic authentication, export the following
+variables in your environment::
 
   export OS_AUTH_TYPE=gnocchi-basic
   export GNOCCHI_USER=<youruserid>
@@ -82,28 +85,8 @@ environment variables::
     export GNOCCHI_USER_ID=99aae-4dc2-4fbc-b5b8-9688c470d9cc
     export GNOCCHI_PROJECT_ID=c8d27445-48af-457c-8e0d-1de7103eae1f
 
-Usage
-=====
 
-Once authentication is set up, all shell commands take the form::
+Commands descriptions
++++++++++++++++++++++
 
-    gnocchi <command> [arguments...]
-
-Run :program:`gnocchi help` to get a full list of all possible commands,
-and run :program:`gnocchi help <command>` to get detailed help for that
-command.
-
-Examples
---------
-
-Create a resource::
-
-    gnocchi resource create --attribute id:5a301761-f78b-46e2-8900-8b4f6fe6675a --attribute project_id:eba5c38f-c3dd-4d9c-9235-32d430471f94 -n temperature:high instance
-
-List resources::
-
-    gnocchi resource list --type instance
-
-Search of resources::
-
-    gnocchi resource search "project_id='5a301761-f78b-46e2-8900-8b4f6fe6675a' and type=instance"
+.. include:: gnocchi.rst

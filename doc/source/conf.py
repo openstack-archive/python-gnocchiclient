@@ -26,6 +26,7 @@ sys.path.insert(0, BASE_DIR)
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
+    'gnocchiclient.gendoc',
     'sphinx.ext.autodoc',
     #'sphinx.ext.intersphinx'
 ]
