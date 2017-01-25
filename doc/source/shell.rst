@@ -44,6 +44,12 @@ in your environment::
   export GNOCCHI_PROJECT_ID=<yourprojectid>
   export GNOCCHI_ENDPOINT=http://urlofgnocchi
 
+.. note::
+
+  OS_AUTH_TYPE is used globally by all clients supporting Keystone. Provide
+  :option:`--os-auth-plugin` gnocchi-noauth to the client instead if other
+  clients are used in session.
+
 Basic authentication
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -53,6 +59,12 @@ variables in your environment::
   export OS_AUTH_TYPE=gnocchi-basic
   export GNOCCHI_USER=<youruserid>
   export GNOCCHI_ENDPOINT=http://urlofgnocchi
+
+.. note::
+
+  OS_AUTH_TYPE is used globally by all clients supporting Keystone. Provide
+  :option:`--os-auth-plugin` gnocchi-basic to the client instead if other
+  clients are used in session.
 
 OpenStack Keystone authentication
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -74,16 +86,6 @@ variables::
     export GNOCCHI_ENDPOINT=http://gnocchi.example.org:8041
     export OS_AUTH_PLUGIN=token
     export OS_AUTH_TOKEN=3bcc3d3a03f44e3d8377f9247b0ad155
-
-Also, if the server doesn't support authentication, you can provide
-:option:`--os-auth-plugin` gnocchi-noauth, :option:`--endpoint`,
-:option:`--user-id` and :option:`--project-id`. You can alternatively set these
-environment variables::
-
-    export OS_AUTH_PLUGIN=gnocchi-noauth
-    export GNOCCHI_ENDPOINT=http://gnocchi.example.org:8041
-    export GNOCCHI_USER_ID=99aae-4dc2-4fbc-b5b8-9688c470d9cc
-    export GNOCCHI_PROJECT_ID=c8d27445-48af-457c-8e0d-1de7103eae1f
 
 
 Commands descriptions
