@@ -49,11 +49,27 @@ class CliResourceList(lister.Lister):
                             default="generic", help="Type of resource")
         return parser
 
+    def _list2cols(self, resources):
+        """Return a formatted list of resources."""
+        if not resources:
+            return self.COLS, []
+        cols = list(self.COLS)
+        for k in resources[0]:
+            if k not in cols:
+                cols.append(k)
+        if 'creator' in cols:
+            cols.remove('created_by_user_id')
+            cols.remove('created_by_project_id')
+        return utils.list2cols(cols, resources)
+
     def take_action(self, parsed_args):
         resources = utils.get_client(self).resource.list(
             resource_type=parsed_args.resource_type,
             **utils.get_pagination_options(parsed_args))
-        return utils.list2cols(self.COLS, resources)
+        # Do not dump metrics because it makes the list way too long
+        for r in resources:
+            del r['metrics']
+        return self._list2cols(resources)
 
 
 class CliResourceHistory(CliResourceList):
@@ -71,10 +87,9 @@ class CliResourceHistory(CliResourceList):
             resource_type=parsed_args.resource_type,
             resource_id=parsed_args.resource_id,
             **utils.get_pagination_options(parsed_args))
-        cols = resources[0].keys() if resources else self.COLS
         if parsed_args.formatter == 'table':
-            return utils.list2cols(cols, map(normalize_metrics, resources))
-        return utils.list2cols(cols, resources)
+            return self._list2cols(list(map(normalize_metrics, resources)))
+        return self._list2cols(resources)
 
 
 class CliResourceSearch(CliResourceList):
@@ -90,7 +105,10 @@ class CliResourceSearch(CliResourceList):
             resource_type=parsed_args.resource_type,
             query=parsed_args.query,
             **utils.get_pagination_options(parsed_args))
-        return utils.list2cols(self.COLS, resources)
+        # Do not dump metrics because it makes the list way too long
+        for r in resources:
+            del r['metrics']
+        return self._list2cols(resources)
 
 
 def normalize_metrics(res):
