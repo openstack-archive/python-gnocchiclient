@@ -107,9 +107,11 @@ class GnocchiBasicLoader(loading.BaseLoader):
         options = super(GnocchiBasicLoader, self).get_options()
         options.extend([
             GnocchiOpt('user', help='User', required=True,
+                       default="admin",
                        metavar="<gnocchi user>"),
             GnocchiOpt('endpoint', help='Gnocchi endpoint',
                        dest="endpoint", required=True,
+                       default="http://localhost:8041",
                        metavar="<gnocchi endpoint>"),
         ])
         return options

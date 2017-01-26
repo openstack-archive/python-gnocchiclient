@@ -132,7 +132,7 @@ class GnocchiShell(app.App):
             help='Defaults to env[GNOCCHI_API_VERSION] or 1.')
         loading.register_session_argparse_arguments(parser=parser)
         plugin = loading.register_auth_argparse_arguments(
-            parser=parser, argv=sys.argv, default="password")
+            parser=parser, argv=sys.argv, default="gnocchi-basic")
 
         if not isinstance(plugin, (auth.GnocchiNoAuthLoader,
                                    auth.GnocchiBasicLoader)):
