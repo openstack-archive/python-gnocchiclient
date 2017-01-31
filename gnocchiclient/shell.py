@@ -160,17 +160,19 @@ class GnocchiShell(app.App):
                              self.options.os_api_version or
                              self.options.gnocchi_api_version),
                     session=session,
-                    service_type=(self.options.os_metric_service_type or
-                                  self.options.os_service_type),
-                    service_name=(self.options.os_metric_service_name or
-                                  self.options.os_service_name),
-                    interface=(self.options.os_metric_interface or
-                               self.options.os_interface),
-                    region_name=self.options.os_region_name,
-                    endpoint_override=(
-                        self.options.os_metric_endpoint_override or
-                        self.options.os_endpoint_override or
-                        self.options.endpoint),
+                    adapter_options=dict(
+                        service_type=(self.options.os_metric_service_type or
+                                      self.options.os_service_type),
+                        service_name=(self.options.os_metric_service_name or
+                                      self.options.os_service_name),
+                        interface=(self.options.os_metric_interface or
+                                   self.options.os_interface),
+                        region_name=self.options.os_region_name,
+                        endpoint_override=(
+                            self.options.os_metric_endpoint_override or
+                            self.options.os_endpoint_override or
+                            self.options.endpoint),
+                    )
                 )
             self._client = client.Client(**kwargs)
         return self._client
