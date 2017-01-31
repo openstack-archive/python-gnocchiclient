@@ -20,6 +20,7 @@ import warnings
 
 from cliff import app
 from cliff import commandmanager
+from keystoneauth1 import adapter
 from keystoneauth1 import exceptions
 from keystoneauth1 import loading
 
@@ -110,36 +111,28 @@ class GnocchiShell(app.App):
             description,
             version,
             argparse_kwargs={'allow_abbrev': False})
-        # Global arguments, one day this should go to keystoneauth1
-        parser.add_argument(
-            '--os-region-name',
-            metavar='<auth-region-name>',
-            dest='region_name',
-            default=os.environ.get('OS_REGION_NAME'),
-            help='Authentication region name (Env: OS_REGION_NAME)')
-        parser.add_argument(
-            '--os-interface',
-            metavar='<interface>',
-            dest='interface',
-            choices=['admin', 'public', 'internal'],
-            default=os.environ.get('OS_INTERFACE'),
-            help='Select an interface type.'
-                 ' Valid interface types: [admin, public, internal].'
-                 ' (Env: OS_INTERFACE)')
         parser.add_argument(
             '--gnocchi-api-version',
             default=os.environ.get('GNOCCHI_API_VERSION', '1'),
             help='Defaults to env[GNOCCHI_API_VERSION] or 1.')
+
         loading.register_session_argparse_arguments(parser=parser)
         plugin = loading.register_auth_argparse_arguments(
             parser=parser, argv=sys.argv, default="gnocchi-basic")
 
         if not isinstance(plugin, (auth.GnocchiNoAuthLoader,
                                    auth.GnocchiBasicLoader)):
+            adapter.register_adapter_argparse_arguments(
+                parser=parser, service_type="metric")
+            adapter.register_service_adapter_argparse_arguments(
+                parser=parser, service_type="metric")
+
             parser.add_argument(
                 '--endpoint',
                 default=os.environ.get('GNOCCHI_ENDPOINT'),
-                help='Gnocchi endpoint (Env: GNOCCHI_ENDPOINT)')
+                help='Gnocchi endpoint (Env: GNOCCHI_ENDPOINT). '
+                'Deprecated, use --os-endpoint-override and '
+                'OS_ENDPOINT_OVERRIDE instead')
 
         return parser
 
@@ -148,20 +141,38 @@ class GnocchiShell(app.App):
         # NOTE(sileht): we lazy load the client to not
         # load/connect auth stuffs
         if self._client is None:
-            if hasattr(self.options, "endpoint"):
-                endpoint_override = self.options.endpoint
-            else:
-                endpoint_override = None
             auth_plugin = loading.load_auth_from_argparse_arguments(
                 self.options)
             session = loading.load_session_from_argparse_arguments(
                 self.options, auth=auth_plugin)
 
-            self._client = client.Client(self.options.gnocchi_api_version,
-                                         session=session,
-                                         interface=self.options.interface,
-                                         region_name=self.options.region_name,
-                                         endpoint_override=endpoint_override)
+            if isinstance(auth_plugin, (auth.GnocchiNoAuthPlugin,
+                                        auth.GnocchiBasicPlugin)):
+                # Normal endpoint
+                kwargs = dict(
+                    version=self.options.gnocchi_api_version,
+                    session=session,
+                )
+            else:
+                # Openstck style endpoint
+                kwargs = dict(
+                    version=(self.options.os_metric_api_version or
+                             self.options.os_api_version or
+                             self.options.gnocchi_api_version),
+                    session=session,
+                    service_type=(self.options.os_metric_service_type or
+                                  self.options.os_service_type),
+                    service_name=(self.options.os_metric_service_name or
+                                  self.options.os_service_name),
+                    interface=(self.options.os_metric_interface or
+                               self.options.os_interface),
+                    region_name=self.options.os_region_name,
+                    endpoint_override=(
+                        self.options.os_metric_endpoint_override or
+                        self.options.os_endpoint_override or
+                        self.options.endpoint),
+                )
+            self._client = client.Client(**kwargs)
         return self._client
 
     def clean_up(self, cmd, result, err):
