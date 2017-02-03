@@ -30,6 +30,16 @@ class ExceptionsTest(base.BaseTestCase):
         exc = exceptions.from_response(r)
         self.assertIsInstance(exc, exceptions.ArchivePolicyRuleNotFound)
 
+    def test_resource_type_before_resource(self):
+        r = models.Response()
+        r.status_code = 404
+        r.headers['Content-Type'] = "application/json"
+        r._content = json.dumps(
+            {"description": "Resource type foobar does not exist"}
+        ).encode('utf-8')
+        exc = exceptions.from_response(r)
+        self.assertIsInstance(exc, exceptions.ResourceTypeNotFound)
+
     def test_from_response_keystone_401(self):
         r = models.Response()
         r.status_code = 401

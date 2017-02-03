@@ -171,8 +171,8 @@ _error_classes = [BadRequest, Unauthorized, Forbidden, NotFound,
                   MethodNotAllowed, NotAcceptable, Conflict, OverLimit,
                   RateLimit, NotImplemented]
 _error_classes_enhanced = {
-    NotFound: [MetricNotFound, ResourceNotFound, ArchivePolicyRuleNotFound,
-               ArchivePolicyNotFound, ResourceTypeNotFound],
+    NotFound: [MetricNotFound, ResourceTypeNotFound, ResourceNotFound,
+               ArchivePolicyRuleNotFound, ArchivePolicyNotFound],
     Conflict: [NamedMetricAlreadyExists, ResourceAlreadyExists,
                ArchivePolicyAlreadyExists,
                ArchivePolicyRuleAlreadyExists]
