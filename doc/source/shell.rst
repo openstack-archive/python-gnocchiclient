@@ -13,26 +13,6 @@ Authentication method
 You'll need to provide the authentication method and your credentials to
 :program:`gnocchi`.
 
-You can do this with the :option:`--os-username`, :option:`--os-password`,
-:option:`--os-tenant-id` and :option:`--os-auth-url` options, but it's easier
-to just set them as environment variables:
-
-.. envvar:: OS_USERNAME
-
-    Your username.
-
-.. envvar:: OS_PASSWORD
-
-    Your password.
-
-.. envvar:: OS_TENANT_NAME
-
-    Project to work on.
-
-.. envvar:: OS_AUTH_URL
-
-    The OpenStack auth server URL (Keystone).
-
 No authentication
 ~~~~~~~~~~~~~~~~~
 
@@ -72,6 +52,7 @@ OpenStack Keystone authentication
 If you're using Gnocchi with Keystone authentication, export the following
 variables in your environment with the appropriate values::
 
+    export OS_AUTH_TYPE=password
     export OS_USERNAME=user
     export OS_PASSWORD=pass
     export OS_TENANT_NAME=myproject
@@ -86,6 +67,10 @@ variables::
     export GNOCCHI_ENDPOINT=http://gnocchi.example.org:8041
     export OS_AUTH_PLUGIN=token
     export OS_AUTH_TOKEN=3bcc3d3a03f44e3d8377f9247b0ad155
+
+For more details, check the `keystoneauth documentation`_.
+
+.. _`keystoneauth documentation` https://docs.openstack.org/developer/keystoneauth/
 
 
 Commands descriptions
