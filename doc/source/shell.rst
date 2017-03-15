@@ -70,7 +70,7 @@ variables::
 
 For more details, check the `keystoneauth documentation`_.
 
-.. _`keystoneauth documentation` https://docs.openstack.org/developer/keystoneauth/
+.. _`keystoneauth documentation`: https://docs.openstack.org/developer/keystoneauth/
 
 
 Commands descriptions
