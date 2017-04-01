@@ -13,6 +13,7 @@
 
 import base64
 import os
+import socket
 
 from keystoneauth1 import loading
 from keystoneauth1 import plugin
@@ -105,13 +106,14 @@ class GnocchiBasicLoader(loading.BaseLoader):
 
     def get_options(self):
         options = super(GnocchiBasicLoader, self).get_options()
+        hostname = socket.gethostname()
         options.extend([
             GnocchiOpt('user', help='User', required=True,
                        default="admin",
                        metavar="<gnocchi user>"),
             GnocchiOpt('endpoint', help='Gnocchi endpoint',
                        dest="endpoint", required=True,
-                       default="http://localhost:8041",
+                       default="http://"+hostname+":8041",
                        metavar="<gnocchi endpoint>"),
         ])
         return options
