@@ -1,0 +1,18 @@
+language: python
+dist: xenial
+sudo: required
+cache:
+  - pip
+python:
+    - 2.7
+    - 3.4
+    - 3.5
+    - 3.6
+before_install:
+  # Always redownload tarball
+  - find ~/.cache/pip -name '*.dev*' -delete
+  - sudo apt-get -qq update
+install:
+    # The install requirements in travis virtualenv that will be cached
+  - pip install tox-travis .[test]
+script: tox
