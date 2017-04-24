@@ -28,7 +28,6 @@ Contents:
    installation
    shell
    api
-   contributing
 
 Indices and tables
 ==================
