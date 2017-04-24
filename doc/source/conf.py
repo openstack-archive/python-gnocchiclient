@@ -62,15 +62,10 @@ pygments_style = 'sphinx'
 # html_theme_path = ["."]
 # html_theme = '_theme'
 # html_static_path = ['static']
-html_theme = os.getenv("SPHINX_HTML_THEME", 'openstack')
+html_theme = 'sphinx_rtd_theme'
 
-if html_theme == "sphinx_rtd_theme":
-    import sphinx_rtd_theme
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-else:
-    import oslosphinx
-    html_theme_path = [os.path.join(os.path.dirname(oslosphinx.__file__),
-                                    'theme')]
+import sphinx_rtd_theme
+html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = '%sdoc' % project
