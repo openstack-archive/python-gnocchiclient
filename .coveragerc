@@ -1,6 +1,0 @@
-[run]
-branch = True
-source = gnocchiclient
-
-[report]
-ignore_errors = True
